@@ -23,6 +23,7 @@
     "homeTitle": "Blink",
     "@homeTitle": {},
     "userNameAlreadyExisted": "Username is already exsisted.",
-    "@userNameAlreadyExisted": {}
-
+    "@userNameAlreadyExisted": {},
+    "searchHint": "Search contact",
+    "@searchHint": {}
 }

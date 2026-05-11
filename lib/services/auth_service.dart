@@ -4,7 +4,6 @@ import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/loading_service.dart';
 import 'package:blink/services/toastification_service.dart';
-import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +13,9 @@ class AuthService {
     return CacheService().getBool(cacheKeyIsSignedIn);
   }
 
-  goIn(String username, String passcode, bool isSignedIn) async {
+  goIn(String username, String passcode, bool isSignInMode) async {
     final userCollection = getIt<FirebaseFirestore>().collection('users');
-    if (isSignedIn) {
+    if (isSignInMode) {
       getIt<LoadingService>().showGlobalLoading();
       QuerySnapshot querySnapshot =
           await userCollection
@@ -42,6 +41,7 @@ class AuthService {
           );
           getIt<CacheService>().setString(cacheKeyUsername, username);
           getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
+          getIt<CacheService>().setString(cacheKeyUserId, doc.id);
         } else {
           getIt<ToastificationService>().showError(
             getIt<AppLocalizations>().passcodeNotCorrect,
@@ -63,7 +63,13 @@ class AuthService {
         return;
       }
       try {
-        await userCollection.add({"username": username, "passcode": passcode});
+        final user = await userCollection.add({
+          "username": username,
+          "passcode": passcode,
+        });
+        getIt<CacheService>().setString(cacheKeyUsername, username);
+        getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
+        getIt<CacheService>().setString(cacheKeyUserId, user.id);
       } catch (e) {
         getIt<ToastificationService>().showError(
           getIt<AppLocalizations>().signUpFailed,
@@ -78,8 +84,6 @@ class AuthService {
         MaterialPageRoute(builder: (context) => const HomeScreen()),
         (Route<dynamic> route) => false,
       );
-      getIt<CacheService>().setString(cacheKeyUsername, username);
-      getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
     }
   }
 }

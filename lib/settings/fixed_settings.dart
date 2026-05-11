@@ -1,6 +1,3 @@
-// fixed settings
-// firebase config
-
 // routes
 const splash = '/splash';
 const home = '/home';
@@ -20,7 +17,12 @@ const mediumBorderWidth = 1.0;
 const appPadding = 18.0;
 const appTitleMarginLarge = 98.0;
 
-const appBorderRadius = 4.0;
+const appBorderRadius = 2.0;
+const appBorderWidth = 4.0;
+const appBorderCameraWidth = 4.0;
+const appCameraScanFrameSize = 250.0;
+const appCameraCornerLength = 16.0;
+const appTorchPositionBottom = 100.0;
 
 const appBoxPadding = 12.0;
 const appBoxHeightSmall = 24.0;
@@ -36,3 +38,11 @@ const pinInputValueFontSize = 28.0;
 const pinInputSeparatorWidth = 3.0;
 
 const toggleButtonWidth = 80.0;
+
+const appTextInputHeight = 40.0;
+const appTextInputFontSize = 14.0;
+const appTextInputBorderWidth = 1.0;
+
+const appSixedBoxSizeSmall = 30.0;
+const appSixedBoxSizeMedium = 40.0;
+const appSixedBoxSizeLarge = 50.0;

@@ -43,4 +43,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userNameAlreadyExisted => 'Username is already exsisted.';
+
+  @override
+  String get searchHint => 'Search contact';
 }

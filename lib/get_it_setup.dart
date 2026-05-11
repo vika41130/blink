@@ -2,6 +2,7 @@ import 'package:blink/app.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/loading_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/themes/app_theme.dart';
@@ -20,6 +21,7 @@ Future<void> getItSetup() async {
   getIt.registerSingleton<AuthService>(AuthService());
   getIt.registerSingleton<ToastificationService>(ToastificationService());
   getIt.registerSingleton<LoadingService>(LoadingService());
+  getIt.registerSingleton<ChatService>(ChatService());
 
   getIt.registerSingleton<AppThemes>(AppThemes());
 

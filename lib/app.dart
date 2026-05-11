@@ -24,7 +24,6 @@ class BlinkApp extends StatelessWidget {
             // when already signed in
             // go fast to home
             theme: getIt<AppThemes>().themeData,
-            darkTheme: AppThemes.darkTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),

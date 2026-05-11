@@ -19,7 +19,7 @@ class _AuthScreenState extends State<AuthScreen> {
   late final FocusNode pInputFocusNode;
   late final GlobalKey<FormState> formKey;
   late final TextEditingController usernameController;
-  var isSignedIn = true;
+  var isSignInMode = true;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           AppLocalizations.of(context)!.signUp,
                         ],
                         onToggle: (index) {
-                          isSignedIn = index == 0;
+                          isSignInMode = index == 0;
                           // setState(() {
                           //   // isSignedIn = index == 0;
                           // });
@@ -177,10 +177,10 @@ class _AuthScreenState extends State<AuthScreen> {
                           AuthService().goIn(
                             usernameController.value.text,
                             pinController.value.text,
-                            isSignedIn,
+                            isSignInMode,
                           );
                           pinController.setText('');
-                        }
+                        },
                       ),
                     ],
                   ),
