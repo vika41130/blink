@@ -24,6 +24,8 @@ const appCameraScanFrameSize = 250.0;
 const appCameraCornerLength = 16.0;
 const appTorchPositionBottom = 100.0;
 
+const appQrImageViewSize = 240.0;
+
 const appBoxPadding = 12.0;
 const appBoxHeightSmall = 24.0;
 const appBoxHeightMedium = 36.0;
@@ -46,3 +48,10 @@ const appTextInputBorderWidth = 1.0;
 const appSixedBoxSizeSmall = 30.0;
 const appSixedBoxSizeMedium = 40.0;
 const appSixedBoxSizeLarge = 50.0;
+
+const appLoadingIndicatorSizeSmall = 20.0;
+const appLoadingstrokeWidthSmall = 2.0;
+
+const appImagePixelRatio = 3.0;
+const appImageQuality = 100;
+const appImageFileNamePrefix = "qr_code_";

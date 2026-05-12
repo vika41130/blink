@@ -33,5 +33,13 @@
     "failedToReadQRCode": "Failed to read QR code.",
     "@failedToReadQRCode": {},
     "noQRCodeDetected": "No QR code detected.",
-    "@noQRCodeDetected": {}
+    "@noQRCodeDetected": {},
+    "saving": "Saving...",
+    "@saving": {},
+    "saveToGallery": "Save to Gallery",
+    "@saveToGallery": {},
+    "failedToSaveQRCode": "Failed to save QR Code.",
+    "@failedToSaveQRCode": {},
+    "qrCodeSaved": "QR Code saved to Gallery!",
+    "@qrCodeSaved": {}
 }

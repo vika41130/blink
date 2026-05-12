@@ -5,7 +5,7 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/home_content.dart';
-import 'package:blink/widgets/profile_content.dart';
+import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.power_settings_new),
             onPressed: () {
               getIt<CacheService>().clearCache();
               navigatorKey.currentState?.pushAndRemoveUntil(
@@ -71,17 +71,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
             ),
-            IconButton(icon: Icon(Icons.qr_code_scanner), onPressed: () {
-              navigatorKey.currentState?.push(
-                MaterialPageRoute(builder: (context) => const QRScannerScreen()),
-              );
-            }),
+            IconButton(
+              icon: Icon(Icons.qr_code_scanner),
+              onPressed: () {
+                navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (context) => const QRScannerScreen(),
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: Icon(Icons.person),
               onPressed: () {
-                setState(() {
-                  content = const ProfileContent();
-                });
+                navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
               },
             ),
           ],
