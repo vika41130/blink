@@ -41,5 +41,7 @@
     "failedToSaveQRCode": "Failed to save QR Code.",
     "@failedToSaveQRCode": {},
     "qrCodeSaved": "QR Code saved to Gallery!",
-    "@qrCodeSaved": {}
+    "@qrCodeSaved": {},
+    "noUserFound": "No user found.",
+    "@noUserFound": {}
 }

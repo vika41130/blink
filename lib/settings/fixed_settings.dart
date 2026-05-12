@@ -55,3 +55,5 @@ const appLoadingstrokeWidthSmall = 2.0;
 const appImagePixelRatio = 3.0;
 const appImageQuality = 100;
 const appImageFileNamePrefix = "qr_code_";
+
+const appIconMidSize = 20.0;

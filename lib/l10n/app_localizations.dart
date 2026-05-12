@@ -218,6 +218,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'QR Code saved to Gallery!'**
   String get qrCodeSaved;
+
+  /// No description provided for @noUserFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found.'**
+  String get noUserFound;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

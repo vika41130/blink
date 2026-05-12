@@ -4,7 +4,7 @@ import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
-import 'package:blink/widgets/home_content.dart';
+import 'package:blink/widgets/search_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Widget content = const HomeContent();
+  Widget content = const SearchScreen();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.home_filled),
               onPressed: () {
                 setState(() {
-                  content = const HomeContent();
+                  content = const SearchScreen();
                 });
               },
             ),

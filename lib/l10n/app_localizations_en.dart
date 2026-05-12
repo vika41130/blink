@@ -70,4 +70,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrCodeSaved => 'QR Code saved to Gallery!';
+
+  @override
+  String get noUserFound => 'No user found.';
 }

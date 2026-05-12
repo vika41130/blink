@@ -87,14 +87,24 @@ class AuthService {
     }
   }
 
-  Future<bool> checkUserIdExisting(String userId) async {
+  Future<Map<String, dynamic>?> getUserByUsername(String username) async {
+    if (getIt<CacheService>().getString(cacheKeyUsername) == username) {
+      return null;
+    }
     try {
       final userCollection = getIt<FirebaseFirestore>().collection('users');
-      final DocumentSnapshot<Map<String, dynamic>> doc =
-          await userCollection.doc(userId).get();
-      return doc.exists;
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await userCollection
+              .where('username', isEqualTo: username)
+              .limit(1)
+              .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.data();
+      } else {
+        return null;
+      }
     } catch (e) {
-      return false;
+      return null;
     }
   }
 
@@ -109,6 +119,31 @@ class AuthService {
         return null;
       }
     } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String?> getDocIdByUsername(String targetUsername) async {
+    try {
+      // 1. Create a query looking for the matching field value
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: targetUsername)
+              .limit(1) // Optimization: stop searching after the first match
+              .get();
+
+      // 2. Check if any matching document was actually found
+      if (querySnapshot.docs.isNotEmpty) {
+        // 3. Extract the document ID from the snapshot metadata
+        String docId = querySnapshot.docs.first.id;
+        return docId;
+      } else {
+        print("No document found matching that username.");
+        return null;
+      }
+    } catch (e) {
+      print("Error querying Firestore: $e");
       return null;
     }
   }
