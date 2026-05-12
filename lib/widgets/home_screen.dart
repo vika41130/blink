@@ -6,7 +6,7 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/home_content.dart';
 import 'package:blink/widgets/profile_content.dart';
-import 'package:blink/widgets/qr_code_content.dart';
+import 'package:blink/widgets/qr_scanner_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(icon: Icon(Icons.qr_code_scanner), onPressed: () {
               navigatorKey.currentState?.push(
-                MaterialPageRoute(builder: (context) => const QRScannerContent()),
+                MaterialPageRoute(builder: (context) => const QRScannerScreen()),
               );
             }),
             IconButton(

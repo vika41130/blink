@@ -86,4 +86,30 @@ class AuthService {
       );
     }
   }
+
+  Future<bool> checkUserIdExisting(String userId) async {
+    try {
+      final userCollection = getIt<FirebaseFirestore>().collection('users');
+      final DocumentSnapshot<Map<String, dynamic>> doc =
+          await userCollection.doc(userId).get();
+      return doc.exists;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserById(String userId) async {
+    try {
+      final userCollection = getIt<FirebaseFirestore>().collection('users');
+      final DocumentSnapshot<Map<String, dynamic>> doc =
+          await userCollection.doc(userId).get();
+      if (doc.exists) {
+        return doc.data();
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
 }

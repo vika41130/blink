@@ -170,6 +170,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search contact'**
   String get searchHint;
+
+  /// No description provided for @cannotChatWithYourself.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot chat with yourself.'**
+  String get cannotChatWithYourself;
+
+  /// No description provided for @userNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found.'**
+  String get userNotFound;
+
+  /// No description provided for @failedToReadQRCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to read QR code.'**
+  String get failedToReadQRCode;
+
+  /// No description provided for @noQRCodeDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No QR code detected.'**
+  String get noQRCodeDetected;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

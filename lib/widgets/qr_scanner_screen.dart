@@ -1,20 +1,26 @@
+import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/services/auth_service.dart';
+import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/themes/app_theme.dart';
+import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/corner_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class QRScannerContent extends StatefulWidget {
-  const QRScannerContent({super.key});
+class QRScannerScreen extends StatefulWidget {
+  const QRScannerScreen({super.key});
 
   @override
-  State<QRScannerContent> createState() => _QRScannerContentState();
+  State<QRScannerScreen> createState() => _QRScannerScreenState();
 }
 
-class _QRScannerContentState extends State<QRScannerContent> {
+class _QRScannerScreenState extends State<QRScannerScreen> {
   final MobileScannerController _cameraController = MobileScannerController(
     facing: CameraFacing.back,
     detectionSpeed: DetectionSpeed.normal,
@@ -47,7 +53,7 @@ class _QRScannerContentState extends State<QRScannerContent> {
         // full screen camera preview
         MobileScanner(
           controller: _cameraController,
-          onDetect: (capture) {
+          onDetect: (capture) async {
             if (_isScanCompleted) {
               return;
             }
@@ -57,20 +63,11 @@ class _QRScannerContentState extends State<QRScannerContent> {
                 _isScanCompleted = true;
               });
               final String? qrCodeValue = barcodes.first.rawValue;
-              if (qrCodeValue != null) {
-                HapticFeedback.vibrate();
-                _cameraController.stop();
-                // if (mounted) {
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //     SnackBar(
-                //       content: Text('QR Code Detected: $qrCodeValue'),
-                //       backgroundColor: Colors.green,
-                //     ),
-                //   );
-                // }
-                // search user and go to chat if found
-                // else show error toast message
-              }
+              await _processScannedQRCode(qrCodeValue);
+            } else {
+              getIt<ToastificationService>().showError(
+                getIt<AppLocalizations>().noQRCodeDetected,
+              );
             }
           },
         ),
@@ -156,47 +153,70 @@ class _QRScannerContentState extends State<QRScannerContent> {
       final XFile? pickedFile = await _imagePicker.pickImage(
         source: ImageSource.gallery,
       );
-
       if (pickedFile == null) {
         _cameraController.start();
         return; // User canceled the picker
       }
-
       // 2. Pass the file path to MobileScanner to analyze it
       final BarcodeCapture? capture = await _cameraController.analyzeImage(
         pickedFile.path,
       );
-
       // 3. Process the results
       if (capture != null && capture.barcodes.isNotEmpty) {
         final String? qrCodeValue = capture.barcodes.first.rawValue;
-
-        if (qrCodeValue != null && mounted) {
-          HapticFeedback.vibrate();
-          _cameraController.stop();
-          // search user and go to chat if found else show error toast message
-        }
+        await _processScannedQRCode(qrCodeValue);
       } else {
         _cameraController.start();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No QR code found in the selected image.'),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
-        }
+        getIt<ToastificationService>().showError(
+          getIt<AppLocalizations>().noQRCodeDetected,
+        );
       }
     } catch (e) {
       _cameraController.start();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error scanning image: $e'),
-            backgroundColor: Colors.redAccent,
-          ),
+      getIt<ToastificationService>().showError(
+        getIt<AppLocalizations>().noQRCodeDetected,
+      );
+    }
+  }
+
+  _processScannedQRCode(String? qrCodeValue) async {
+    if (qrCodeValue != null) {
+      HapticFeedback.vibrate();
+      _cameraController.stop();
+      final user = await getIt<AuthService>().getUserById(qrCodeValue);
+      final String currentUserId =
+          getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+      if (user != null) {
+        if (qrCodeValue == currentUserId) {
+          getIt<ToastificationService>().showError(
+            getIt<AppLocalizations>().cannotChatWithYourself,
+          );
+          _cameraController.start();
+          setState(() {
+            _isScanCompleted = false;
+          });
+          return;
+        } else {
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder:
+                  (context) => ChatScreen(
+                    currentUserId: currentUserId,
+                    receiverId: qrCodeValue,
+                    receiverName: user['username'],
+                  ),
+            ),
+          );
+        }
+      } else {
+        getIt<ToastificationService>().showError(
+          getIt<AppLocalizations>().userNotFound,
         );
       }
+    } else {
+      getIt<ToastificationService>().showError(
+        getIt<AppLocalizations>().failedToReadQRCode,
+      );
     }
   }
 }

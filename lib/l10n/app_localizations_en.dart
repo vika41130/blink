@@ -46,4 +46,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchHint => 'Search contact';
+
+  @override
+  String get cannotChatWithYourself => 'Cannot chat with yourself.';
+
+  @override
+  String get userNotFound => 'User not found.';
+
+  @override
+  String get failedToReadQRCode => 'Failed to read QR code.';
+
+  @override
+  String get noQRCodeDetected => 'No QR code detected.';
 }

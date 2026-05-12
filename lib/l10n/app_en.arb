@@ -25,5 +25,13 @@
     "userNameAlreadyExisted": "Username is already exsisted.",
     "@userNameAlreadyExisted": {},
     "searchHint": "Search contact",
-    "@searchHint": {}
+    "@searchHint": {},
+    "cannotChatWithYourself": "Cannot chat with yourself.",
+    "@cannotChatWithYourself": {},
+    "userNotFound": "User not found.",
+    "@userNotFound": {},
+    "failedToReadQRCode": "Failed to read QR code.",
+    "@failedToReadQRCode": {},
+    "noQRCodeDetected": "No QR code detected.",
+    "@noQRCodeDetected": {}
 }

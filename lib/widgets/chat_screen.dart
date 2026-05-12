@@ -1,6 +1,7 @@
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
+import 'package:blink/widgets/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -33,84 +34,111 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.receiverName)),
-      body: Column(
-        children: [
-          // 1. Live Chat Stream
-          Expanded(
-            child: StreamBuilder<List<MessageModel>>(
-              stream: getIt<ChatService>().getMessages(
-                widget.currentUserId,
-                widget.receiverId,
-              ),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("No messages yet. Say hi!"));
-                }
+    return PopScope(
+      canPop: false, // Prevents default back navigation
+      onPopInvokedWithResult: (didPop, result) async {
+        // safety check: if the system somehow already popped, don't repeat it
+        if (didPop) return;
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (Route<dynamic> route) => false,
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.receiverName),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
+        ),
+        body: Column(
+          children: [
+            // 1. Live Chat Stream
+            Expanded(
+              child: StreamBuilder<List<MessageModel>>(
+                stream: getIt<ChatService>().getMessages(
+                  widget.currentUserId,
+                  widget.receiverId,
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text("No messages yet. Say hi!"),
+                    );
+                  }
 
-                final messages = snapshot.data!;
+                  final messages = snapshot.data!;
 
-                return ListView.builder(
-                  reverse:
-                      true, // Pushes UI elements to the bottom of the screen
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    final bool isMe = message.senderId == widget.currentUserId;
+                  return ListView.builder(
+                    reverse:
+                        true, // Pushes UI elements to the bottom of the screen
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      final bool isMe =
+                          message.senderId == widget.currentUserId;
 
-                    return Align(
-                      alignment:
-                          isMe ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 4,
-                          horizontal: 8,
-                        ),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isMe ? Colors.blueAccent : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          message.text,
-                          style: TextStyle(
-                            color: isMe ? Colors.white : Colors.black87,
+                      return Align(
+                        alignment:
+                            isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 4,
+                            horizontal: 8,
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isMe ? Colors.blueAccent : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            message.text,
+                            style: TextStyle(
+                              color: isMe ? Colors.white : Colors.black87,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
 
-          // 2. Chat Input Row
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: const InputDecoration(
-                      hintText: "Type a message...",
-                      border: OutlineInputBorder(),
+            // 2. Chat Input Row
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      decoration: const InputDecoration(
+                        hintText: "Type a message...",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send, color: Colors.blueAccent),
-                  onPressed: _sendMessage,
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.send, color: Colors.blueAccent),
+                    onPressed: _sendMessage,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
