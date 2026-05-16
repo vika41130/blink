@@ -5,7 +5,6 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/qr_image_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

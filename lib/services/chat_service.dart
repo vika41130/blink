@@ -3,7 +3,6 @@ import 'package:blink/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatService {
-
   // Helper: Generate a unique chat room ID for 2 users (always sorted alphabetically)
   String getChatRoomId(String user1, String user2) {
     List<String> ids = [user1, user2];
@@ -22,10 +21,14 @@ class ChatService {
     final String chatRoomId = getChatRoomId(currentUserId, receiverId);
 
     // Prepare message data
+    final now = DateTime.now();
+    final oneMinuteFromNow = now.add(const Duration(minutes: 1));
     final message = MessageModel(
       senderId: currentUserId,
       text: messageText.trim(),
-      timestamp: DateTime.now(),
+      timestamp: now,
+      createdAt: now,
+      deleteAt: oneMinuteFromNow,
     );
 
     // Save message to nested subcollection
@@ -46,15 +49,14 @@ class ChatService {
 
   // 2. Stream Messages (Real-time read)
   Stream<List<MessageModel>> getMessages(String user1, String user2) {
+    final currentTime = Timestamp.fromDate(DateTime.now());
     final String chatRoomId = getChatRoomId(user1, user2);
     return getIt<FirebaseFirestore>()
         .collection('chats')
         .doc(chatRoomId)
         .collection('messages')
-        .orderBy(
-          'timestamp',
-          descending: true,
-        ) // Newest messages first for easy ListView implementation
+        .where('deleteAt', isGreaterThan: currentTime)
+        .orderBy('deleteAt', descending: true)
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {

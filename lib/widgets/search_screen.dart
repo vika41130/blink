@@ -80,6 +80,7 @@ class _HomeContenttState extends State<SearchScreen> {
               itemCount: searchResults.length,
               itemBuilder: (context, index) {
                 final user = searchResults[index];
+                // save contact feature
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(

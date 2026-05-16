@@ -4,11 +4,15 @@ class MessageModel {
   final String senderId;
   final String text;
   final DateTime timestamp;
+  final DateTime createdAt;
+  final DateTime deleteAt;
 
   MessageModel({
     required this.senderId,
     required this.text,
     required this.timestamp,
+    required this.createdAt,
+    required this.deleteAt,
   });
 
   // Factory to convert Firestore document data to MessageModel
@@ -17,6 +21,10 @@ class MessageModel {
       senderId: data['senderId'] ?? '',
       text: data['text'] ?? '',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      deleteAt:
+          (data['deleteAt'] as Timestamp?)?.toDate() ??
+          DateTime.now().add(const Duration(minutes: 1)),
     );
   }
 
@@ -25,8 +33,9 @@ class MessageModel {
     return {
       'senderId': senderId,
       'text': text,
-      'timestamp':
-          FieldValue.serverTimestamp(), // Always use server-side timestamp
+      'timestamp': Timestamp.fromDate(timestamp),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'deleteAt': Timestamp.fromDate(deleteAt),
     };
   }
 }
