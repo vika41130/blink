@@ -44,6 +44,10 @@ const toggleButtonWidth = 80.0;
 const appTextInputHeight = 40.0;
 const appTextInputFontSize = 14.0;
 const appTextInputBorderWidth = 1.0;
+const appTextInputBorderRadius = 999.0;
+const appTextInputContentPadding = 10.0;
+const appTextInputMaxLines = 2;
+const appTextInputMinLines = 1;
 
 const appSixedBoxSizeSmall = 30.0;
 const appSixedBoxSizeMedium = 40.0;
@@ -56,4 +60,11 @@ const appImagePixelRatio = 3.0;
 const appImageQuality = 100;
 const appImageFileNamePrefix = "qr_code_";
 
+const appIconSmallSize = 15.0;
 const appIconMidSize = 20.0;
+const appIconLargeSize = 30.0;
+
+const appBlinkSize = 30.0;
+
+const appMessagePadding = 10.0;
+const appMessageMarginVertical = 4.0;

@@ -43,14 +43,15 @@ class _HomeContenttState extends State<SearchScreen> {
               setState(() {});
               searchFieldFocusNode.unfocus();
             },
+            maxLength: pinInputMaxLength,
             style: const TextStyle(fontSize: appTextInputFontSize),
             decoration: InputDecoration(
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 0.0),
+              contentPadding: EdgeInsets.only(right: appTextInputContentPadding),
               hintText: getIt<AppLocalizations>().searchHint,
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(999.0),
+                borderRadius: BorderRadius.circular(appTextInputBorderRadius),
                 borderSide: BorderSide.none,
               ),
               filled: true,

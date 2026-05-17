@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
+import 'package:blink/settings/fixed_settings.dart';
+import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/custom_widgets/thanos_dissolve_wrapper.dart';
 import 'package:flutter/material.dart';
 
@@ -82,19 +84,30 @@ class _MessageWidgetState extends State<MessageWidget>
       alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: ThanosDissolveWrapper(
         isDeleted: _isRemoving,
-        messageColor: Colors.blue,
+        messageColor: getIt<AppThemes>().themeData.colorScheme.primary,
         onAnimationComplete: () {},
         child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(appMessagePadding),
+          margin: const EdgeInsets.symmetric(
+            vertical: appMessageMarginVertical,
+          ),
           decoration: BoxDecoration(
-            color: widget.isMe ? Colors.blueAccent : Colors.grey[300],
-            borderRadius: BorderRadius.circular(12),
+            color:
+                widget.isMe
+                    ? getIt<AppThemes>().themeData.colorScheme.primary
+                    : getIt<AppThemes>().themeData.colorScheme.secondary,
+            borderRadius: BorderRadius.circular(appTextInputBorderRadius),
           ),
           child: Text(
             widget.message.text,
             style: TextStyle(
-              color: widget.isMe ? Colors.white : Colors.black87,
+              color:
+                  widget.isMe
+                      ? getIt<AppThemes>()
+                          .themeData
+                          .colorScheme
+                          .surfaceContainerHighest
+                      : getIt<AppThemes>().themeData.colorScheme.surfaceBright,
             ),
           ),
         ),

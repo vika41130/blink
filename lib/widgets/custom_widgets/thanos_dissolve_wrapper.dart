@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/custom_widgets/dissolve_particle.dart';
 import 'package:blink/widgets/custom_widgets/particle_painter.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class _ThanosDissolveWrapperState extends State<ThanosDissolveWrapper>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800), // Thời gian tan biến
+      duration: const Duration(seconds: 1),
     );
 
     _controller.addListener(() {
@@ -54,9 +55,9 @@ class _ThanosDissolveWrapperState extends State<ThanosDissolveWrapper>
 
   void _generateParticles() {
     _particles.clear();
-    for (int i = 0; i < 150; i++) {
-      double startX = _random.nextDouble() * 100;
-      double startY = _random.nextDouble() * 50;
+    for (int i = 0; i < appBlinkSize.toInt(); i++) {
+      double startX = _random.nextDouble() * appBlinkSize;
+      double startY = _random.nextDouble() * appBlinkSize;
 
       _particles.add(
         DissolveParticle(
@@ -99,7 +100,7 @@ class _ThanosDissolveWrapperState extends State<ThanosDissolveWrapper>
               particles: _particles,
               color: widget.messageColor,
             ),
-            child: const SizedBox(width: 100, height: 50),
+            child: const SizedBox(width: appBlinkSize, height: appBlinkSize),
           ),
       ],
     );
