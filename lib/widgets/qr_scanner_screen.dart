@@ -8,6 +8,7 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/corner_border.dart';
+import 'package:blink/widgets/socket_chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -205,6 +206,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     receiverId: qrCodeValue,
                     receiverName: user['username'],
                   ),
+                  // (context) => SocketChatScreen(),
             ),
           );
         }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageModel {
+  final String messageId;
   final String senderId;
   final String text;
   final DateTime timestamp;
@@ -8,6 +9,7 @@ class MessageModel {
   final DateTime deleteAt;
 
   MessageModel({
+    required this.messageId,
     required this.senderId,
     required this.text,
     required this.timestamp,
@@ -16,8 +18,12 @@ class MessageModel {
   });
 
   // Factory to convert Firestore document data to MessageModel
-  factory MessageModel.fromFirestore(Map<String, dynamic> data) {
+  factory MessageModel.fromFirestore(
+    Map<String, dynamic> data,
+    String messageId,
+  ) {
     return MessageModel(
+      messageId: messageId,
       senderId: data['senderId'] ?? '',
       text: data['text'] ?? '',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),

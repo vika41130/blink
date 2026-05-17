@@ -22,8 +22,9 @@ class ChatService {
 
     // Prepare message data
     final now = DateTime.now();
-    final oneMinuteFromNow = now.add(const Duration(minutes: 1));
+    final oneMinuteFromNow = now.add(const Duration(seconds: 10));
     final message = MessageModel(
+      messageId: '',
       senderId: currentUserId,
       text: messageText.trim(),
       timestamp: now,
@@ -60,8 +61,23 @@ class ChatService {
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
-            return MessageModel.fromFirestore(doc.data());
+            return MessageModel.fromFirestore(doc.data(), doc.id);
           }).toList();
         });
+  }
+
+  // 3. Delete a message by setting its text to an empty string
+  Future<void> deleteMessage({
+    required String currentUserId,
+    required String receiverId,
+    required String messageId,
+  }) async {
+    final String chatRoomId = getChatRoomId(currentUserId, receiverId);
+    await getIt<FirebaseFirestore>()
+        .collection('chats')
+        .doc(chatRoomId)
+        .collection('messages')
+        .doc(messageId)
+        .delete();
   }
 }

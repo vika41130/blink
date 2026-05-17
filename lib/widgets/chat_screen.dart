@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/widgets/home_screen.dart';
+import 'package:blink/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -24,19 +23,19 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  Timer? _refreshTimer;
+  // Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
-    _refreshTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      if (mounted) setState(() {});
-    });
+    // _refreshTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+    //   if (mounted) setState(() {});
+    // });
   }
 
   @override
   void dispose() {
-    _refreshTimer?.cancel();
+    // _refreshTimer?.cancel();
     super.dispose();
   }
 
@@ -76,85 +75,69 @@ class _ChatScreenState extends State<ChatScreen> {
             },
           ),
         ),
-        body: Column(
-          children: [
-            // 1. Live Chat Stream
-            Expanded(
-              child: StreamBuilder<List<MessageModel>>(
-                stream: getIt<ChatService>().getMessages(
-                  widget.currentUserId,
-                  widget.receiverId,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text("No messages yet. Say hi!"),
+        body: SafeArea(
+          child: Column(
+            children: [
+              // 1. Live Chat Stream
+              Expanded(
+                child: StreamBuilder<List<MessageModel>>(
+                  stream: getIt<ChatService>().getMessages(
+                    widget.currentUserId,
+                    widget.receiverId,
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox.shrink();
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    final messages = snapshot.data!;
+                    return ListView.builder(
+                      reverse:
+                          true, // Pushes UI elements to the bottom of the screen
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final bool isMe =
+                            message.senderId == widget.currentUserId;
+                        return MessageWidget(
+                          key: ValueKey(message.messageId),
+                          message: message,
+                          isMe: isMe,
+                          currentUserId: widget.currentUserId,
+                          receiverId: widget.receiverId,
+                          messageId: message.messageId,
+                        );
+                      },
                     );
-                  }
-
-                  final messages = snapshot.data!;
-
-                  return ListView.builder(
-                    reverse:
-                        true, // Pushes UI elements to the bottom of the screen
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final message = messages[index];
-                      final bool isMe =
-                          message.senderId == widget.currentUserId;
-
-                      return Align(
-                        alignment:
-                            isMe ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            vertical: 4,
-                            horizontal: 8,
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isMe ? Colors.blueAccent : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            message.text,
-                            style: TextStyle(
-                              color: isMe ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                  },
+                ),
               ),
-            ),
 
-            // 2. Chat Input Row
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: "Type a message...",
-                        border: OutlineInputBorder(),
+              // 2. Chat Input Row
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: const InputDecoration(
+                          hintText: "Type a message...",
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.send, color: Colors.blueAccent),
-                    onPressed: _sendMessage,
-                  ),
-                ],
+                    IconButton(
+                      icon: const Icon(Icons.send, color: Colors.blueAccent),
+                      onPressed: _sendMessage,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
