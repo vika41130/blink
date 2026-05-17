@@ -23,19 +23,14 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  // Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
-    // _refreshTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
-    //   if (mounted) setState(() {});
-    // });
   }
 
   @override
   void dispose() {
-    // _refreshTimer?.cancel();
     super.dispose();
   }
 
