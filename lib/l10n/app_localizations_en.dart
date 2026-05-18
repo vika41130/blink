@@ -73,4 +73,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noUserFound => 'No user found.';
+
+  @override
+  String get contactSavedSuccessfully => 'Contact saved successfully.';
+
+  @override
+  String get failedToSaveContact => 'Failed to save contact.';
+
+  @override
+  String get contactAlreadyAdded => 'Contact already added.';
+
+  @override
+  String get contactNotAdded => 'Contact not added.';
+
+  @override
+  String get contactRemovedSuccessfully => 'Contact removed successfully.';
+
+  @override
+  String get failedToRemoveContact => 'Failed to remove contact.';
 }

@@ -43,5 +43,18 @@
     "qrCodeSaved": "QR Code saved to Gallery!",
     "@qrCodeSaved": {},
     "noUserFound": "No user found.",
-    "@noUserFound": {}
+    "@noUserFound": {},
+    "contactSavedSuccessfully": "Contact saved successfully.",
+    "@contactSavedSuccessfully": {},
+    "failedToSaveContact": "Failed to save contact.",
+    "@failedToSaveContact": {},
+    "contactAlreadyAdded": "Contact already added.",
+    "@contactAlreadyAdded": {},
+    "contactNotAdded": "Contact not added.",
+    "@contactNotAdded": {},
+    "contactRemovedSuccessfully": "Contact removed successfully.",
+    "@contactRemovedSuccessfully": {},
+    "failedToRemoveContact": "Failed to remove contact.",
+    "@failedToRemoveContact": {}
+    
 }

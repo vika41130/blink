@@ -203,7 +203,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   (context) => ChatScreen(
                     currentUserId: currentUserId,
                     receiverId: qrCodeValue,
-                    receiverName: user['username'],
+                    receiverName: user.username,
                   ),
               // (context) => SocketChatScreen(),
             ),

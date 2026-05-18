@@ -14,7 +14,9 @@ class ParticlePainter extends CustomPainter {
     for (var particle in particles) {
       if (particle.opacity > 0) {
         // Vẽ từng hạt vuông nhỏ đại diện cho pixel tin nhắn bị vỡ
-        paint.color = color.withOpacity(particle.opacity);
+        paint.color = color.withAlpha(
+          (particle.opacity * 255).clamp(0, 255).toInt(),
+        );
         canvas.drawRect(
           Rect.fromLTWH(particle.x, particle.y, particle.size, particle.size),
           paint,

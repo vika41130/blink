@@ -1,5 +1,6 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/models/user.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/loading_service.dart';
@@ -63,10 +64,8 @@ class AuthService {
         return;
       }
       try {
-        final user = await userCollection.add({
-          "username": username,
-          "passcode": passcode,
-        });
+        final userModel = User(username: username, passcode: passcode);
+        final user = await userCollection.add(userModel.toMap());
         getIt<CacheService>().setString(cacheKeyUsername, username);
         getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
         getIt<CacheService>().setString(cacheKeyUserId, user.id);
@@ -87,7 +86,7 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> getUserByUsername(String username) async {
+  Future<User?> getUserByUsername(String username) async {
     if (getIt<CacheService>().getString(cacheKeyUsername) == username) {
       return null;
     }
@@ -99,7 +98,7 @@ class AuthService {
               .limit(1)
               .get();
       if (querySnapshot.docs.isNotEmpty) {
-        return querySnapshot.docs.first.data();
+        return User.fromMap(querySnapshot.docs.first.data());
       } else {
         return null;
       }
@@ -108,13 +107,13 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> getUserById(String userId) async {
+  Future<User?> getUserById(String userId) async {
     try {
       final userCollection = getIt<FirebaseFirestore>().collection('users');
       final DocumentSnapshot<Map<String, dynamic>> doc =
           await userCollection.doc(userId).get();
-      if (doc.exists) {
-        return doc.data();
+      if (doc.exists && doc.data() != null) {
+        return User.fromMap(doc.data()!);
       } else {
         return null;
       }
@@ -139,11 +138,11 @@ class AuthService {
         String docId = querySnapshot.docs.first.id;
         return docId;
       } else {
-        print("No document found matching that username.");
+        debugPrint("No document found matching that username.");
         return null;
       }
     } catch (e) {
-      print("Error querying Firestore: $e");
+      debugPrint("Error querying Firestore: $e");
       return null;
     }
   }

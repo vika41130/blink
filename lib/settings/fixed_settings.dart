@@ -68,3 +68,4 @@ const appBlinkSize = 30.0;
 
 const appMessagePadding = 10.0;
 const appMessageMarginVertical = 4.0;
+const appMessageMaxLength = 50;

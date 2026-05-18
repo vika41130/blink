@@ -6,6 +6,7 @@ import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -127,6 +128,11 @@ class _ChatScreenState extends State<ChatScreen> {
                             controller: _messageController,
                             maxLines: appTextInputMaxLines,
                             minLines: appTextInputMinLines,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(
+                                appMessageMaxLength,
+                              ),
+                            ],
                             style: const TextStyle(
                               fontSize: appTextInputFontSize,
                             ),

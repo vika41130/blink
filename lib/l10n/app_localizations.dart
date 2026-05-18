@@ -224,6 +224,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No user found.'**
   String get noUserFound;
+
+  /// No description provided for @contactSavedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact saved successfully.'**
+  String get contactSavedSuccessfully;
+
+  /// No description provided for @failedToSaveContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save contact.'**
+  String get failedToSaveContact;
+
+  /// No description provided for @contactAlreadyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact already added.'**
+  String get contactAlreadyAdded;
+
+  /// No description provided for @contactNotAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact not added.'**
+  String get contactNotAdded;
+
+  /// No description provided for @contactRemovedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact removed successfully.'**
+  String get contactRemovedSuccessfully;
+
+  /// No description provided for @failedToRemoveContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove contact.'**
+  String get failedToRemoveContact;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
