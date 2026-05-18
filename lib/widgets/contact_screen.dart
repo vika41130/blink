@@ -1,6 +1,7 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/models/contact.dart';
 import 'package:blink/models/user.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
@@ -21,11 +22,18 @@ class ContactScreen extends StatefulWidget {
 class _ContactScreenState extends State<ContactScreen> {
   late final FocusNode searchFieldFocusNode;
   List<User> searchResults = [];
+  List<Contact> contacts = [];
 
   @override
   void initState() {
     super.initState();
     searchFieldFocusNode = FocusNode();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      contacts = await getIt<ContactService>().getContacts(
+        getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+      );
+      setState(() {});
+    });
   }
 
   @override
@@ -97,14 +105,14 @@ class _ContactScreenState extends State<ContactScreen> {
                 ),
               ),
               SizedBox(height: appFormItemMargin),
-              searchResults.isNotEmpty
+              contacts.isNotEmpty
                   ? ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: searchResults.length,
+                    itemCount: contacts.length,
                     itemBuilder: (context, index) {
-                      final user = searchResults[index];
-                      return _buildUserListTile(user);
+                      final contact = contacts[index];
+                      return _buildUserListTile(contact);
                     },
                   )
                   : searchFieldFocusNode.hasFocus && searchResults.isEmpty
@@ -127,7 +135,7 @@ class _ContactScreenState extends State<ContactScreen> {
     );
   }
 
-  Widget _buildUserListTile(User user) {
+  Widget _buildUserListTile(Contact contact) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
@@ -139,13 +147,13 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
       ),
       title: Text(
-        user.username,
+        contact.username,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       trailing: FutureBuilder<bool>(
         future: getIt<ContactService>().isContactAdded(
           getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-          user.username,
+          contact.username,
         ),
         builder: (context, snapshot) {
           final isAdded = snapshot.data == true;
@@ -158,12 +166,12 @@ class _ContactScreenState extends State<ContactScreen> {
               if (isAdded) {
                 await getIt<ContactService>().removeContact(
                   currentUserId,
-                  user.username,
+                  contact.username,
                 );
               } else {
                 await getIt<ContactService>().saveContact(
                   currentUserId,
-                  user.username,
+                  contact.username,
                 );
               }
               setState(() {});
@@ -175,14 +183,15 @@ class _ContactScreenState extends State<ContactScreen> {
         final String currentUserId =
             getIt<CacheService>().getString(cacheKeyUserId) ?? '';
         final String receiverId =
-            await getIt<AuthService>().getDocIdByUsername(user.username) ?? '';
+            await getIt<AuthService>().getDocIdByUsername(contact.username) ??
+            '';
         navigatorKey.currentState?.push(
           MaterialPageRoute(
             builder:
                 (context) => ChatScreen(
                   currentUserId: currentUserId,
                   receiverId: receiverId,
-                  receiverName: user.username,
+                  receiverName: contact.username,
                 ),
           ),
         );
