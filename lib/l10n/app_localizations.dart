@@ -260,6 +260,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to remove contact.'**
   String get failedToRemoveContact;
+
+  /// No description provided for @contactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get contactTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

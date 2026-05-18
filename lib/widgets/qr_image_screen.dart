@@ -59,7 +59,7 @@ class _QrImageScreenState extends State<QrImageScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: formItemMargin),
+              SizedBox(height: appFormItemMargin),
               ElevatedButton.icon(
                 onPressed: _isSaving ? null : _downloadQrCode,
                 icon:

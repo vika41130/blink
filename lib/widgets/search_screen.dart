@@ -34,6 +34,82 @@ class _HomeContenttState extends State<SearchScreen> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: appTextInputHeight,
+          child: Center(
+            child: TextField(
+              focusNode: searchFieldFocusNode,
+              onTapOutside: (event) {
+                setState(() {});
+                searchFieldFocusNode.unfocus();
+              },
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(pinInputMaxLength),
+              ],
+              style: const TextStyle(fontSize: appTextInputFontSize),
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.only(
+                  right: appTextInputContentPadding,
+                  top: appTextInputContentPadding,
+                  bottom: appTextInputContentPadding,
+                ),
+                hintText: getIt<AppLocalizations>().searchHint,
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+              ),
+              onChanged: (value) async {
+                final user = await getIt<AuthService>().getUserByUsername(
+                  value.trim(),
+                );
+                if (user != null) {
+                  setState(() {
+                    searchResults = [user];
+                  });
+                } else {
+                  setState(() {
+                    searchResults = [];
+                  });
+                }
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: appFormItemMargin),
+        searchResults.isNotEmpty
+            ? ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: searchResults.length,
+              itemBuilder: (context, index) {
+                final user = searchResults[index];
+                return _buildUserListTile(user);
+              },
+            )
+            : searchFieldFocusNode.hasFocus && searchResults.isEmpty
+            ? Text(
+              getIt<AppLocalizations>().noUserFound,
+              style: TextStyle(
+                color:
+                    getIt<AppThemes>().themeData.colorScheme.onSurfaceVariant,
+                fontSize: fontSizeMedium,
+              ),
+            )
+            : const SizedBox.shrink(),
+      ],
+    );
+  }
+
   Widget _buildUserListTile(User user) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -94,82 +170,6 @@ class _HomeContenttState extends State<SearchScreen> {
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: appTextInputHeight,
-          child: Center(
-            child: TextField(
-              focusNode: searchFieldFocusNode,
-              onTapOutside: (event) {
-                setState(() {});
-                searchFieldFocusNode.unfocus();
-              },
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(pinInputMaxLength),
-              ],
-              style: const TextStyle(fontSize: appTextInputFontSize),
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.only(
-                  right: appTextInputContentPadding,
-                  top: appTextInputContentPadding,
-                  bottom: appTextInputContentPadding,
-                ),
-                hintText: getIt<AppLocalizations>().searchHint,
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(appTextInputBorderRadius),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
-              onChanged: (value) async {
-                final user = await getIt<AuthService>().getUserByUsername(
-                  value.trim(),
-                );
-                if (user != null) {
-                  setState(() {
-                    searchResults = [user];
-                  });
-                } else {
-                  setState(() {
-                    searchResults = [];
-                  });
-                }
-              },
-            ),
-          ),
-        ),
-        SizedBox(height: formItemMargin),
-        searchResults.isNotEmpty
-            ? ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: searchResults.length,
-              itemBuilder: (context, index) {
-                final user = searchResults[index];
-                return _buildUserListTile(user);
-              },
-            )
-            : searchFieldFocusNode.hasFocus && searchResults.isEmpty
-            ? Text(
-              getIt<AppLocalizations>().noUserFound,
-              style: TextStyle(
-                color:
-                    getIt<AppThemes>().themeData.colorScheme.onSurfaceVariant,
-                fontSize: fontSizeMedium,
-              ),
-            )
-            : const SizedBox.shrink(),
-      ],
     );
   }
 }

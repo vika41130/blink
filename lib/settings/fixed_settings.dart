@@ -31,7 +31,7 @@ const appBoxHeightSmall = 24.0;
 const appBoxHeightMedium = 36.0;
 const appBoxHeightLarge = 48.0;
 
-const formItemMargin = 20.0;
+const appFormItemMargin = 20.0;
 const pinItemWidth = 58.0;
 const pinItemHeight = 40.0;
 const pinInputMaxLength = 20;
@@ -63,6 +63,7 @@ const appImageFileNamePrefix = "qr_code_";
 const appIconSmallSize = 15.0;
 const appIconMidSize = 20.0;
 const appIconLargeSize = 30.0;
+const appIconExtraLargeSize = 40.0;
 
 const appBlinkSize = 30.0;
 

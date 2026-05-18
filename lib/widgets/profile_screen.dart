@@ -3,6 +3,7 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
+import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/qr_image_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -18,15 +19,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(Icons.qr_code_scanner),
-          onPressed: () {
-            navigatorKey.currentState?.push(
-              MaterialPageRoute(builder: (context) => const QrImageScreen()),
-            );
-          },
-        ),
         actions: [
           IconButton(
             icon: Icon(Icons.power_settings_new),
@@ -50,27 +42,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Align(
-              //   alignment: Alignment.center,
-              //   child: QrImageView(
-              //     data: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-              //     version:
-              //         QrVersions.auto, // Automatically calculate QR version
-              //     size: 200.0, // Total width and height of the widget
-              //     gapless: false, // Fixes alignment gaps on some screens
-              //     dataModuleStyle: QrDataModuleStyle(
-              //       color:
-              //           Theme.of(
-              //             context,
-              //           ).colorScheme.primary, // Color of the QR code modules
-              //     ),
-              //     eyeStyle: QrEyeStyle(
-              //       color: Theme.of(context).colorScheme.primary,
-              //       eyeShape: QrEyeShape.square,
-              //     ),
-              //   ),
-              // ),
-              Text('List of contacts will be here'),
+              Align(
+                alignment: Alignment.center,
+                child: IconButton(
+                  iconSize: appIconExtraLargeSize,
+                  icon: Icon(Icons.qr_code_scanner),
+                  onPressed: () {
+                    navigatorKey.currentState?.push(
+                      MaterialPageRoute(
+                        builder: (context) => const QrImageScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: appFormItemMargin),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      navigatorKey.currentState?.push(
+                        MaterialPageRoute(
+                          builder: (context) => const ContactScreen(),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.contact_page),
+                  ),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
+                ],
+              ),
             ],
           ),
         ),

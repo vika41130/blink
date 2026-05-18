@@ -83,9 +83,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           // });
                         },
                       ),
-                      SizedBox(height: formItemMargin),
-                      SizedBox(height: formItemMargin),
-                      SizedBox(height: formItemMargin),
+                      SizedBox(height: appFormItemMargin),
+                      SizedBox(height: appFormItemMargin),
+                      SizedBox(height: appFormItemMargin),
                       TextFormField(
                         onChanged: (value) {
                           setState(() {});
@@ -134,7 +134,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: formItemMargin),
+                      SizedBox(height: appFormItemMargin),
                       Pinput(
                         controller: pinController,
                         obscureText: true,

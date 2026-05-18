@@ -55,6 +55,8 @@
     "contactRemovedSuccessfully": "Contact removed successfully.",
     "@contactRemovedSuccessfully": {},
     "failedToRemoveContact": "Failed to remove contact.",
-    "@failedToRemoveContact": {}
+    "@failedToRemoveContact": {},
+    "contactTitle": "Contacts",
+    "@contactTitle": {}
     
 }

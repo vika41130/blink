@@ -91,4 +91,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToRemoveContact => 'Failed to remove contact.';
+
+  @override
+  String get contactTitle => 'Contacts';
 }
