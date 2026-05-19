@@ -108,18 +108,19 @@ class ContactService {
     return contacts.contains(username);
   }
 
-  Future<List<Contact>> getContacts(String currentUserId) async {
+  Future<List<Contact>> getContacts({
+    required String currentUserId,
+    String searchText = '',
+  }) async {
     if (currentUserId.isEmpty) {
       return [];
     }
-
     try {
       final userDoc = getIt<FirebaseFirestore>()
           .collection('users')
           .doc(currentUserId);
-
       final userSnapshot = await userDoc.get();
-      final contacts =
+      List<String> contacts =
           (userSnapshot.data()?['contacts'] as List<dynamic>?)
               ?.cast<String>() ??
           [];
@@ -127,7 +128,16 @@ class ContactService {
       if (contacts.isEmpty) {
         return [];
       }
-
+      contacts.sort((a, b) => a.compareTo(b));
+      if (searchText.isNotEmpty) {
+        contacts =
+            contacts
+                .where(
+                  (username) =>
+                      username.toLowerCase().contains(searchText.toLowerCase()),
+                )
+                .toList();
+      }
       final List<Contact> contactEntries = [];
       for (final username in contacts) {
         final querySnapshot =
@@ -146,7 +156,6 @@ class ContactService {
           );
         }
       }
-
       return contactEntries;
     } catch (e) {
       debugPrint('Error fetching contacts: $e');

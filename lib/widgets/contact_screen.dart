@@ -2,7 +2,6 @@ import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/models/contact.dart';
-import 'package:blink/models/user.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
@@ -21,17 +20,21 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   late final FocusNode searchFieldFocusNode;
-  List<User> searchResults = [];
   List<Contact> contacts = [];
+  bool isLoading = true;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     searchFieldFocusNode = FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       contacts = await getIt<ContactService>().getContacts(
-        getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+        currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+        searchText: '',
       );
+      isLoading = false;
       setState(() {});
     });
   }
@@ -39,98 +42,84 @@ class _ContactScreenState extends State<ContactScreen> {
   @override
   void dispose() {
     searchFieldFocusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(title: Text(getIt<AppLocalizations>().contactTitle)),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: appPadding,
-            right: appPadding,
-            bottom: appPadding,
-          ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: appTextInputHeight,
-                child: Center(
-                  child: TextField(
-                    focusNode: searchFieldFocusNode,
-                    onTapOutside: (event) {
-                      setState(() {});
-                      searchFieldFocusNode.unfocus();
-                    },
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(pinInputMaxLength),
-                    ],
-                    style: const TextStyle(fontSize: appTextInputFontSize),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.only(
-                        right: appTextInputContentPadding,
-                        top: appTextInputContentPadding,
-                        bottom: appTextInputContentPadding,
-                      ),
-                      hintText: getIt<AppLocalizations>().searchHint,
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          appTextInputBorderRadius,
-                        ),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                    ),
-                    onChanged: (value) async {
-                      final user = await getIt<AuthService>().getUserByUsername(
-                        value.trim(),
-                      );
-                      if (user != null) {
-                        setState(() {
-                          searchResults = [user];
-                        });
-                      } else {
-                        setState(() {
-                          searchResults = [];
-                        });
-                      }
-                    },
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              left: appPadding,
+              right: appPadding,
+              bottom: appPadding,
+            ),
+            child: SizedBox(
+              height: appTextInputHeight,
+              child: TextField(
+                focusNode: searchFieldFocusNode,
+                onTapOutside: (event) {
+                  setState(() {});
+                  searchFieldFocusNode.unfocus();
+                },
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(pinInputMaxLength),
+                ],
+                style: const TextStyle(fontSize: appTextInputFontSize),
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.only(
+                    right: appTextInputContentPadding,
+                    top: appTextInputContentPadding,
+                    bottom: appTextInputContentPadding,
                   ),
-                ),
-              ),
-              SizedBox(height: appFormItemMargin),
-              contacts.isNotEmpty
-                  ? ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: contacts.length,
-                    itemBuilder: (context, index) {
-                      final contact = contacts[index];
-                      return _buildUserListTile(contact);
-                    },
-                  )
-                  : searchFieldFocusNode.hasFocus && searchResults.isEmpty
-                  ? Text(
-                    getIt<AppLocalizations>().noUserFound,
-                    style: TextStyle(
-                      color:
-                          getIt<AppThemes>()
-                              .themeData
-                              .colorScheme
-                              .onSurfaceVariant,
-                      fontSize: fontSizeMedium,
+                  hintText: getIt<AppLocalizations>().searchHint,
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      appTextInputBorderRadius,
                     ),
-                  )
-                  : const SizedBox.shrink(),
-            ],
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor:
+                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                ),
+                onChanged: (value) async {
+                  final currentUserId =
+                      getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+                  isLoading = true;
+                  setState(() {});
+                  contacts = await getIt<ContactService>().getContacts(
+                    currentUserId: currentUserId,
+                    searchText: value.trim(),
+                  );
+                  isLoading = false;
+                  setState(() {});
+                },
+              ),
+            ),
           ),
-        ),
+          SizedBox(height: appFormItemMargin),
+          Expanded(
+            child:
+                isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.symmetric(horizontal: appPadding),
+                      itemCount: contacts.length,
+                      itemBuilder: (context, index) {
+                        return _buildUserListTile(contacts[index]);
+                      },
+                    ),
+          ),
+        ],
       ),
     );
   }
