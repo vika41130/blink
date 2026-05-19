@@ -14,6 +14,7 @@ const fontSizeLarge = 18.0;
 const smallBorderWidth = 0.5;
 const mediumBorderWidth = 1.0;
 
+const appPaddingSmall = 12.0;
 const appPadding = 18.0;
 const appTitleMarginLarge = 98.0;
 
@@ -32,6 +33,7 @@ const appBoxHeightMedium = 36.0;
 const appBoxHeightLarge = 48.0;
 
 const appFormItemMargin = 20.0;
+
 const pinItemWidth = 58.0;
 const pinItemHeight = 40.0;
 const pinInputMaxLength = 20;

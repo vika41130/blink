@@ -1,7 +1,6 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
-import 'package:blink/models/contact.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
@@ -20,7 +19,7 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   late final FocusNode searchFieldFocusNode;
-  List<Contact> contacts = [];
+  List<String> contacts = [];
   bool isLoading = true;
   final ScrollController _scrollController = ScrollController();
 
@@ -51,80 +50,81 @@ class _ContactScreenState extends State<ContactScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(title: Text(getIt<AppLocalizations>().contactTitle)),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(
-              left: appPadding,
-              right: appPadding,
-              bottom: appPadding,
-            ),
-            child: SizedBox(
-              height: appTextInputHeight,
-              child: TextField(
-                focusNode: searchFieldFocusNode,
-                onTapOutside: (event) {
-                  setState(() {});
-                  searchFieldFocusNode.unfocus();
-                },
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(pinInputMaxLength),
-                ],
-                style: const TextStyle(fontSize: appTextInputFontSize),
-                decoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: EdgeInsets.only(
-                    right: appTextInputContentPadding,
-                    top: appTextInputContentPadding,
-                    bottom: appTextInputContentPadding,
-                  ),
-                  hintText: getIt<AppLocalizations>().searchHint,
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      appTextInputBorderRadius,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: appPadding,
+            right: appPadding,
+            bottom: appPadding,
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                height: appTextInputHeight,
+                child: TextField(
+                  focusNode: searchFieldFocusNode,
+                  onTapOutside: (event) {
+                    setState(() {});
+                    searchFieldFocusNode.unfocus();
+                  },
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(pinInputMaxLength),
+                  ],
+                  style: const TextStyle(fontSize: appTextInputFontSize),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.only(
+                      right: appTextInputContentPadding,
+                      top: appTextInputContentPadding,
+                      bottom: appTextInputContentPadding,
                     ),
-                    borderSide: BorderSide.none,
+                    hintText: getIt<AppLocalizations>().searchHint,
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        appTextInputBorderRadius,
+                      ),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                   ),
-                  filled: true,
-                  fillColor:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                  onChanged: (value) async {
+                    final currentUserId =
+                        getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+                    isLoading = true;
+                    setState(() {});
+                    contacts = await getIt<ContactService>().getContacts(
+                      currentUserId: currentUserId,
+                      searchText: value.trim(),
+                    );
+                    isLoading = false;
+                    setState(() {});
+                  },
                 ),
-                onChanged: (value) async {
-                  final currentUserId =
-                      getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-                  isLoading = true;
-                  setState(() {});
-                  contacts = await getIt<ContactService>().getContacts(
-                    currentUserId: currentUserId,
-                    searchText: value.trim(),
-                  );
-                  isLoading = false;
-                  setState(() {});
-                },
               ),
-            ),
+              SizedBox(height: appPaddingSmall),
+              Expanded(
+                child:
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                          controller: _scrollController,
+                          itemCount: contacts.length,
+                          itemBuilder: (context, index) {
+                            return _buildUserListTile(contacts[index]);
+                          },
+                        ),
+              ),
+            ],
           ),
-          SizedBox(height: appFormItemMargin),
-          Expanded(
-            child:
-                isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.symmetric(horizontal: appPadding),
-                      itemCount: contacts.length,
-                      itemBuilder: (context, index) {
-                        return _buildUserListTile(contacts[index]);
-                      },
-                    ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildUserListTile(Contact contact) {
+  Widget _buildUserListTile(String username) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
@@ -136,13 +136,13 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
       ),
       title: Text(
-        contact.username,
+        username,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       trailing: FutureBuilder<bool>(
         future: getIt<ContactService>().isContactAdded(
           getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-          contact.username,
+          username,
         ),
         builder: (context, snapshot) {
           final isAdded = snapshot.data == true;
@@ -155,12 +155,12 @@ class _ContactScreenState extends State<ContactScreen> {
               if (isAdded) {
                 await getIt<ContactService>().removeContact(
                   currentUserId,
-                  contact.username,
+                  username,
                 );
               } else {
                 await getIt<ContactService>().saveContact(
                   currentUserId,
-                  contact.username,
+                  username,
                 );
               }
               setState(() {});
@@ -172,15 +172,14 @@ class _ContactScreenState extends State<ContactScreen> {
         final String currentUserId =
             getIt<CacheService>().getString(cacheKeyUserId) ?? '';
         final String receiverId =
-            await getIt<AuthService>().getDocIdByUsername(contact.username) ??
-            '';
+            await getIt<AuthService>().getDocIdByUsername(username) ?? '';
         navigatorKey.currentState?.push(
           MaterialPageRoute(
             builder:
                 (context) => ChatScreen(
                   currentUserId: currentUserId,
                   receiverId: receiverId,
-                  receiverName: contact.username,
+                  receiverName: username,
                 ),
           ),
         );

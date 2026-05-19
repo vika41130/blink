@@ -2,7 +2,7 @@ class Contact {
   final String username;
   final String userId;
 
-  Contact({required this.username, required this.userId});
+  Contact({required this.username, this.userId = ''});
 
   factory Contact.fromMap(Map<String, dynamic> map) {
     return Contact(
