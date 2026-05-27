@@ -57,6 +57,7 @@ class AuthService {
         }
       } catch (e) {
         getIt<LoadingService>().hideLoading();
+        await Future.delayed(const Duration(milliseconds: 100));
         if (NetworkErrorHandler.isNetworkError(e)) {
           getIt<ToastificationService>().showError('Network error');
         } else {
@@ -74,10 +75,10 @@ class AuthService {
                 .limit(1)
                 .get();
         if (querySnapshot.docs.isNotEmpty) {
+          getIt<LoadingService>().hideLoading();
           getIt<ToastificationService>().showError(
             getIt<AppLocalizations>().userNameAlreadyExisted,
           );
-          getIt<LoadingService>().hideLoading();
           return;
         }
         final userModel = User(username: username, passcode: passcode);
@@ -89,6 +90,7 @@ class AuthService {
         getIt<LoadingService>().showGlobalLoading(
           message: getIt<AppLocalizations>().createUserSuccess,
         );
+        await Future.delayed(const Duration(seconds: 1));
         getIt<LoadingService>().hideLoading();
         navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -96,6 +98,7 @@ class AuthService {
         );
       } catch (e) {
         getIt<LoadingService>().hideLoading();
+        await Future.delayed(const Duration(milliseconds: 100));
         if (NetworkErrorHandler.isNetworkError(e)) {
           getIt<ToastificationService>().showError('Network error');
         } else {
