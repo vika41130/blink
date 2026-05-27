@@ -57,6 +57,10 @@
     "failedToRemoveContact": "Failed to remove contact.",
     "@failedToRemoveContact": {},
     "contactTitle": "Contacts",
-    "@contactTitle": {}
+    "@contactTitle": {},
+    "cameraPermissionDenied": "Camera permission is required.",
+    "@cameraPermissionDenied": {},
+    "openSettings": "Open settings",
+    "@openSettings": {}
     
 }

@@ -94,4 +94,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactTitle => 'Contacts';
+
+  @override
+  String get cameraPermissionDenied => 'Camera permission is required.';
+
+  @override
+  String get openSettings => 'Open settings';
 }

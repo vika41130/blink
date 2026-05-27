@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
@@ -20,23 +21,69 @@ class QRScannerScreen extends StatefulWidget {
   State<QRScannerScreen> createState() => _QRScannerScreenState();
 }
 
-class _QRScannerScreenState extends State<QRScannerScreen> {
-  final MobileScannerController _cameraController = MobileScannerController(
-    facing: CameraFacing.back,
-    detectionSpeed: DetectionSpeed.normal,
-  );
+class _QRScannerScreenState extends State<QRScannerScreen>
+    with WidgetsBindingObserver {
+  MobileScannerController? _cameraController;
   bool _isScanCompleted = false;
   final ImagePicker _imagePicker = ImagePicker();
+
+  bool? _permissionDenied;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    _initCamera();
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      var status = await Permission.camera.status;
+      debugPrint('Initial camera status: $status');
+      if (!status.isGranted && !status.isPermanentlyDenied) {
+        status = await Permission.camera.request();
+        debugPrint('After request camera status: $status');
+      }
+      if (!mounted) return;
+      if (status.isGranted) {
+        _startCamera();
+      } else {
+        setState(() => _permissionDenied = true);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _permissionDenied = true);
+    }
+  }
+
+  void _startCamera() {
+    _cameraController?.dispose();
+    _cameraController = MobileScannerController(
+      facing: CameraFacing.back,
+      detectionSpeed: DetectionSpeed.normal,
+    );
+    if (mounted) {
+      setState(() => _permissionDenied = false);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed && _permissionDenied == true) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (!mounted) return;
+      final status = await Permission.camera.status;
+      if (!mounted) return;
+      if (status.isGranted) {
+        _startCamera();
+      }
+    }
   }
 
   @override
   void dispose() {
-    _cameraController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -48,15 +95,37 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_permissionDenied == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (_permissionDenied == true) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(getIt<AppLocalizations>().cameraPermissionDenied),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => openAppSettings(),
+                child: Text(getIt<AppLocalizations>().openSettings),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Stack(
       children: [
-        // full screen camera preview
         MobileScanner(
-          controller: _cameraController,
+          controller: _cameraController!,
+          errorBuilder: (context, error) => const SizedBox.shrink(),
           onDetect: (capture) async {
-            if (_isScanCompleted) {
-              return;
-            }
+            if (_isScanCompleted) return;
             final List<Barcode> barcodes = capture.barcodes;
             if (barcodes.isNotEmpty) {
               setState(() {
@@ -105,7 +174,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 width: appSixedBoxSizeMedium,
                 child: IconButton(
                   icon: ValueListenableBuilder<MobileScannerState>(
-                    valueListenable: _cameraController,
+                    valueListenable: _cameraController!,
                     builder: (context, state, child) {
                       if (!state.isInitialized ||
                           state.torchState == TorchState.unavailable) {
@@ -129,7 +198,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       }
                     },
                   ),
-                  onPressed: () => _cameraController.toggleTorch(),
+                  onPressed: () => _cameraController!.toggleTorch(),
                 ),
               ),
               SizedBox(
@@ -148,31 +217,28 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   Future<void> _scanImageFromGallery() async {
     try {
-      _cameraController.stop();
-      // 1. Pick an image from the device gallery
+      _cameraController?.stop();
       final XFile? pickedFile = await _imagePicker.pickImage(
         source: ImageSource.gallery,
       );
       if (pickedFile == null) {
-        _cameraController.start();
-        return; // User canceled the picker
+        _cameraController?.start();
+        return;
       }
-      // 2. Pass the file path to MobileScanner to analyze it
-      final BarcodeCapture? capture = await _cameraController.analyzeImage(
+      final BarcodeCapture? capture = await _cameraController?.analyzeImage(
         pickedFile.path,
       );
-      // 3. Process the results
       if (capture != null && capture.barcodes.isNotEmpty) {
         final String? qrCodeValue = capture.barcodes.first.rawValue;
         await _processScannedQRCode(qrCodeValue);
       } else {
-        _cameraController.start();
+        _cameraController?.start();
         getIt<ToastificationService>().showError(
           getIt<AppLocalizations>().noQRCodeDetected,
         );
       }
     } catch (e) {
-      _cameraController.start();
+      _cameraController?.start();
       getIt<ToastificationService>().showError(
         getIt<AppLocalizations>().noQRCodeDetected,
       );
@@ -182,7 +248,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   _processScannedQRCode(String? qrCodeValue) async {
     if (qrCodeValue != null) {
       HapticFeedback.vibrate();
-      _cameraController.stop();
+      _cameraController?.stop();
       final user = await getIt<AuthService>().getUserById(qrCodeValue);
       final String currentUserId =
           getIt<CacheService>().getString(cacheKeyUserId) ?? '';
@@ -191,7 +257,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           getIt<ToastificationService>().showError(
             getIt<AppLocalizations>().cannotChatWithYourself,
           );
-          _cameraController.start();
+          _cameraController?.start();
           setState(() {
             _isScanCompleted = false;
           });
@@ -205,7 +271,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     receiverId: qrCodeValue,
                     receiverName: user.username,
                   ),
-              // (context) => SocketChatScreen(),
             ),
           );
         }
