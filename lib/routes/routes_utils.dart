@@ -8,7 +8,7 @@ class RoutesUtils {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
-        return MaterialPageRoute(builder: (context) => SplashScreen());
+        return MaterialPageRoute(builder: (context) => const SplashScreen());
       case auth:
         return MaterialPageRoute(builder: (context) => AuthScreen());
       case home:

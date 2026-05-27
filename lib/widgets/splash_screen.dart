@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
@@ -7,7 +5,7 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,49 +14,90 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  Timer? _timer;
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fadeIn;
+  bool _error = false;
 
   @override
   void initState() {
     super.initState();
-    if (getIt<CacheService>().getBool(cacheKeyIsSignedIn)) {
-      _timer = Timer(Duration(seconds: 0), () {
-        navigatorKey.currentState?.pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (Route<dynamic> route) => false,
-        );
-      });
-    } else {
-      _timer = Timer(Duration(seconds: 1), () {
-        navigatorKey.currentState?.pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const AuthScreen()),
-          (Route<dynamic> route) => false,
-        );
-      });
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeIn = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.forward();
+    _init();
+  }
+
+  Future<void> _init() async {
+    try {
+      final minDuration = Future.delayed(const Duration(milliseconds: 1500));
+      if (!getIt.isRegistered<CacheService>()) {
+        final sp = await SharedPreferences.getInstance();
+        getItSetupSync(sp);
+      }
+      if (!getIt.isRegistered<bool>(instanceName: 'firebaseReady')) {
+        await initFirebase();
+        getIt.registerSingleton<bool>(true, instanceName: 'firebaseReady');
+      }
+      await minDuration;
+      if (!mounted) return;
+      final isSignedIn = getIt<CacheService>().getBool(cacheKeyIsSignedIn);
+      final destination = isSignedIn ? const HomeScreen() : const AuthScreen();
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => destination),
+        (route) => false,
+      );
+    } catch (_) {
+      if (mounted) setState(() => _error = true);
     }
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_error) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.wifi_off, size: appIconExtraLargeSize),
+              const SizedBox(height: appFormItemMargin),
+              const Text('Network error. Please check your connection.'),
+              const SizedBox(height: appFormItemMargin),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() => _error = false);
+                  _init();
+                },
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Image.asset(
-              splashBackground,
-              height: 1.sh,
-              width: 1.sw,
-              fit: BoxFit.cover,
+      body: Center(
+        child: FadeTransition(
+          opacity: _fadeIn,
+          child: Text(
+            'Blink',
+            style: TextStyle(
+              fontSize: appTitleFontSize * 2,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            Center(child: Text('Welcome to Blink chat')),
-          ],
+          ),
         ),
       ),
     );

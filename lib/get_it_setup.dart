@@ -1,4 +1,5 @@
 import 'package:blink/app.dart';
+import 'package:blink/firebase_options.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
@@ -8,24 +9,18 @@ import 'package:blink/services/loading_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/themes/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final getIt = GetIt.instance;
 
-Future<void> getItSetup() async {
-  final sharedPreferences = await SharedPreferences.getInstance();
+void getItSetupSync(SharedPreferences sharedPreferences) {
   getIt.registerSingleton<SharedPreferences>(sharedPreferences);
   getIt.registerSingleton<CacheService>(CacheService());
-
-  getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
-  getIt.registerSingleton<AuthService>(AuthService());
+  getIt.registerSingleton<AppThemes>(AppThemes());
   getIt.registerSingleton<ToastificationService>(ToastificationService());
   getIt.registerSingleton<LoadingService>(LoadingService());
-  getIt.registerSingleton<ChatService>(ChatService());
-  getIt.registerSingleton<ContactService>(ContactService());
-
-  getIt.registerSingleton<AppThemes>(AppThemes());
 
   getIt.registerFactory<AppLocalizations>(() {
     final context = navigatorKey.currentContext;
@@ -36,4 +31,14 @@ Future<void> getItSetup() async {
     }
     return AppLocalizations.of(context)!;
   });
+}
+
+Future<void> initFirebase() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final firestore = FirebaseFirestore.instance;
+  firestore.settings = const Settings(persistenceEnabled: true);
+  getIt.registerSingleton<FirebaseFirestore>(firestore);
+  getIt.registerSingleton<AuthService>(AuthService());
+  getIt.registerLazySingleton<ChatService>(() => ChatService());
+  getIt.registerLazySingleton<ContactService>(() => ContactService());
 }
