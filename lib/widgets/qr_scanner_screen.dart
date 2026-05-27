@@ -8,6 +8,7 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/custom_widgets/corner_border.dart';
+import 'package:blink/widgets/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -96,122 +97,162 @@ class _QRScannerScreenState extends State<QRScannerScreen>
   @override
   Widget build(BuildContext context) {
     if (_permissionDenied == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: const Center(child: CircularProgressIndicator()),
+      return PopScope(
+        canPop: false, // Prevents default back navigation
+        onPopInvokedWithResult: (didPop, result) async {
+          // safety check: if the system somehow already popped, don't repeat it
+          if (didPop) return;
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (Route<dynamic> route) => false,
+          );
+        },
+        child: Scaffold(
+          appBar: AppBar(),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
       );
     }
     if (_permissionDenied == true) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(getIt<AppLocalizations>().cameraPermissionDenied),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => openAppSettings(),
-                child: Text(getIt<AppLocalizations>().openSettings),
-              ),
-            ],
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (Route<dynamic> route) => false,
+          );
+        },
+        child: Scaffold(
+          appBar: AppBar(),
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(getIt<AppLocalizations>().cameraPermissionDenied),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => openAppSettings(),
+                  child: Text(getIt<AppLocalizations>().openSettings),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
-    return Stack(
-      children: [
-        MobileScanner(
-          controller: _cameraController!,
-          errorBuilder: (context, error) => const SizedBox.shrink(),
-          onDetect: (capture) async {
-            if (_isScanCompleted) return;
-            final List<Barcode> barcodes = capture.barcodes;
-            if (barcodes.isNotEmpty) {
-              setState(() {
-                _isScanCompleted = true;
-              });
-              final String? qrCodeValue = barcodes.first.rawValue;
-              await _processScannedQRCode(qrCodeValue);
-            } else {
-              getIt<ToastificationService>().showError(
-                getIt<AppLocalizations>().noQRCodeDetected,
-              );
-            }
-          },
-        ),
-        Container(color: Colors.black.withAlpha(10)),
-        Center(
-          child: CustomPaint(
-            painter: CornerBorderPainter(
-              strokeColor: getIt<AppThemes>().themeData.colorScheme.primary,
-              strokeWidth: appBorderWidth,
-              cornerLength: appCameraCornerLength,
-              cornerRadius: appBorderRadius,
-            ),
-            child: SizedBox(
-              width: appCameraScanFrameSize,
-              height: appCameraScanFrameSize,
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(color: Colors.transparent),
-                  ),
-                ],
+    return PopScope(
+      canPop: false, // Prevents default back navigation
+      onPopInvokedWithResult: (didPop, result) async {
+        // safety check: if the system somehow already popped, don't repeat it
+        if (didPop) return;
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (Route<dynamic> route) => false,
+        );
+      },
+      child: Stack(
+        children: [
+          MobileScanner(
+            controller: _cameraController!,
+            errorBuilder: (context, error) => const SizedBox.shrink(),
+            onDetect: (capture) async {
+              if (_isScanCompleted) return;
+              final List<Barcode> barcodes = capture.barcodes;
+              if (barcodes.isNotEmpty) {
+                setState(() {
+                  _isScanCompleted = true;
+                });
+                final String? qrCodeValue = barcodes.first.rawValue;
+                await _processScannedQRCode(qrCodeValue);
+              } else {
+                getIt<ToastificationService>().showError(
+                  getIt<AppLocalizations>().noQRCodeDetected,
+                );
+              }
+            },
+          ),
+          Container(color: Colors.black.withAlpha(10)),
+          Center(
+            child: CustomPaint(
+              painter: CornerBorderPainter(
+                strokeColor: getIt<AppThemes>().themeData.colorScheme.primary,
+                strokeWidth: appBorderWidth,
+                cornerLength: appCameraCornerLength,
+                cornerRadius: appBorderRadius,
+              ),
+              child: SizedBox(
+                width: appCameraScanFrameSize,
+                height: appCameraScanFrameSize,
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: appTorchPositionBottom,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(width: appSixedBoxSizeMedium, child: SizedBox.shrink()),
-              SizedBox(
-                width: appSixedBoxSizeMedium,
-                child: IconButton(
-                  icon: ValueListenableBuilder<MobileScannerState>(
-                    valueListenable: _cameraController!,
-                    builder: (context, state, child) {
-                      if (!state.isInitialized ||
-                          state.torchState == TorchState.unavailable) {
-                        return const SizedBox.shrink();
-                      }
-                      switch (state.torchState) {
-                        case TorchState.off:
-                          return const Icon(
-                            Icons.flash_off,
-                            color: Colors.grey,
-                          );
-                        case TorchState.on:
-                          return const Icon(
-                            Icons.flash_on,
-                            color: Colors.yellow,
-                          );
-                        case TorchState.auto:
-                          throw UnimplementedError();
-                        case TorchState.unavailable:
-                          throw UnimplementedError();
-                      }
-                    },
+          Positioned(
+            bottom: appTorchPositionBottom,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: appSixedBoxSizeMedium,
+                  child: SizedBox.shrink(),
+                ),
+                SizedBox(
+                  width: appSixedBoxSizeMedium,
+                  child: IconButton(
+                    icon: ValueListenableBuilder<MobileScannerState>(
+                      valueListenable: _cameraController!,
+                      builder: (context, state, child) {
+                        if (!state.isInitialized ||
+                            state.torchState == TorchState.unavailable) {
+                          return const SizedBox.shrink();
+                        }
+                        switch (state.torchState) {
+                          case TorchState.off:
+                            return const Icon(
+                              Icons.flash_off,
+                              color: Colors.grey,
+                            );
+                          case TorchState.on:
+                            return const Icon(
+                              Icons.flash_on,
+                              color: Colors.yellow,
+                            );
+                          case TorchState.auto:
+                            throw UnimplementedError();
+                          case TorchState.unavailable:
+                            throw UnimplementedError();
+                        }
+                      },
+                    ),
+                    onPressed: () => _cameraController!.toggleTorch(),
                   ),
-                  onPressed: () => _cameraController!.toggleTorch(),
                 ),
-              ),
-              SizedBox(
-                width: appSixedBoxSizeMedium,
-                child: IconButton(
-                  icon: const Icon(Icons.photo_library),
-                  onPressed: _scanImageFromGallery,
+                SizedBox(
+                  width: appSixedBoxSizeMedium,
+                  child: IconButton(
+                    icon: const Icon(Icons.photo_library),
+                    onPressed: _scanImageFromGallery,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
