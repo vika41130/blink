@@ -8,7 +8,7 @@ class ToastificationService {
   showError(String msg) {
     toastification.showCustom(
       alignment: Alignment.bottomCenter,
-      autoCloseDuration: Duration(seconds: 1),
+      autoCloseDuration: Duration(seconds: 2),
       builder: (context, item) {
         return Padding(
           padding: const EdgeInsets.all(appPadding),
@@ -35,7 +35,7 @@ class ToastificationService {
   showSuccess(String msg) {
     toastification.showCustom(
       alignment: Alignment.bottomCenter,
-      autoCloseDuration: Duration(seconds: 1),
+      autoCloseDuration: Duration(seconds: 2),
       builder: (context, item) {
         return Padding(
           padding: const EdgeInsets.all(appPadding),

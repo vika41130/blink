@@ -50,13 +50,15 @@ class _ChatScreenState extends State<ChatScreen> {
     await ScreenProtector.preventScreenshotOff();
   }
 
-  void _sendMessage() {
-    getIt<ChatService>().sendMessage(
+  void _sendMessage() async {
+    final text = _messageController.text;
+    if (text.trim().isEmpty) return;
+    _messageController.clear();
+    await getIt<ChatService>().sendMessage(
       currentUserId: widget.currentUserId,
       receiverId: widget.receiverId,
-      messageText: _messageController.text,
+      messageText: text,
     );
-    _messageController.clear();
   }
 
   @override

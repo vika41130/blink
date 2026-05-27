@@ -1,26 +1,25 @@
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
+import 'package:blink/services/network_error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatService {
-  // Helper: Generate a unique chat room ID for 2 users (always sorted alphabetically)
   String getChatRoomId(String user1, String user2) {
     List<String> ids = [user1, user2];
     ids.sort();
     return ids.join('_');
   }
 
-  // 1. Send Message
   Future<void> sendMessage({
     required String currentUserId,
     required String receiverId,
     required String messageText,
   }) async {
     if (messageText.trim().isEmpty) return;
+    if (await NetworkErrorHandler.checkAndHandle()) return;
 
     final String chatRoomId = getChatRoomId(currentUserId, receiverId);
 
-    // Prepare message data
     final now = DateTime.now();
     final oneMinuteFromNow = now.add(const Duration(seconds: 10));
     final message = MessageModel(
@@ -32,23 +31,26 @@ class ChatService {
       deleteAt: oneMinuteFromNow,
     );
 
-    // Save message to nested subcollection
-    await getIt<FirebaseFirestore>()
-        .collection('chats')
-        .doc(chatRoomId)
-        .collection('messages')
-        .add(message.toFirestore());
+    try {
+      await getIt<FirebaseFirestore>()
+          .collection('chats')
+          .doc(chatRoomId)
+          .collection('messages')
+          .add(message.toFirestore());
 
-    // Update parent chat room document with metadata for chat list previews
-    await getIt<FirebaseFirestore>().collection('chats').doc(chatRoomId).set({
-      'participants': [currentUserId, receiverId],
-      'lastMessage': messageText.trim(),
-      'lastMessageSenderId': currentUserId,
-      'lastMessageTimestamp': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+      await getIt<FirebaseFirestore>().collection('chats').doc(chatRoomId).set({
+        'participants': [currentUserId, receiverId],
+        'lastMessage': messageText.trim(),
+        'lastMessageSenderId': currentUserId,
+        'lastMessageTimestamp': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      if (NetworkErrorHandler.isNetworkError(e)) {
+        await NetworkErrorHandler.handleNetworkError();
+      }
+    }
   }
 
-  // 2. Stream Messages (Real-time read)
   Stream<List<MessageModel>> getMessages(String user1, String user2) {
     final currentTime = Timestamp.fromDate(DateTime.now());
     final String chatRoomId = getChatRoomId(user1, user2);
@@ -59,6 +61,11 @@ class ChatService {
         .where('deleteAt', isGreaterThan: currentTime)
         .orderBy('deleteAt', descending: true)
         .snapshots()
+        .handleError((e) {
+          if (NetworkErrorHandler.isNetworkError(e)) {
+            NetworkErrorHandler.handleNetworkError();
+          }
+        })
         .map((snapshot) {
           return snapshot.docs.map((doc) {
             return MessageModel.fromFirestore(doc.data(), doc.id);
@@ -66,18 +73,25 @@ class ChatService {
         });
   }
 
-  // 3. Delete a message by setting its text to an empty string
   Future<void> deleteMessage({
     required String currentUserId,
     required String receiverId,
     required String messageId,
   }) async {
+    if (await NetworkErrorHandler.checkAndHandle()) return;
+
     final String chatRoomId = getChatRoomId(currentUserId, receiverId);
-    await getIt<FirebaseFirestore>()
-        .collection('chats')
-        .doc(chatRoomId)
-        .collection('messages')
-        .doc(messageId)
-        .delete();
+    try {
+      await getIt<FirebaseFirestore>()
+          .collection('chats')
+          .doc(chatRoomId)
+          .collection('messages')
+          .doc(messageId)
+          .delete();
+    } catch (e) {
+      if (NetworkErrorHandler.isNetworkError(e)) {
+        await NetworkErrorHandler.handleNetworkError();
+      }
+    }
   }
 }

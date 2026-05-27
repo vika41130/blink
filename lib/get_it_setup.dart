@@ -36,7 +36,7 @@ void getItSetupSync(SharedPreferences sharedPreferences) {
 Future<void> initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final firestore = FirebaseFirestore.instance;
-  firestore.settings = const Settings(persistenceEnabled: true);
+  firestore.settings = const Settings(persistenceEnabled: false);
   getIt.registerSingleton<FirebaseFirestore>(firestore);
   getIt.registerSingleton<AuthService>(AuthService());
   getIt.registerLazySingleton<ChatService>(() => ChatService());
