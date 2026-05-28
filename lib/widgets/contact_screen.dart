@@ -49,7 +49,16 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(title: Text(getIt<AppLocalizations>().contactTitle)),
+      appBar: AppBar(
+        title: Text(
+          getIt<AppLocalizations>().contactTitle,
+          style: TextStyle(
+            fontSize: appTitleFontSize,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(

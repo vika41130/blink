@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 
+const _darkBlue900 = Color(0xFF0D1B2A);
+const _darkBlue800 = Color(0xFF1B2838);
+const _darkBlue700 = Color(0xFF1B3A5C);
+const _darkBlue500 = Color(0xFF2E6399);
+const _darkBlue400 = Color(0xFF3D7AB8);
+const _darkBlue300 = Color(0xFF5C9AD6);
+const _darkBlue200 = Color(0xFF8BBAE8);
+const _darkBlue100 = Color(0xFFB8D4F0);
+
 class AppThemes {
   static final lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    colorSchemeSeed: Colors.blue, // Your primary color
-    appBarTheme: const AppBarTheme(elevation: 0),
+    colorScheme: ColorScheme.light(
+      primary: _darkBlue700,
+      secondary: _darkBlue500,
+      tertiary: _darkBlue400,
+      error: const Color(0xFFD32F2F),
+      surface: _darkBlue100,
+      surfaceContainerHighest: _darkBlue200,
+    ),
+    appBarTheme: AppBarTheme(
+      elevation: 0,
+      iconTheme: IconThemeData(color: _darkBlue700),
+    ),
     extensions: <ThemeExtension<dynamic>>[
       const AppColors(
-        success: Color.fromARGB(255, 49, 206, 175),
-        error: Color.fromARGB(255, 240, 99, 83),
+        success: Color(0xFF2E7D6E),
+        error: Color(0xFFD32F2F),
       ),
     ],
   );
@@ -17,11 +36,24 @@ class AppThemes {
   static final darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    colorSchemeSeed: Colors.indigo,
+    colorScheme: ColorScheme.dark(
+      primary: _darkBlue300,
+      secondary: _darkBlue400,
+      tertiary: _darkBlue200,
+      error: const Color(0xFFEF5350),
+      surface: _darkBlue900,
+      surfaceContainerHighest: _darkBlue800,
+      onSurface: _darkBlue100,
+      onSurfaceVariant: _darkBlue200,
+    ),
+    appBarTheme: AppBarTheme(
+      elevation: 0,
+      iconTheme: IconThemeData(color: _darkBlue300),
+    ),
     extensions: <ThemeExtension<dynamic>>[
       const AppColors(
-        success: Color.fromARGB(255, 215, 102, 241),
-        error: Color.fromARGB(255, 233, 122, 159),
+        success: Color(0xFF4DB6AC),
+        error: Color(0xFFEF5350),
       ),
     ],
   );

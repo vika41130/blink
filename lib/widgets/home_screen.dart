@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
           getIt<AppLocalizations>().homeTitle,
           style: TextStyle(
             fontSize: appTitleFontSize,
+            fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),

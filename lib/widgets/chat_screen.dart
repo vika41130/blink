@@ -76,7 +76,14 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.receiverName),
+          title: Text(
+            widget.receiverName,
+            style: TextStyle(
+              fontSize: appTitleFontSize,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {

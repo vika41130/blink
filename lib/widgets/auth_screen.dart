@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -34,6 +33,16 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          AppLocalizations.of(context)!.authTitle,
+          style: TextStyle(
+            fontSize: appTitleFontSize,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
@@ -44,14 +53,6 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                AppLocalizations.of(context)!.authTitle,
-                style: TextStyle(
-                  fontSize: appTitleFontSize,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              SizedBox(height: appTitleMarginLarge),
               SingleChildScrollView(
                 child: Form(
                   key: formKey,
@@ -59,81 +60,128 @@ class _AuthScreenState extends State<AuthScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ToggleSwitch(
-                        customWidths: [toggleButtonWidth, toggleButtonWidth],
-                        cornerRadius: appBorderRadius,
-                        borderWidth: smallBorderWidth,
-                        borderColor: [
-                          Theme.of(context).colorScheme.secondary,
-                          Theme.of(context).colorScheme.secondary,
-                        ],
-                        activeFgColor: Theme.of(context).colorScheme.primary,
-                        inactiveBgColor: Colors.transparent,
-                        inactiveFgColor:
-                            Theme.of(context).colorScheme.surfaceBright,
-                        totalSwitches: 2,
-                        labels: [
-                          AppLocalizations.of(context)!.signIn,
-                          AppLocalizations.of(context)!.signUp,
-                        ],
-                        onToggle: (index) {
-                          isSignInMode = index == 0;
-                          // setState(() {
-                          //   // isSignedIn = index == 0;
-                          // });
-                        },
+                      Container(
+                        height: 36.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: smallBorderWidth,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: () => setState(() => isSignInMode = true),
+                              child: Container(
+                                width: toggleButtonWidth,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  AppLocalizations.of(context)!.signIn,
+                                  style: TextStyle(
+                                    fontSize: fontSizeSmall,
+                                    color: isSignInMode
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: smallBorderWidth,
+                              height: 14,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                            ),
+                            GestureDetector(
+                              onTap: () => setState(() => isSignInMode = false),
+                              child: Container(
+                                width: toggleButtonWidth,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  AppLocalizations.of(context)!.signUp,
+                                  style: TextStyle(
+                                    fontSize: fontSizeSmall,
+                                    color: !isSignInMode
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: appFormItemMargin),
                       SizedBox(height: appFormItemMargin),
                       SizedBox(height: appFormItemMargin),
-                      TextFormField(
-                        onChanged: (value) {
-                          setState(() {});
-                        },
-                        onTapOutside: (event) {
-                          userNameFocusNode.unfocus();
-                        },
-                        focusNode: userNameFocusNode,
-                        controller: usernameController,
-                        style: TextStyle(
-                          fontSize: fontSizeMedium,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                        decoration: InputDecoration(
-                          hintStyle: TextStyle(
-                            fontSize: fontSizeSmall,
+                      SizedBox(
+                        height: appTextInputHeight,
+                        child: TextFormField(
+                          expands: true,
+                          maxLines: null,
+                          minLines: null,
+                          textAlignVertical: TextAlignVertical.center,
+                          onFieldSubmitted: (_) {
+                            if (_enablePinInput()) {
+                              pInputFocusNode.requestFocus();
+                            }
+                          },
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          onTapOutside: (event) {
+                            userNameFocusNode.unfocus();
+                          },
+                          focusNode: userNameFocusNode,
+                          controller: usernameController,
+                          style: TextStyle(
+                            fontSize: fontSizeMedium,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
-                          hintText: 'Username',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: smallBorderWidth,
-                              color: Theme.of(context).colorScheme.primary,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: appTextInputContentPadding * 1.5,
                             ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: smallBorderWidth,
+                            hintStyle: TextStyle(
+                              fontSize: fontSizeSmall,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: smallBorderWidth,
-                              color: Theme.of(context).colorScheme.primary,
+                            hintText: 'Username',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                              borderSide: BorderSide(
+                                width: smallBorderWidth,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                              borderSide: BorderSide(
+                                width: smallBorderWidth,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                              borderSide: BorderSide(
+                                width: smallBorderWidth,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                            counterText: '',
                           ),
-                          counterText: '',
+                          maxLength: pinInputMaxLength,
+                          keyboardType: TextInputType.text,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z0-9_]'),
+                            ),
+                          ],
                         ),
-                        maxLength: pinInputMaxLength,
-                        keyboardType: TextInputType.text,
-                        inputFormatters: [
-                          // This allows only a-z, A-Z, 0-9, and _
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'[a-zA-Z0-9_]'),
-                          ),
-                        ],
                       ),
+                      SizedBox(height: appFormItemMargin),
                       SizedBox(height: appFormItemMargin),
                       Pinput(
                         controller: pinController,
@@ -141,36 +189,34 @@ class _AuthScreenState extends State<AuthScreen> {
                         focusNode: pInputFocusNode,
                         enabled: _enablePinInput(),
                         defaultPinTheme: PinTheme(
-                          width: pinItemWidth,
+                          width: pinItemHeight,
                           height: pinItemHeight,
                           textStyle: TextStyle(
                             fontSize: pinInputValueFontSize,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
-                                width: smallBorderWidth,
-                              ),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.secondary,
+                              width: smallBorderWidth,
                             ),
                           ),
                         ),
                         showCursor: true,
-                        cursor: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              width: pinItemWidth,
-                              height: mediumBorderWidth,
+                        cursor: Center(
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
                               color: Theme.of(context).colorScheme.primary,
                             ),
-                          ],
+                          ),
                         ),
                         separatorBuilder:
                             (index) => const SizedBox(
-                              width: pinInputSeparatorWidth,
-                              height: pinInputSeparatorWidth,
+                              width: appPaddingSmall,
                             ),
                         hapticFeedbackType: HapticFeedbackType.lightImpact,
                         onCompleted: (pin) {

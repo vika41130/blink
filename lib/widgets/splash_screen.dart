@@ -94,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen>
             'Blink',
             style: TextStyle(
               fontSize: appTitleFontSize * 2,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
