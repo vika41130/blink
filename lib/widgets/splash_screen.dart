@@ -1,6 +1,7 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/home_screen.dart';
@@ -46,6 +47,9 @@ class _SplashScreenState extends State<SplashScreen>
       await minDuration;
       if (!mounted) return;
       final isSignedIn = getIt<CacheService>().getBool(cacheKeyIsSignedIn);
+      if (isSignedIn) {
+        await getIt<NotificationService>().init();
+      }
       final destination = isSignedIn ? const HomeScreen() : const AuthScreen();
       navigatorKey.currentState?.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => destination),

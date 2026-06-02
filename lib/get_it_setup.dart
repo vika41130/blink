@@ -6,10 +6,12 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/loading_service.dart';
+import 'package:blink/services/notification_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/themes/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,10 +37,12 @@ void getItSetupSync(SharedPreferences sharedPreferences) {
 
 Future<void> initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   final firestore = FirebaseFirestore.instance;
   firestore.settings = const Settings(persistenceEnabled: false);
   getIt.registerSingleton<FirebaseFirestore>(firestore);
   getIt.registerSingleton<AuthService>(AuthService());
+  getIt.registerSingleton<NotificationService>(NotificationService());
   getIt.registerLazySingleton<ChatService>(() => ChatService());
   getIt.registerLazySingleton<ContactService>(() => ContactService());
 }

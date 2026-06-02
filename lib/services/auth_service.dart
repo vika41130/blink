@@ -5,6 +5,7 @@ import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/loading_service.dart';
 import 'package:blink/services/network_error_handler.dart';
+import 'package:blink/services/notification_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -49,6 +50,7 @@ class AuthService {
             getIt<CacheService>().setString(cacheKeyUsername, username);
             getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
             getIt<CacheService>().setString(cacheKeyUserId, doc.id);
+            await getIt<NotificationService>().init();
           } else {
             getIt<ToastificationService>().showError(
               getIt<AppLocalizations>().passcodeNotCorrect,
@@ -86,6 +88,7 @@ class AuthService {
         getIt<CacheService>().setString(cacheKeyUsername, username);
         getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
         getIt<CacheService>().setString(cacheKeyUserId, user.id);
+        await getIt<NotificationService>().init();
         getIt<LoadingService>().hideLoading();
         getIt<LoadingService>().showGlobalLoading(
           message: getIt<AppLocalizations>().createUserSuccess,

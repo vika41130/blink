@@ -1,6 +1,7 @@
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
+import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/home_screen.dart';
@@ -32,10 +33,12 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _enableProtection();
+    getIt<NotificationService>().setCurrentChat(widget.receiverId);
   }
 
   @override
   void dispose() {
+    getIt<NotificationService>().setCurrentChat(null);
     _disableProtection();
     super.dispose();
   }
