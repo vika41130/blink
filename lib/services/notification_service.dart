@@ -199,7 +199,6 @@ class NotificationService {
   void _notify(String senderName, String payload) {
     try {
       unreadCount.value++;
-      _showLocalNotification(title: '', body: 'message', payload: payload);
       _showInAppBanner(title: senderName, body: 'message', payload: payload);
     } catch (e) {
       debugPrint('Notify error: $e');
