@@ -47,6 +47,7 @@ class NotificationScreen extends StatelessWidget {
                   ),
                   onTap: () {
                     final parts = item.payload.split('|');
+                    getIt<NotificationService>().removeNotification(index);
                     if (parts.length == 3) {
                       Navigator.push(
                         context,

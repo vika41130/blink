@@ -4,6 +4,7 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/in_app_notification_banner.dart';
+import 'package:blink/settings/fixed_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,12 @@ class NotificationService {
 
   void resetCount() {
     unreadCount.value = 0;
+  }
+
+  void removeNotification(int index) {
+    final list = [...notifications.value];
+    list.removeAt(index);
+    notifications.value = list;
   }
 
   void setCurrentChat(String? receiverId) {
@@ -169,15 +176,21 @@ class NotificationService {
   void _notify(String senderName, String payload) {
     try {
       unreadCount.value++;
-      notifications.value = [
-        NotificationItem(
-          senderName: senderName,
-          payload: payload,
-          time: DateTime.now(),
-        ),
-        ...notifications.value,
-      ];
+      final item = NotificationItem(
+        senderName: senderName,
+        payload: payload,
+        time: DateTime.now(),
+      );
+      notifications.value = [item, ...notifications.value];
       _showInAppBanner(title: senderName, body: 'message', payload: payload);
+      Future.delayed(
+        const Duration(seconds: notificationAutoDeleteSeconds),
+        () {
+          final list = [...notifications.value];
+          list.remove(item);
+          notifications.value = list;
+        },
+      );
     } catch (e) {
       debugPrint('Notify error: $e');
     }
