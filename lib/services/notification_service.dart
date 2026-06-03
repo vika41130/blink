@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
@@ -13,7 +14,15 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
+  final ValueNotifier<int> unreadCount = ValueNotifier<int>(0);
+
   String? _currentChatReceiverId;
+  StreamSubscription? _chatsSubscription;
+  final Map<String, StreamSubscription> _messageSubscriptions = {};
+
+  void resetCount() {
+    unreadCount.value = 0;
+  }
 
   void setCurrentChat(String? receiverId) {
     _currentChatReceiverId = receiverId;
@@ -25,6 +34,7 @@ class NotificationService {
     await _saveToken();
     _listenForegroundMessages();
     _listenTokenRefresh();
+    _listenFirestoreMessages();
   }
 
   Future<void> _requestPermission() async {
@@ -33,7 +43,6 @@ class NotificationService {
       badge: true,
       sound: true,
     );
-    // Request Android 13+ notification permission
     await _localNotifications
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -41,7 +50,8 @@ class NotificationService {
   }
 
   Future<void> _initLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
     const settings = InitializationSettings(
       android: androidSettings,
@@ -86,15 +96,19 @@ class NotificationService {
   }
 
   Future<void> _saveToken() async {
-    final token = await _messaging.getToken();
-    if (token != null) {
-      final userId = getIt<CacheService>().getString(cacheKeyUserId);
-      if (userId != null && userId.isNotEmpty) {
-        await getIt<FirebaseFirestore>()
-            .collection('users')
-            .doc(userId)
-            .update({'fcmToken': token});
+    try {
+      final token = await _messaging.getToken();
+      if (token != null) {
+        final userId = getIt<CacheService>().getString(cacheKeyUserId);
+        if (userId != null && userId.isNotEmpty) {
+          await getIt<FirebaseFirestore>()
+              .collection('users')
+              .doc(userId)
+              .update({'fcmToken': token});
+        }
       }
+    } catch (e) {
+      debugPrint('FCM token error: $e');
     }
   }
 
@@ -112,20 +126,81 @@ class NotificationService {
 
   void _listenForegroundMessages() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('FCM foreground message received: ${message.data}');
       final senderId = message.data['senderId'];
       if (senderId == _currentChatReceiverId) return;
 
-      final notification = message.notification;
-      if (notification != null) {
-        final title = notification.title ?? 'New message';
-        final body = notification.body ?? '';
-        final payload =
-            '${message.data['receiverId']}|${message.data['senderId']}|${message.data['senderName']}';
-        _showLocalNotification(title: title, body: body, payload: payload);
-        _showInAppBanner(title: title, body: body, payload: payload);
-      }
+      final senderName = message.data['senderName'] ?? 'Someone';
+      final payload =
+          '${message.data['receiverId']}|$senderId|$senderName';
+      _notify(senderName, payload);
     });
+  }
+
+  void _listenFirestoreMessages() {
+    final userId = getIt<CacheService>().getString(cacheKeyUserId);
+    if (userId == null || userId.isEmpty) return;
+
+    _chatsSubscription = getIt<FirebaseFirestore>()
+        .collection('chats')
+        .where('participants', arrayContains: userId)
+        .snapshots()
+        .listen((snapshot) {
+      for (final doc in snapshot.docs) {
+        final chatRoomId = doc.id;
+        if (_messageSubscriptions.containsKey(chatRoomId)) continue;
+
+        bool isFirst = true;
+        _messageSubscriptions[chatRoomId] = getIt<FirebaseFirestore>()
+            .collection('chats')
+            .doc(chatRoomId)
+            .collection('messages')
+            .orderBy('timestamp', descending: true)
+            .limit(1)
+            .snapshots()
+            .listen((msgSnapshot) {
+          if (isFirst) {
+            isFirst = false;
+            return;
+          }
+          for (final change in msgSnapshot.docChanges) {
+            if (change.type == DocumentChangeType.added) {
+              final data = change.doc.data();
+              if (data == null) continue;
+              final senderId = data['senderId'] as String?;
+              if (senderId == null || senderId == userId) continue;
+              if (senderId == _currentChatReceiverId) continue;
+
+              getIt<FirebaseFirestore>()
+                  .collection('users')
+                  .doc(senderId)
+                  .get()
+                  .then((userDoc) {
+                final senderName =
+                    userDoc.data()?['username'] ?? 'Someone';
+                final payload = '$userId|$senderId|$senderName';
+                _notify(senderName, payload);
+              });
+            }
+          }
+        }, onError: (e) {
+          debugPrint('Message listener error: $e');
+        });
+      }
+    }, onError: (e) {
+      debugPrint('Chat listener error: $e');
+    });
+  }
+
+  void _notify(String senderName, String payload) {
+    try {
+      unreadCount.value++;
+      _showLocalNotification(
+          title: senderName, body: 'New message.', payload: payload);
+      _showInAppBanner(
+          title: senderName, body: 'New message.', payload: payload);
+    } catch (e) {
+      debugPrint('Notify error: $e');
+    }
   }
 
   void _showInAppBanner({
@@ -137,11 +212,18 @@ class NotificationService {
     if (context == null) return;
     showOverlay(context, title, body, () {
       if (payload != null) {
-        _onNotificationTap(NotificationResponse(
-          notificationResponseType:
-              NotificationResponseType.selectedNotification,
-          payload: payload,
-        ));
+        final parts = payload.split('|');
+        if (parts.length == 3) {
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (_) => ChatScreen(
+                currentUserId: parts[0],
+                receiverId: parts[1],
+                receiverName: parts[2],
+              ),
+            ),
+          );
+        }
       }
     });
   }
@@ -170,9 +252,39 @@ class NotificationService {
       payload: payload,
     );
   }
+
+  void dispose() {
+    _chatsSubscription?.cancel();
+    for (final sub in _messageSubscriptions.values) {
+      sub.cancel();
+    }
+  }
 }
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Background messages are handled by the system notification tray automatically
+  final plugin = FlutterLocalNotificationsPlugin();
+  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const settings = InitializationSettings(android: androidSettings);
+  await plugin.initialize(settings);
+
+  final senderName = message.data['senderName'] ?? 'Someone';
+
+  const androidDetails = AndroidNotificationDetails(
+    'chat_messages',
+    'Chat Messages',
+    importance: Importance.high,
+    priority: Priority.high,
+  );
+  const iosDetails = DarwinNotificationDetails();
+  const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+  await plugin.show(
+    DateTime.now().millisecondsSinceEpoch ~/ 1000,
+    senderName,
+    'New message.',
+    details,
+    payload:
+        '${message.data['receiverId']}|${message.data['senderId']}|$senderName',
+  );
 }

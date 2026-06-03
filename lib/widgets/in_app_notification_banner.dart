@@ -7,25 +7,30 @@ void showOverlay(
   String body,
   VoidCallback onTap,
 ) {
-  final overlay = Overlay.of(context);
-  late OverlayEntry entry;
+  try {
+    final overlay = Overlay.maybeOf(context);
+    if (overlay == null) return;
+    late OverlayEntry entry;
 
-  entry = OverlayEntry(
-    builder: (_) => _InAppNotificationBanner(
-      title: title,
-      body: body,
-      onTap: () {
-        entry.remove();
-        onTap();
-      },
-      onDismiss: () => entry.remove(),
-    ),
-  );
+    entry = OverlayEntry(
+      builder: (_) => _InAppNotificationBanner(
+        title: title,
+        body: body,
+        onTap: () {
+          if (entry.mounted) entry.remove();
+          onTap();
+        },
+        onDismiss: () {
+          if (entry.mounted) entry.remove();
+        },
+      ),
+    );
 
-  overlay.insert(entry);
-  Future.delayed(const Duration(seconds: 4), () {
-    if (entry.mounted) entry.remove();
-  });
+    overlay.insert(entry);
+    Future.delayed(const Duration(seconds: 4), () {
+      if (entry.mounted) entry.remove();
+    });
+  } catch (_) {}
 }
 
 class _InAppNotificationBanner extends StatelessWidget {
