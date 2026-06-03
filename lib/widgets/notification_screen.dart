@@ -37,7 +37,7 @@ class NotificationScreen extends StatelessWidget {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(item.senderName),
-                  subtitle: const Text('message'),
+                  subtitle: Text(item.messageText),
                   trailing: Text(
                     _formatTime(item.time),
                     style: TextStyle(

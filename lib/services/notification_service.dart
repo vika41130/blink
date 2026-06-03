@@ -161,8 +161,9 @@ class NotificationService {
                     .then((userDoc) {
                       final senderName =
                           userDoc.data()?['username'] ?? 'Someone';
+                      final messageText = data['lastMessage'] as String? ?? '';
                       final payload = '$userId|$lastSenderId|$senderName';
-                      _notify(senderName, payload);
+                      _notify(senderName, messageText, payload);
                     });
               }
             }
@@ -173,16 +174,17 @@ class NotificationService {
         );
   }
 
-  void _notify(String senderName, String payload) {
+  void _notify(String senderName, String messageText, String payload) {
     try {
       unreadCount.value++;
       final item = NotificationItem(
         senderName: senderName,
+        messageText: messageText,
         payload: payload,
         time: DateTime.now(),
       );
       notifications.value = [item, ...notifications.value];
-      _showInAppBanner(title: senderName, body: 'message', payload: payload);
+      _showInAppBanner(title: senderName, body: messageText, payload: payload);
       Future.delayed(
         const Duration(seconds: notificationAutoDeleteSeconds),
         () {
@@ -229,11 +231,13 @@ class NotificationService {
 
 class NotificationItem {
   final String senderName;
+  final String messageText;
   final String payload;
   final DateTime time;
 
   NotificationItem({
     required this.senderName,
+    required this.messageText,
     required this.payload,
     required this.time,
   });
