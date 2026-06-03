@@ -2,6 +2,7 @@ import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/search_screen.dart';
@@ -32,6 +33,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
+          ValueListenableBuilder<int>(
+            valueListenable: getIt<NotificationService>().unreadCount,
+            builder:
+                (_, count, __) => IconButton(
+                  icon: Badge(
+                    isLabelVisible: count > 0,
+                    label: Text('$count'),
+                    child: Icon(Icons.notifications_outlined),
+                  ),
+                  onPressed: () {
+                    getIt<NotificationService>().resetCount();
+                  },
+                ),
+          ),
           IconButton(
             icon: Icon(Icons.power_settings_new),
             onPressed: () {

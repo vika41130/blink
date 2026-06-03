@@ -18,7 +18,6 @@ class NotificationService {
 
   String? _currentChatReceiverId;
   StreamSubscription? _chatsSubscription;
-  final Map<String, StreamSubscription> _messageSubscriptions = {};
 
   void resetCount() {
     unreadCount.value = 0;
@@ -32,7 +31,6 @@ class NotificationService {
     await _requestPermission();
     await _initLocalNotifications();
     await _saveToken();
-    _listenForegroundMessages();
     _listenTokenRefresh();
     _listenFirestoreMessages();
   }
@@ -139,55 +137,36 @@ class NotificationService {
     final userId = getIt<CacheService>().getString(cacheKeyUserId);
     if (userId == null || userId.isEmpty) return;
 
+    bool isFirst = true;
     _chatsSubscription = getIt<FirebaseFirestore>()
         .collection('chats')
         .where('participants', arrayContains: userId)
         .snapshots()
         .listen(
           (snapshot) {
-            for (final doc in snapshot.docs) {
-              final chatRoomId = doc.id;
-              if (_messageSubscriptions.containsKey(chatRoomId)) continue;
+            if (isFirst) {
+              isFirst = false;
+              return;
+            }
+            for (final change in snapshot.docChanges) {
+              if (change.type == DocumentChangeType.modified) {
+                final data = change.doc.data();
+                if (data == null) continue;
+                final lastSenderId = data['lastMessageSenderId'] as String?;
+                if (lastSenderId == null || lastSenderId == userId) continue;
+                if (lastSenderId == _currentChatReceiverId) continue;
 
-              bool isFirst = true;
-              _messageSubscriptions[chatRoomId] = getIt<FirebaseFirestore>()
-                  .collection('chats')
-                  .doc(chatRoomId)
-                  .collection('messages')
-                  .orderBy('timestamp', descending: true)
-                  .limit(1)
-                  .snapshots()
-                  .listen(
-                    (msgSnapshot) {
-                      if (isFirst) {
-                        isFirst = false;
-                        return;
-                      }
-                      for (final change in msgSnapshot.docChanges) {
-                        if (change.type == DocumentChangeType.added) {
-                          final data = change.doc.data();
-                          if (data == null) continue;
-                          final senderId = data['senderId'] as String?;
-                          if (senderId == null || senderId == userId) continue;
-                          if (senderId == _currentChatReceiverId) continue;
-
-                          getIt<FirebaseFirestore>()
-                              .collection('users')
-                              .doc(senderId)
-                              .get()
-                              .then((userDoc) {
-                                final senderName =
-                                    userDoc.data()?['username'] ?? 'Someone';
-                                final payload = '$userId|$senderId|$senderName';
-                                _notify(senderName, payload);
-                              });
-                        }
-                      }
-                    },
-                    onError: (e) {
-                      debugPrint('Message listener error: $e');
-                    },
-                  );
+                getIt<FirebaseFirestore>()
+                    .collection('users')
+                    .doc(lastSenderId)
+                    .get()
+                    .then((userDoc) {
+                      final senderName =
+                          userDoc.data()?['username'] ?? 'Someone';
+                      final payload = '$userId|$lastSenderId|$senderName';
+                      _notify(senderName, payload);
+                    });
+              }
             }
           },
           onError: (e) {
@@ -258,9 +237,6 @@ class NotificationService {
 
   void dispose() {
     _chatsSubscription?.cancel();
-    for (final sub in _messageSubscriptions.values) {
-      sub.cancel();
-    }
   }
 }
 
