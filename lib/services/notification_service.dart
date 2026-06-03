@@ -15,6 +15,8 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   final ValueNotifier<int> unreadCount = ValueNotifier<int>(0);
+  final ValueNotifier<List<NotificationItem>> notifications =
+      ValueNotifier<List<NotificationItem>>([]);
 
   String? _currentChatReceiverId;
   StreamSubscription? _chatsSubscription;
@@ -122,17 +124,6 @@ class NotificationService {
     });
   }
 
-  void _listenForegroundMessages() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final senderId = message.data['senderId'];
-      if (senderId == _currentChatReceiverId) return;
-
-      final senderName = message.data['senderName'] ?? 'Someone';
-      final payload = '${message.data['receiverId']}|$senderId|$senderName';
-      _notify(senderName, payload);
-    });
-  }
-
   void _listenFirestoreMessages() {
     final userId = getIt<CacheService>().getString(cacheKeyUserId);
     if (userId == null || userId.isEmpty) return;
@@ -178,6 +169,14 @@ class NotificationService {
   void _notify(String senderName, String payload) {
     try {
       unreadCount.value++;
+      notifications.value = [
+        NotificationItem(
+          senderName: senderName,
+          payload: payload,
+          time: DateTime.now(),
+        ),
+        ...notifications.value,
+      ];
       _showInAppBanner(title: senderName, body: 'message', payload: payload);
     } catch (e) {
       debugPrint('Notify error: $e');
@@ -210,34 +209,21 @@ class NotificationService {
     });
   }
 
-  Future<void> _showLocalNotification({
-    required String title,
-    required String body,
-    String? payload,
-  }) async {
-    const androidDetails = AndroidNotificationDetails(
-      'chat_messages',
-      'Chat Messages',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-    const iosDetails = DarwinNotificationDetails();
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-    await _localNotifications.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title,
-      body,
-      details,
-      payload: payload,
-    );
-  }
-
   void dispose() {
     _chatsSubscription?.cancel();
   }
+}
+
+class NotificationItem {
+  final String senderName;
+  final String payload;
+  final DateTime time;
+
+  NotificationItem({
+    required this.senderName,
+    required this.payload,
+    required this.time,
+  });
 }
 
 @pragma('vm:entry-point')

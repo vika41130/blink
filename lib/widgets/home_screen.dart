@@ -5,6 +5,7 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
+import 'package:blink/widgets/notification_screen.dart';
 import 'package:blink/widgets/search_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
@@ -44,6 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onPressed: () {
                     getIt<NotificationService>().resetCount();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationScreen(),
+                      ),
+                    );
                   },
                 ),
           ),
