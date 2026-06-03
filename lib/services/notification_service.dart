@@ -38,20 +38,18 @@ class NotificationService {
   }
 
   Future<void> _requestPermission() async {
-    await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    await _messaging.requestPermission(alert: true, badge: true, sound: true);
     await _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.requestNotificationsPermission();
   }
 
   Future<void> _initLocalNotifications() async {
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings();
     const settings = InitializationSettings(
       android: androidSettings,
@@ -62,9 +60,11 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
 
-    final androidPlugin = _localNotifications
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin =
+        _localNotifications
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
     await androidPlugin?.createNotificationChannel(
       const AndroidNotificationChannel(
         'chat_messages',
@@ -84,11 +84,12 @@ class NotificationService {
         final senderName = parts[2];
         navigatorKey.currentState?.push(
           MaterialPageRoute(
-            builder: (_) => ChatScreen(
-              currentUserId: currentUserId,
-              receiverId: senderId,
-              receiverName: senderName,
-            ),
+            builder:
+                (_) => ChatScreen(
+                  currentUserId: currentUserId,
+                  receiverId: senderId,
+                  receiverName: senderName,
+                ),
           ),
         );
       }
@@ -116,10 +117,9 @@ class NotificationService {
     _messaging.onTokenRefresh.listen((token) async {
       final userId = getIt<CacheService>().getString(cacheKeyUserId);
       if (userId != null && userId.isNotEmpty) {
-        await getIt<FirebaseFirestore>()
-            .collection('users')
-            .doc(userId)
-            .update({'fcmToken': token});
+        await getIt<FirebaseFirestore>().collection('users').doc(userId).update(
+          {'fcmToken': token},
+        );
       }
     });
   }
@@ -130,8 +130,7 @@ class NotificationService {
       if (senderId == _currentChatReceiverId) return;
 
       final senderName = message.data['senderName'] ?? 'Someone';
-      final payload =
-          '${message.data['receiverId']}|$senderId|$senderName';
+      final payload = '${message.data['receiverId']}|$senderId|$senderName';
       _notify(senderName, payload);
     });
   }
@@ -144,60 +143,64 @@ class NotificationService {
         .collection('chats')
         .where('participants', arrayContains: userId)
         .snapshots()
-        .listen((snapshot) {
-      for (final doc in snapshot.docs) {
-        final chatRoomId = doc.id;
-        if (_messageSubscriptions.containsKey(chatRoomId)) continue;
+        .listen(
+          (snapshot) {
+            for (final doc in snapshot.docs) {
+              final chatRoomId = doc.id;
+              if (_messageSubscriptions.containsKey(chatRoomId)) continue;
 
-        bool isFirst = true;
-        _messageSubscriptions[chatRoomId] = getIt<FirebaseFirestore>()
-            .collection('chats')
-            .doc(chatRoomId)
-            .collection('messages')
-            .orderBy('timestamp', descending: true)
-            .limit(1)
-            .snapshots()
-            .listen((msgSnapshot) {
-          if (isFirst) {
-            isFirst = false;
-            return;
-          }
-          for (final change in msgSnapshot.docChanges) {
-            if (change.type == DocumentChangeType.added) {
-              final data = change.doc.data();
-              if (data == null) continue;
-              final senderId = data['senderId'] as String?;
-              if (senderId == null || senderId == userId) continue;
-              if (senderId == _currentChatReceiverId) continue;
+              bool isFirst = true;
+              _messageSubscriptions[chatRoomId] = getIt<FirebaseFirestore>()
+                  .collection('chats')
+                  .doc(chatRoomId)
+                  .collection('messages')
+                  .orderBy('timestamp', descending: true)
+                  .limit(1)
+                  .snapshots()
+                  .listen(
+                    (msgSnapshot) {
+                      if (isFirst) {
+                        isFirst = false;
+                        return;
+                      }
+                      for (final change in msgSnapshot.docChanges) {
+                        if (change.type == DocumentChangeType.added) {
+                          final data = change.doc.data();
+                          if (data == null) continue;
+                          final senderId = data['senderId'] as String?;
+                          if (senderId == null || senderId == userId) continue;
+                          if (senderId == _currentChatReceiverId) continue;
 
-              getIt<FirebaseFirestore>()
-                  .collection('users')
-                  .doc(senderId)
-                  .get()
-                  .then((userDoc) {
-                final senderName =
-                    userDoc.data()?['username'] ?? 'Someone';
-                final payload = '$userId|$senderId|$senderName';
-                _notify(senderName, payload);
-              });
+                          getIt<FirebaseFirestore>()
+                              .collection('users')
+                              .doc(senderId)
+                              .get()
+                              .then((userDoc) {
+                                final senderName =
+                                    userDoc.data()?['username'] ?? 'Someone';
+                                final payload = '$userId|$senderId|$senderName';
+                                _notify(senderName, payload);
+                              });
+                        }
+                      }
+                    },
+                    onError: (e) {
+                      debugPrint('Message listener error: $e');
+                    },
+                  );
             }
-          }
-        }, onError: (e) {
-          debugPrint('Message listener error: $e');
-        });
-      }
-    }, onError: (e) {
-      debugPrint('Chat listener error: $e');
-    });
+          },
+          onError: (e) {
+            debugPrint('Chat listener error: $e');
+          },
+        );
   }
 
   void _notify(String senderName, String payload) {
     try {
       unreadCount.value++;
-      _showLocalNotification(
-          title: senderName, body: 'New message.', payload: payload);
-      _showInAppBanner(
-          title: senderName, body: 'New message.', payload: payload);
+      _showLocalNotification(title: '', body: 'message', payload: payload);
+      _showInAppBanner(title: senderName, body: 'message', payload: payload);
     } catch (e) {
       debugPrint('Notify error: $e');
     }
@@ -216,11 +219,12 @@ class NotificationService {
         if (parts.length == 3) {
           navigatorKey.currentState?.push(
             MaterialPageRoute(
-              builder: (_) => ChatScreen(
-                currentUserId: parts[0],
-                receiverId: parts[1],
-                receiverName: parts[2],
-              ),
+              builder:
+                  (_) => ChatScreen(
+                    currentUserId: parts[0],
+                    receiverId: parts[1],
+                    receiverName: parts[2],
+                  ),
             ),
           );
         }
@@ -281,8 +285,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   await plugin.show(
     DateTime.now().millisecondsSinceEpoch ~/ 1000,
-    senderName,
-    'New message.',
+    '',
+    'message',
     details,
     payload:
         '${message.data['receiverId']}|${message.data['senderId']}|$senderName',
