@@ -74,3 +74,5 @@ const appMessageMarginVertical = 4.0;
 const appMessageMaxLength = 50;
 
 const notificationAutoDeleteSeconds = 3600;
+
+const notificationBadgeMax = 6;

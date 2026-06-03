@@ -8,6 +8,7 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -24,6 +25,7 @@ class NotificationService {
 
   void resetCount() {
     unreadCount.value = 0;
+    AppBadgePlus.updateBadge(0);
   }
 
   void removeNotification(int index) {
@@ -177,6 +179,7 @@ class NotificationService {
   void _notify(String senderName, String messageText, String payload) {
     try {
       unreadCount.value++;
+      AppBadgePlus.updateBadge(unreadCount.value);
       final item = NotificationItem(
         senderName: senderName,
         messageText: messageText,

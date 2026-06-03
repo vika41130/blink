@@ -40,7 +40,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 (_, count, __) => IconButton(
                   icon: Badge(
                     isLabelVisible: count > 0,
-                    label: Text('$count'),
+                    label: Text(
+                      count > notificationBadgeMax
+                          ? '$notificationBadgeMax+'
+                          : '$count',
+                    ),
                     child: Icon(Icons.notifications_outlined),
                   ),
                   onPressed: () {
