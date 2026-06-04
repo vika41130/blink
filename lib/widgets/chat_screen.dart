@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
@@ -8,6 +10,7 @@ import 'package:blink/widgets/home_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:screen_protector/screen_protector.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -28,10 +31,15 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  late final Stream<List<MessageModel>> _messagesStream;
 
   @override
   void initState() {
     super.initState();
+    _messagesStream = getIt<ChatService>().getMessages(
+      widget.currentUserId,
+      widget.receiverId,
+    );
     _enableProtection();
     getIt<NotificationService>().setCurrentChat(widget.receiverId);
   }
@@ -64,12 +72,28 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Future<void> _pickAndSendImage() async {
+    final picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+      maxWidth: 800,
+    );
+    if (pickedFile == null) return;
+
+    final imageFile = File(pickedFile.path);
+    await getIt<ChatService>().sendImageMessage(
+      currentUserId: widget.currentUserId,
+      receiverId: widget.receiverId,
+      imageFile: imageFile,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // Prevents default back navigation
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        // safety check: if the system somehow already popped, don't repeat it
         if (didPop) return;
         Navigator.pushAndRemoveUntil(
           context,
@@ -107,13 +131,9 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             child: Column(
               children: [
-                // 1. Live Chat Stream
                 Expanded(
                   child: StreamBuilder<List<MessageModel>>(
-                    stream: getIt<ChatService>().getMessages(
-                      widget.currentUserId,
-                      widget.receiverId,
-                    ),
+                    stream: _messagesStream,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const SizedBox.shrink();
@@ -123,8 +143,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       }
                       final messages = snapshot.data!;
                       return ListView.builder(
-                        reverse:
-                            true, // Pushes UI elements to the bottom of the screen
+                        reverse: true,
                         itemCount: messages.length,
                         itemBuilder: (context, index) {
                           final message = messages[index];
@@ -145,6 +164,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Row(
                   children: [
+                    IconButton(
+                      iconSize: appIconSmallSize,
+                      icon: Icon(
+                        Icons.photo_outlined,
+                        color:
+                            getIt<AppThemes>().themeData.colorScheme.tertiary,
+                      ),
+                      onPressed: _pickAndSendImage,
+                    ),
                     Expanded(
                       child: SizedBox(
                         height: appTextInputHeight,

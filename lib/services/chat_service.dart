@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/network_error_handler.dart';
@@ -41,6 +44,52 @@ class ChatService {
       await getIt<FirebaseFirestore>().collection('chats').doc(chatRoomId).set({
         'participants': [currentUserId, receiverId],
         'lastMessage': messageText.trim(),
+        'lastMessageSenderId': currentUserId,
+        'lastMessageTimestamp': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      if (NetworkErrorHandler.isNetworkError(e)) {
+        await NetworkErrorHandler.handleNetworkError();
+      }
+    }
+  }
+
+  Future<void> sendImageMessage({
+    required String currentUserId,
+    required String receiverId,
+    required File imageFile,
+  }) async {
+    if (await NetworkErrorHandler.checkAndHandle()) return;
+
+    final String chatRoomId = getChatRoomId(currentUserId, receiverId);
+
+    try {
+      // Convert image to base64 binary string
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final now = DateTime.now();
+      final deleteAt = now.add(const Duration(seconds: 10));
+
+      final message = MessageModel(
+        messageId: '',
+        senderId: currentUserId,
+        text: '',
+        imageBase64: base64Image,
+        timestamp: now,
+        createdAt: now,
+        deleteAt: deleteAt,
+      );
+
+      await getIt<FirebaseFirestore>()
+          .collection('chats')
+          .doc(chatRoomId)
+          .collection('messages')
+          .add(message.toFirestore());
+
+      await getIt<FirebaseFirestore>().collection('chats').doc(chatRoomId).set({
+        'participants': [currentUserId, receiverId],
+        'lastMessage': '📷 Photo',
         'lastMessageSenderId': currentUserId,
         'lastMessageTimestamp': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
