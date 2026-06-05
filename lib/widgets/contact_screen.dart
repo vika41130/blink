@@ -27,15 +27,19 @@ class _ContactScreenState extends State<ContactScreen> {
   void initState() {
     super.initState();
     searchFieldFocusNode = FocusNode();
+    _loadContacts();
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      contacts = await getIt<ContactService>().getContacts(
-        currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-        searchText: '',
-      );
-      isLoading = false;
-      setState(() {});
-    });
+  Future<void> _loadContacts() async {
+    contacts = await getIt<ContactService>().getContacts(
+      currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+      searchText: '',
+    );
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override

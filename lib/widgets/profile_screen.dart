@@ -33,6 +33,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         appBar: AppBar(
           actions: [
             IconButton(
+              onPressed: () {
+                navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (context) => const ContactScreen(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.contact_page),
+            ),
+            IconButton(
               icon: Icon(Icons.power_settings_new),
               onPressed: () {
                 getIt<CacheService>().clearCache();
@@ -69,22 +79,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 SizedBox(height: appFormItemMargin),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        navigatorKey.currentState?.push(
-                          MaterialPageRoute(
-                            builder: (context) => const ContactScreen(),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.contact_page),
-                    ),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
-                  ],
-                ),
               ],
             ),
           ),
