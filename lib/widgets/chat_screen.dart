@@ -164,15 +164,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      iconSize: appIconSmallSize,
-                      icon: Icon(
+                    GestureDetector(
+                      onTap: _pickAndSendImage,
+                      child: Icon(
                         Icons.photo_outlined,
+                        size: appIconSmallSize,
                         color:
                             getIt<AppThemes>().themeData.colorScheme.tertiary,
                       ),
-                      onPressed: _pickAndSendImage,
                     ),
+                    SizedBox(width: appPadding),
                     Expanded(
                       child: SizedBox(
                         height: appTextInputHeight,
@@ -212,14 +213,15 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      iconSize: appIconSmallSize,
-                      icon: Icon(
+                    SizedBox(width: appPadding),
+                    GestureDetector(
+                      onTap: _sendMessage,
+                      child: Icon(
                         Icons.send,
+                        size: appIconSmallSize,
                         color:
                             getIt<AppThemes>().themeData.colorScheme.tertiary,
                       ),
-                      onPressed: _sendMessage,
                     ),
                   ],
                 ),

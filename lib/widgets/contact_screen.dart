@@ -65,13 +65,10 @@ class _ContactScreenState extends State<ContactScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(
-            left: appPadding,
-            right: appPadding,
-            bottom: appPadding,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: appPadding),
           child: Column(
             children: [
+              SizedBox(height: appPadding),
               SizedBox(
                 height: appTextInputHeight,
                 child: TextField(
@@ -92,7 +89,17 @@ class _ContactScreenState extends State<ContactScreen> {
                       bottom: appTextInputContentPadding,
                     ),
                     hintText: getIt<AppLocalizations>().searchHint,
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(
+                        left: appTextInputContentPadding,
+                        right: appTextInputContentPadding / 2,
+                      ),
+                      child: Icon(Icons.search, size: appIconSmallSize),
+                    ),
+                    prefixIconConstraints: const BoxConstraints(
+                      minWidth: 0,
+                      minHeight: 0,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
                         appTextInputBorderRadius,
@@ -139,14 +146,16 @@ class _ContactScreenState extends State<ContactScreen> {
 
   Widget _buildUserListTile(String username) {
     return ListTile(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+      ),
       contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        backgroundColor:
-            getIt<AppThemes>().themeData.colorScheme.surfaceContainerHighest,
-        child: Icon(
-          Icons.person,
-          color: getIt<AppThemes>().themeData.colorScheme.primary,
-        ),
+      minLeadingWidth: 0,
+      horizontalTitleGap: appPadding,
+      leading: Icon(
+        Icons.person,
+        size: appIconMidSize,
+        color: getIt<AppThemes>().themeData.colorScheme.primary,
       ),
       title: Text(
         username,
@@ -159,25 +168,34 @@ class _ContactScreenState extends State<ContactScreen> {
         ),
         builder: (context, snapshot) {
           final isAdded = snapshot.data == true;
-          return IconButton(
-            icon: Icon(isAdded ? Icons.star : Icons.star_border),
-            iconSize: appIconMidSize,
-            onPressed: () async {
-              final String currentUserId =
-                  getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-              if (isAdded) {
-                await getIt<ContactService>().removeContact(
-                  currentUserId,
-                  username,
-                );
-              } else {
-                await getIt<ContactService>().saveContact(
-                  currentUserId,
-                  username,
-                );
-              }
-              setState(() {});
-            },
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+              onTap: () async {
+                final String currentUserId =
+                    getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+                if (isAdded) {
+                  await getIt<ContactService>().removeContact(
+                    currentUserId,
+                    username,
+                  );
+                } else {
+                  await getIt<ContactService>().saveContact(
+                    currentUserId,
+                    username,
+                  );
+                }
+                setState(() {});
+              },
+              child: Padding(
+                padding: EdgeInsets.zero,
+                child: Icon(
+                  isAdded ? Icons.star : Icons.star_border,
+                  size: appIconMidSize,
+                ),
+              ),
+            ),
           );
         },
       ),

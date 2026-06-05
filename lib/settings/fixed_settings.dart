@@ -15,7 +15,7 @@ const smallBorderWidth = 0.5;
 const mediumBorderWidth = 1.0;
 
 const appPaddingSmall = 12.0;
-const appPadding = 14.0;
+const appPadding = 8.0;
 const appTitleMarginLarge = 98.0;
 
 const appBorderRadius = 2.0;
@@ -43,7 +43,7 @@ const pinInputSeparatorWidth = 3.0;
 
 const toggleButtonWidth = 80.0;
 
-const appTextInputHeight = 36.0;
+const appTextInputHeight = 42.0;
 const appTextInputFontSize = 14.0;
 const appTextInputBorderWidth = 1.0;
 const appTextInputBorderRadius = 999.0;

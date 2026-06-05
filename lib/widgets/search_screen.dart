@@ -38,6 +38,7 @@ class _HomeContenttState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(height: appPadding),
         SizedBox(
           height: appTextInputHeight,
           child: Center(
@@ -59,7 +60,17 @@ class _HomeContenttState extends State<SearchScreen> {
                   bottom: appTextInputContentPadding,
                 ),
                 hintText: getIt<AppLocalizations>().searchHint,
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(
+                    left: appTextInputContentPadding,
+                    right: appTextInputContentPadding / 2,
+                  ),
+                  child: Icon(Icons.search, size: appIconSmallSize),
+                ),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 0,
+                  minHeight: 0,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(appTextInputBorderRadius),
                   borderSide: BorderSide.none,
@@ -112,14 +123,16 @@ class _HomeContenttState extends State<SearchScreen> {
 
   Widget _buildUserListTile(User user) {
     return ListTile(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+      ),
       contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        backgroundColor:
-            getIt<AppThemes>().themeData.colorScheme.surfaceContainerHighest,
-        child: Icon(
-          Icons.person,
-          color: getIt<AppThemes>().themeData.colorScheme.primary,
-        ),
+      minLeadingWidth: 0,
+      horizontalTitleGap: appPadding,
+      leading: Icon(
+        Icons.person,
+        size: appIconMidSize,
+        color: getIt<AppThemes>().themeData.colorScheme.primary,
       ),
       title: Text(
         user.username,
@@ -133,6 +146,8 @@ class _HomeContenttState extends State<SearchScreen> {
         builder: (context, snapshot) {
           final isAdded = snapshot.data == true;
           return IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
             icon: Icon(isAdded ? Icons.star : Icons.star_border),
             iconSize: appIconMidSize,
             onPressed: () async {

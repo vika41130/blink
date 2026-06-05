@@ -79,9 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [Expanded(child: content)]),
-            ],
+            children: [Expanded(child: content)],
           ),
         ),
       ),
