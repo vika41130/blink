@@ -33,16 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         appBar: AppBar(
           actions: [
             IconButton(
-              onPressed: () {
-                navigatorKey.currentState?.push(
-                  MaterialPageRoute(
-                    builder: (context) => const ContactScreen(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.contact_page),
-            ),
-            IconButton(
               icon: Icon(Icons.power_settings_new),
               onPressed: () {
                 getIt<CacheService>().clearCache();
@@ -66,18 +56,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Align(
                   alignment: Alignment.center,
-                  child: IconButton(
-                    iconSize: appIconExtraLargeSize,
-                    icon: Icon(Icons.qr_code_scanner),
-                    onPressed: () {
-                      navigatorKey.currentState?.push(
-                        MaterialPageRoute(
-                          builder: (context) => const QrImageScreen(),
-                        ),
-                      );
-                    },
+                  child: Text(
+                    getIt<CacheService>().getString(cacheKeyUsername) ?? '',
+                    style: TextStyle(
+                      fontSize: appTitleFontSize * 1.5,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
+                SizedBox(height: appFormItemMargin),
+                SizedBox(height: appFormItemMargin),
+                SizedBox(height: appFormItemMargin),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: IconButton(
+                          iconSize: appIconExtraLargeSize,
+                          icon: Icon(Icons.contact_page),
+                          onPressed: () {
+                            navigatorKey.currentState?.push(
+                              MaterialPageRoute(
+                                builder: (context) => const ContactScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: IconButton(
+                          iconSize: appIconExtraLargeSize,
+                          icon: Icon(Icons.qr_code_scanner),
+                          onPressed: () {
+                            navigatorKey.currentState?.push(
+                              MaterialPageRoute(
+                                builder: (context) => const QrImageScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: appFormItemMargin),
+                SizedBox(height: appFormItemMargin),
+                SizedBox(height: appFormItemMargin),
                 SizedBox(height: appFormItemMargin),
               ],
             ),
