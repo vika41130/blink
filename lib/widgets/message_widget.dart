@@ -9,6 +9,7 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/custom_widgets/thanos_dissolve_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 
 class MessageWidget extends StatefulWidget {
   final MessageModel message;
@@ -95,6 +96,54 @@ class _MessageWidgetState extends State<MessageWidget>
     );
   }
 
+  void _openFullScreenImage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (_) => Scaffold(
+              backgroundColor: Colors.black,
+              appBar: AppBar(
+                backgroundColor: Colors.black,
+                iconTheme: const IconThemeData(color: Colors.white),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.save_alt, color: Colors.white),
+                    onPressed: () => _saveToGallery(context),
+                  ),
+                ],
+              ),
+              body: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Center(
+                  child: Image.memory(_imageBytes!, fit: BoxFit.contain),
+                ),
+              ),
+            ),
+      ),
+    );
+  }
+
+  Future<void> _saveToGallery(BuildContext context) async {
+    try {
+      await ImageGallerySaverPlus.saveImage(
+        _imageBytes!,
+        quality: 100,
+        name: 'blink_${DateTime.now().millisecondsSinceEpoch}',
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Saved to gallery')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to save image')));
+      }
+    }
+  }
+
   @override
   void dispose() {
     _deleteTimer?.cancel();
@@ -112,29 +161,32 @@ class _MessageWidgetState extends State<MessageWidget>
         onAnimationComplete: () {},
         child:
             widget.message.isImage && _imageBytes != null
-                ? Container(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: appMessageMarginVertical,
-                  ),
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.65,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(appBorderRadius),
-                    child: Image.memory(
-                      _imageBytes!,
-                      width: 180,
-                      height: 180,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const SizedBox(
-                          width: 180,
-                          height: 180,
-                          child: Center(
-                            child: Icon(Icons.broken_image, size: 40),
-                          ),
-                        );
-                      },
+                ? GestureDetector(
+                  onTap: () => _openFullScreenImage(context),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: appMessageMarginVertical,
+                    ),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.65,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(appBorderRadius),
+                      child: Image.memory(
+                        _imageBytes!,
+                        width: 180,
+                        height: 180,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const SizedBox(
+                            width: 180,
+                            height: 180,
+                            child: Center(
+                              child: Icon(Icons.broken_image, size: 40),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 )
