@@ -165,11 +165,17 @@ abstract class AppLocalizations {
   /// **'Username is already exsisted.'**
   String get userNameAlreadyExisted;
 
-  /// No description provided for @searchHint.
+  /// No description provided for @searchContact.
   ///
   /// In en, this message translates to:
   /// **'Search contact'**
-  String get searchHint;
+  String get searchContact;
+
+  /// No description provided for @searchUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Search username'**
+  String get searchUsername;
 
   /// No description provided for @cannotChatWithYourself.
   ///

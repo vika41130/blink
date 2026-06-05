@@ -88,7 +88,7 @@ class _ContactScreenState extends State<ContactScreen> {
                       top: appTextInputContentPadding,
                       bottom: appTextInputContentPadding,
                     ),
-                    hintText: getIt<AppLocalizations>().searchHint,
+                    hintText: getIt<AppLocalizations>().searchContact,
                     prefixIcon: Padding(
                       padding: const EdgeInsets.only(
                         left: appTextInputContentPadding,

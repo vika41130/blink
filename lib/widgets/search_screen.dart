@@ -59,7 +59,7 @@ class _HomeContenttState extends State<SearchScreen> {
                   top: appTextInputContentPadding,
                   bottom: appTextInputContentPadding,
                 ),
-                hintText: getIt<AppLocalizations>().searchHint,
+                hintText: getIt<AppLocalizations>().searchUsername,
                 prefixIcon: Padding(
                   padding: const EdgeInsets.only(
                     left: appTextInputContentPadding,

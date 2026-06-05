@@ -24,8 +24,10 @@
     "@homeTitle": {},
     "userNameAlreadyExisted": "Username is already exsisted.",
     "@userNameAlreadyExisted": {},
-    "searchHint": "Search contact",
-    "@searchHint": {},
+    "searchContact": "Search contact",
+    "@searchContact": {},
+    "searchUsername": "Search username",
+    "@searchUsername": {},
     "cannotChatWithYourself": "Cannot chat with yourself.",
     "@cannotChatWithYourself": {},
     "userNotFound": "User not found.",
@@ -62,5 +64,4 @@
     "@cameraPermissionDenied": {},
     "openSettings": "Open settings",
     "@openSettings": {}
-    
 }

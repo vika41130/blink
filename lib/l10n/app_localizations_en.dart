@@ -45,7 +45,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userNameAlreadyExisted => 'Username is already exsisted.';
 
   @override
-  String get searchHint => 'Search contact';
+  String get searchContact => 'Search contact';
+
+  @override
+  String get searchUsername => 'Search username';
 
   @override
   String get cannotChatWithYourself => 'Cannot chat with yourself.';
