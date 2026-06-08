@@ -24,7 +24,7 @@ class ChatService {
     final String chatRoomId = getChatRoomId(currentUserId, receiverId);
 
     final now = DateTime.now();
-    final oneMinuteFromNow = now.add(const Duration(seconds: 10));
+    final oneMinuteFromNow = now.add(const Duration(seconds: 60));
     final message = MessageModel(
       messageId: '',
       senderId: currentUserId,
@@ -69,7 +69,7 @@ class ChatService {
       final base64Image = base64Encode(bytes);
 
       final now = DateTime.now();
-      final deleteAt = now.add(const Duration(seconds: 10));
+      final deleteAt = now.add(const Duration(seconds: 60));
 
       final message = MessageModel(
         messageId: '',
