@@ -72,50 +72,84 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          navigatorKey.currentState?.push(
-                            MaterialPageRoute(
-                              builder: (context) => const ContactScreen(),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(
+                            appTextInputBorderRadius,
+                          ),
+                          splashColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.05),
+                          highlightColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.05),
+                          onTap: () {
+                            navigatorKey.currentState?.push(
+                              MaterialPageRoute(
+                                builder: (context) => const ContactScreen(),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: appPadding,
                             ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.contact_page,
-                              size: appIconExtraLargeSize,
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.contact_page,
+                                  size: appIconExtraLargeSize,
+                                ),
+                                SizedBox(height: appPadding),
+                                Text(
+                                  getIt<AppLocalizations>().contacts,
+                                  style: TextStyle(fontSize: fontSizeSmall),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: appPadding),
-                            Text(
-                              getIt<AppLocalizations>().contacts,
-                              style: TextStyle(fontSize: fontSizeSmall),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          navigatorKey.currentState?.push(
-                            MaterialPageRoute(
-                              builder: (context) => const QrImageScreen(),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(
+                            appTextInputBorderRadius,
+                          ),
+                          splashColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.05),
+                          highlightColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.05),
+                          onTap: () {
+                            navigatorKey.currentState?.push(
+                              MaterialPageRoute(
+                                builder: (context) => const QrImageScreen(),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: appPadding,
                             ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.qr_code_scanner,
-                              size: appIconExtraLargeSize,
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.qr_code_scanner,
+                                  size: appIconExtraLargeSize,
+                                ),
+                                SizedBox(height: appPadding),
+                                Text(
+                                  getIt<AppLocalizations>().yourQR,
+                                  style: TextStyle(fontSize: fontSizeSmall),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: appPadding),
-                            Text(
-                              getIt<AppLocalizations>().yourQR,
-                              style: TextStyle(fontSize: fontSizeSmall),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
