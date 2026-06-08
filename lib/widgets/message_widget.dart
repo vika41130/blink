@@ -7,9 +7,10 @@ import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/themes/app_theme.dart';
-import 'package:blink/widgets/custom_widgets/thanos_dissolve_wrapper.dart';
+import 'package:blink/widgets/custom_widgets/message_removal_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import 'package:intl/intl.dart';
 
 class MessageWidget extends StatefulWidget {
   final MessageModel message;
@@ -31,8 +32,7 @@ class MessageWidget extends StatefulWidget {
   State<MessageWidget> createState() => _MessageWidgetState();
 }
 
-class _MessageWidgetState extends State<MessageWidget>
-    with SingleTickerProviderStateMixin {
+class _MessageWidgetState extends State<MessageWidget> {
   Timer? _deleteTimer;
   Timer? _animationTimer;
   bool _isRemoving = false;
@@ -153,13 +153,15 @@ class _MessageWidgetState extends State<MessageWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: ThanosDissolveWrapper(
-        isDeleted: _isRemoving,
-        messageColor: getIt<AppThemes>().themeData.colorScheme.primary,
-        onAnimationComplete: () {},
-        child:
+    return MessageRemovalWrapper(
+      isRemoving: _isRemoving,
+      onAnimationComplete: () {},
+      child: Align(
+        alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Column(
+          crossAxisAlignment:
+              widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
             widget.message.isImage && _imageBytes != null
                 ? GestureDetector(
                   onTap: () => _openFullScreenImage(context),
@@ -223,6 +225,19 @@ class _MessageWidgetState extends State<MessageWidget>
                     ),
                   ),
                 ),
+            Padding(
+              padding: const EdgeInsets.only(top: 2.0),
+              child: Text(
+                DateFormat('dd/MM HH:mm').format(widget.message.timestamp),
+                style: TextStyle(
+                  fontSize: fontSizeSmall - 2,
+                  color: getIt<AppThemes>().themeData.colorScheme.onSurface
+                      .withValues(alpha: 0.4),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
