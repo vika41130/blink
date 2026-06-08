@@ -253,6 +253,14 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               Spacer(),
+              Text(
+                AppLocalizations.of(context)!.aboutContent,
+                style: TextStyle(
+                  fontSize: fontSizeSmall,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              SizedBox(height: appPadding),
               Text.rich(
                 style: TextStyle(
                   fontSize: fontSizeSmall,

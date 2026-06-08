@@ -2,6 +2,8 @@
     "@@locale": "en",
     "authTitle": "Go in",
     "@authTitle": {},
+    "aboutContent": "We don't store chat history. Messages will be removed after one minute.",
+    "@aboutContent": {},
     "userNameGuide": "Username must be 3 to 40 characters long, containing only digits, letters, or underscores.",
     "@userNameGuide": {},
     "passcodeGuide": "Passcode must be four digits.",

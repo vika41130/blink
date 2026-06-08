@@ -12,10 +12,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authTitle => 'Go in';
 
   @override
-  String get userNameGuide => 'Username has the length from 3 to 40, digit or alphabet or underscore, starting with any of them.';
+  String get aboutContent => 'We don\'t store chat history. Messages will be removed after one minute.';
 
   @override
-  String get passcodeGuide => 'Passcode has four digits.';
+  String get userNameGuide => 'Username must be 3 to 40 characters long, containing only digits, letters, or underscores.';
+
+  @override
+  String get passcodeGuide => 'Passcode must be four digits.';
 
   @override
   String get signIn => 'Sign in';
@@ -24,16 +27,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signUp => 'Sign up';
 
   @override
-  String get userNameNotExisting => 'Username is not existing.';
+  String get userNameNotExisting => 'Username does not exist.';
 
   @override
-  String get passcodeNotCorrect => 'Passcode is not correct.';
+  String get passcodeNotCorrect => 'Passcode is incorrect.';
 
   @override
-  String get signInSuccess => 'Sign in successfully, going in...';
+  String get signInSuccess => 'Signed in successfully. Going in...';
 
   @override
-  String get createUserSuccess => 'Create new user successfully, going in...';
+  String get createUserSuccess => 'New user created successfully. Going in...';
 
   @override
   String get signUpFailed => 'Sign up failed.';
@@ -42,7 +45,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeTitle => 'Blink';
 
   @override
-  String get userNameAlreadyExisted => 'Username is already exsisted.';
+  String get userNameAlreadyExisted => 'Username already exists.';
 
   @override
   String get searchContact => 'Search contact';
@@ -51,7 +54,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchUsername => 'Search username';
 
   @override
-  String get cannotChatWithYourself => 'Cannot chat with yourself.';
+  String get cannotChatWithYourself => 'You cannot chat with yourself.';
 
   @override
   String get userNotFound => 'User not found.';
@@ -66,13 +69,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saving => 'Saving...';
 
   @override
-  String get saveToGallery => 'Save to Gallery';
+  String get saveToGallery => 'Save to gallery';
 
   @override
-  String get failedToSaveQRCode => 'Failed to save QR Code.';
+  String get failedToSaveQRCode => 'Failed to save QR code.';
 
   @override
-  String get qrCodeSaved => 'QR Code saved to Gallery!';
+  String get qrCodeSaved => 'QR code saved to gallery!';
 
   @override
   String get noUserFound => 'No user found.';
@@ -109,4 +112,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yourQR => 'Your QR';
+
+  @override
+  String get searchHint => 'Search';
 }

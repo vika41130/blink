@@ -99,16 +99,22 @@ abstract class AppLocalizations {
   /// **'Go in'**
   String get authTitle;
 
+  /// No description provided for @aboutContent.
+  ///
+  /// In en, this message translates to:
+  /// **'We don\'t store chat history. Messages will be removed after one minute.'**
+  String get aboutContent;
+
   /// No description provided for @userNameGuide.
   ///
   /// In en, this message translates to:
-  /// **'Username has the length from 3 to 40, digit or alphabet or underscore, starting with any of them.'**
+  /// **'Username must be 3 to 40 characters long, containing only digits, letters, or underscores.'**
   String get userNameGuide;
 
   /// No description provided for @passcodeGuide.
   ///
   /// In en, this message translates to:
-  /// **'Passcode has four digits.'**
+  /// **'Passcode must be four digits.'**
   String get passcodeGuide;
 
   /// No description provided for @signIn.
@@ -126,25 +132,25 @@ abstract class AppLocalizations {
   /// No description provided for @userNameNotExisting.
   ///
   /// In en, this message translates to:
-  /// **'Username is not existing.'**
+  /// **'Username does not exist.'**
   String get userNameNotExisting;
 
   /// No description provided for @passcodeNotCorrect.
   ///
   /// In en, this message translates to:
-  /// **'Passcode is not correct.'**
+  /// **'Passcode is incorrect.'**
   String get passcodeNotCorrect;
 
   /// No description provided for @signInSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Sign in successfully, going in...'**
+  /// **'Signed in successfully. Going in...'**
   String get signInSuccess;
 
   /// No description provided for @createUserSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Create new user successfully, going in...'**
+  /// **'New user created successfully. Going in...'**
   String get createUserSuccess;
 
   /// No description provided for @signUpFailed.
@@ -162,7 +168,7 @@ abstract class AppLocalizations {
   /// No description provided for @userNameAlreadyExisted.
   ///
   /// In en, this message translates to:
-  /// **'Username is already exsisted.'**
+  /// **'Username already exists.'**
   String get userNameAlreadyExisted;
 
   /// No description provided for @searchContact.
@@ -180,7 +186,7 @@ abstract class AppLocalizations {
   /// No description provided for @cannotChatWithYourself.
   ///
   /// In en, this message translates to:
-  /// **'Cannot chat with yourself.'**
+  /// **'You cannot chat with yourself.'**
   String get cannotChatWithYourself;
 
   /// No description provided for @userNotFound.
@@ -210,19 +216,19 @@ abstract class AppLocalizations {
   /// No description provided for @saveToGallery.
   ///
   /// In en, this message translates to:
-  /// **'Save to Gallery'**
+  /// **'Save to gallery'**
   String get saveToGallery;
 
   /// No description provided for @failedToSaveQRCode.
   ///
   /// In en, this message translates to:
-  /// **'Failed to save QR Code.'**
+  /// **'Failed to save QR code.'**
   String get failedToSaveQRCode;
 
   /// No description provided for @qrCodeSaved.
   ///
   /// In en, this message translates to:
-  /// **'QR Code saved to Gallery!'**
+  /// **'QR code saved to gallery!'**
   String get qrCodeSaved;
 
   /// No description provided for @noUserFound.
@@ -296,6 +302,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your QR'**
   String get yourQR;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchHint;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
