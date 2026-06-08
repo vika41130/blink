@@ -63,7 +63,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       Container(
                         height: 36.0,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                          borderRadius: BorderRadius.circular(
+                            appTextInputBorderRadius,
+                          ),
                           border: Border.all(
                             color: Theme.of(context).colorScheme.secondary,
                             width: smallBorderWidth,
@@ -81,9 +83,15 @@ class _AuthScreenState extends State<AuthScreen> {
                                   AppLocalizations.of(context)!.signIn,
                                   style: TextStyle(
                                     fontSize: fontSizeSmall,
-                                    color: isSignInMode
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                                    color:
+                                        isSignInMode
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(alpha: 0.3),
                                   ),
                                 ),
                               ),
@@ -91,7 +99,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             Container(
                               width: smallBorderWidth,
                               height: 14,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
                             GestureDetector(
                               onTap: () => setState(() => isSignInMode = false),
@@ -102,9 +112,15 @@ class _AuthScreenState extends State<AuthScreen> {
                                   AppLocalizations.of(context)!.signUp,
                                   style: TextStyle(
                                     fontSize: fontSizeSmall,
-                                    color: !isSignInMode
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                                    color:
+                                        !isSignInMode
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(alpha: 0.3),
                                   ),
                                 ),
                               ),
@@ -150,21 +166,27 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             hintText: 'Username',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                              borderRadius: BorderRadius.circular(
+                                appTextInputBorderRadius,
+                              ),
                               borderSide: BorderSide(
                                 width: smallBorderWidth,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                              borderRadius: BorderRadius.circular(
+                                appTextInputBorderRadius,
+                              ),
                               borderSide: BorderSide(
                                 width: smallBorderWidth,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                              borderRadius: BorderRadius.circular(
+                                appTextInputBorderRadius,
+                              ),
                               borderSide: BorderSide(
                                 width: smallBorderWidth,
                                 color: Theme.of(context).colorScheme.primary,
@@ -215,9 +237,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         separatorBuilder:
-                            (index) => const SizedBox(
-                              width: appPaddingSmall,
-                            ),
+                            (index) => const SizedBox(width: appPaddingSmall),
                         hapticFeedbackType: HapticFeedbackType.lightImpact,
                         onCompleted: (pin) {
                           AuthService().goIn(
@@ -262,6 +282,8 @@ class _AuthScreenState extends State<AuthScreen> {
     int charCode = usernameController.value.text.codeUnitAt(0);
     return usernameController.value.text.length >= pinInputMinLength &&
         ((charCode >= 65 && charCode <= 90) ||
-            (charCode >= 97 && charCode <= 122));
+            (charCode >= 97 && charCode <= 122) ||
+            (charCode >= 48 && charCode <= 57) ||
+            charCode == 95);
   }
 }

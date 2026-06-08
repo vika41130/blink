@@ -1,5 +1,6 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
@@ -71,32 +72,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: Center(
-                        child: IconButton(
-                          iconSize: appIconExtraLargeSize,
-                          icon: Icon(Icons.contact_page),
-                          onPressed: () {
-                            navigatorKey.currentState?.push(
-                              MaterialPageRoute(
-                                builder: (context) => const ContactScreen(),
-                              ),
-                            );
-                          },
+                      child: GestureDetector(
+                        onTap: () {
+                          navigatorKey.currentState?.push(
+                            MaterialPageRoute(
+                              builder: (context) => const ContactScreen(),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.contact_page,
+                              size: appIconExtraLargeSize,
+                            ),
+                            SizedBox(height: appPadding),
+                            Text(
+                              getIt<AppLocalizations>().contacts,
+                              style: TextStyle(fontSize: fontSizeSmall),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                     Expanded(
-                      child: Center(
-                        child: IconButton(
-                          iconSize: appIconExtraLargeSize,
-                          icon: Icon(Icons.qr_code_scanner),
-                          onPressed: () {
-                            navigatorKey.currentState?.push(
-                              MaterialPageRoute(
-                                builder: (context) => const QrImageScreen(),
-                              ),
-                            );
-                          },
+                      child: GestureDetector(
+                        onTap: () {
+                          navigatorKey.currentState?.push(
+                            MaterialPageRoute(
+                              builder: (context) => const QrImageScreen(),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.qr_code_scanner,
+                              size: appIconExtraLargeSize,
+                            ),
+                            SizedBox(height: appPadding),
+                            Text(
+                              getIt<AppLocalizations>().yourQR,
+                              style: TextStyle(fontSize: fontSizeSmall),
+                            ),
+                          ],
                         ),
                       ),
                     ),

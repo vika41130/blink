@@ -2,7 +2,7 @@
     "@@locale": "en",
     "authTitle": "Go in",
     "@authTitle": {},
-    "userNameGuide": "Username has the length from 3 to 40, digit or alphabet or underscore, starts with a letter.",
+    "userNameGuide": "Username has the length from 3 to 40, digit or alphabet or underscore, starting with any of them.",
     "@userNameGuide": {},
     "passcodeGuide": "Passcode has four digits.",
     "@passcodeGuide": {},
@@ -14,9 +14,9 @@
     "@userNameNotExisting": {},
     "passcodeNotCorrect": "Passcode is not correct.",
     "@passcodeNotCorrect": {},
-    "signInSuccess": "Sign in successfully. Going into...",
+    "signInSuccess": "Sign in successfully, going in...",
     "@signInSuccess": {},
-    "createUserSuccess": "Creating new user successfully. Going into...",
+    "createUserSuccess": "Create new user successfully, going in...",
     "@createUserSuccess": {},
     "signUpFailed": "Sign up failed.",
     "@signUpFailed": {},
@@ -63,5 +63,9 @@
     "cameraPermissionDenied": "Camera permission is required.",
     "@cameraPermissionDenied": {},
     "openSettings": "Open settings",
-    "@openSettings": {}
+    "@openSettings": {},
+    "contacts": "Contacts",
+    "@contacts": {},
+    "yourQR": "Your QR",
+    "@yourQR": {}
 }

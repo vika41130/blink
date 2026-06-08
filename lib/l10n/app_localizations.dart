@@ -102,7 +102,7 @@ abstract class AppLocalizations {
   /// No description provided for @userNameGuide.
   ///
   /// In en, this message translates to:
-  /// **'Username has the length from 3 to 40, digit or alphabet or underscore, starts with a letter.'**
+  /// **'Username has the length from 3 to 40, digit or alphabet or underscore, starting with any of them.'**
   String get userNameGuide;
 
   /// No description provided for @passcodeGuide.
@@ -138,13 +138,13 @@ abstract class AppLocalizations {
   /// No description provided for @signInSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Sign in successfully. Going into...'**
+  /// **'Sign in successfully, going in...'**
   String get signInSuccess;
 
   /// No description provided for @createUserSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Creating new user successfully. Going into...'**
+  /// **'Create new user successfully, going in...'**
   String get createUserSuccess;
 
   /// No description provided for @signUpFailed.
@@ -284,6 +284,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open settings'**
   String get openSettings;
+
+  /// No description provided for @contacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get contacts;
+
+  /// No description provided for @yourQR.
+  ///
+  /// In en, this message translates to:
+  /// **'Your QR'**
+  String get yourQR;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

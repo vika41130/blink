@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authTitle => 'Go in';
 
   @override
-  String get userNameGuide => 'Username has the length from 3 to 40, digit or alphabet or underscore, starts with a letter.';
+  String get userNameGuide => 'Username has the length from 3 to 40, digit or alphabet or underscore, starting with any of them.';
 
   @override
   String get passcodeGuide => 'Passcode has four digits.';
@@ -30,10 +30,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passcodeNotCorrect => 'Passcode is not correct.';
 
   @override
-  String get signInSuccess => 'Sign in successfully. Going into...';
+  String get signInSuccess => 'Sign in successfully, going in...';
 
   @override
-  String get createUserSuccess => 'Creating new user successfully. Going into...';
+  String get createUserSuccess => 'Create new user successfully, going in...';
 
   @override
   String get signUpFailed => 'Sign up failed.';
@@ -103,4 +103,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openSettings => 'Open settings';
+
+  @override
+  String get contacts => 'Contacts';
+
+  @override
+  String get yourQR => 'Your QR';
 }
