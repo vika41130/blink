@@ -51,96 +51,75 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Text(
-          getIt<AppLocalizations>().contactTitle,
-          style: TextStyle(
-            fontSize: appTitleFontSize,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: appPadding),
-          child: Column(
-            children: [
-              SizedBox(height: appPadding),
-              SizedBox(
-                height: appTextInputHeight,
-                child: TextField(
-                  focusNode: searchFieldFocusNode,
-                  onTapOutside: (event) {
-                    setState(() {});
-                    searchFieldFocusNode.unfocus();
-                  },
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(pinInputMaxLength),
-                  ],
-                  style: const TextStyle(fontSize: appTextInputFontSize),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.only(
-                      right: appTextInputContentPadding,
-                      top: appTextInputContentPadding,
-                      bottom: appTextInputContentPadding,
-                    ),
-                    hintText: getIt<AppLocalizations>().searchContact,
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.only(
-                        left: appTextInputContentPadding,
-                        right: appTextInputContentPadding / 2,
-                      ),
-                      child: Icon(Icons.search, size: appIconSmallSize),
-                    ),
-                    prefixIconConstraints: const BoxConstraints(
-                      minWidth: 0,
-                      minHeight: 0,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        appTextInputBorderRadius,
-                      ),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                  ),
-                  onChanged: (value) async {
-                    final currentUserId =
-                        getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-                    isLoading = true;
-                    setState(() {});
-                    contacts = await getIt<ContactService>().getContacts(
-                      currentUserId: currentUserId,
-                      searchText: value.trim(),
-                    );
-                    isLoading = false;
-                    setState(() {});
-                  },
-                ),
-              ),
-              SizedBox(height: appPaddingSmall),
-              Expanded(
-                child:
-                    isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                          controller: _scrollController,
-                          itemCount: contacts.length,
-                          itemBuilder: (context, index) {
-                            return _buildUserListTile(contacts[index]);
-                          },
-                        ),
-              ),
+    return Column(
+      children: [
+        SizedBox(height: appPadding),
+        SizedBox(
+          height: appTextInputHeight,
+          child: TextField(
+            focusNode: searchFieldFocusNode,
+            onTapOutside: (event) {
+              setState(() {});
+              searchFieldFocusNode.unfocus();
+            },
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(pinInputMaxLength),
             ],
+            style: const TextStyle(fontSize: appTextInputFontSize),
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.only(
+                right: appTextInputContentPadding,
+                top: appTextInputContentPadding,
+                bottom: appTextInputContentPadding,
+              ),
+              hintText: getIt<AppLocalizations>().searchContact,
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(
+                  left: appTextInputContentPadding,
+                  right: appTextInputContentPadding / 2,
+                ),
+                child: Icon(Icons.search, size: appIconSmallSize),
+              ),
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 0,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
+            onChanged: (value) async {
+              final currentUserId =
+                  getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+              isLoading = true;
+              setState(() {});
+              contacts = await getIt<ContactService>().getContacts(
+                currentUserId: currentUserId,
+                searchText: value.trim(),
+              );
+              isLoading = false;
+              setState(() {});
+            },
           ),
         ),
-      ),
+        SizedBox(height: appPaddingSmall),
+        Expanded(
+          child:
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                    controller: _scrollController,
+                    itemCount: contacts.length,
+                    itemBuilder: (context, index) {
+                      return _buildUserListTile(contacts[index]);
+                    },
+                  ),
+        ),
+      ],
     );
   }
 

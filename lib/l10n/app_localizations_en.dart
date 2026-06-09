@@ -99,19 +99,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToRemoveContact => 'Failed to remove contact.';
 
   @override
-  String get contactTitle => 'Contacts';
-
-  @override
   String get cameraPermissionDenied => 'Camera permission is required.';
 
   @override
   String get openSettings => 'Open settings';
-
-  @override
-  String get contacts => 'Contacts';
-
-  @override
-  String get yourQR => 'Your QR';
 
   @override
   String get searchHint => 'Search';

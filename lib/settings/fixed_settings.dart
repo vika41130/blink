@@ -4,7 +4,6 @@ const home = '/home';
 const auth = 'auth';
 
 // assets
-const splashBackground = 'assets/images/splash_background.jpg';
 
 const appTitleFontSize = 20.0;
 const fontSizeSmall = 12.0;
@@ -17,6 +16,8 @@ const mediumBorderWidth = 1.0;
 const appPaddingSmall = 12.0;
 const appPadding = 8.0;
 const appTitleMarginLarge = 98.0;
+
+const appBarHeight = 44.0;
 
 const appBorderRadius = 2.0;
 const appBorderWidth = 4.0;

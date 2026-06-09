@@ -273,12 +273,6 @@ abstract class AppLocalizations {
   /// **'Failed to remove contact.'**
   String get failedToRemoveContact;
 
-  /// No description provided for @contactTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Contacts'**
-  String get contactTitle;
-
   /// No description provided for @cameraPermissionDenied.
   ///
   /// In en, this message translates to:
@@ -290,18 +284,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open settings'**
   String get openSettings;
-
-  /// No description provided for @contacts.
-  ///
-  /// In en, this message translates to:
-  /// **'Contacts'**
-  String get contacts;
-
-  /// No description provided for @yourQR.
-  ///
-  /// In en, this message translates to:
-  /// **'Your QR'**
-  String get yourQR;
 
   /// No description provided for @searchHint.
   ///

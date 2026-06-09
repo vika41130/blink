@@ -60,16 +60,10 @@
     "@contactRemovedSuccessfully": {},
     "failedToRemoveContact": "Failed to remove contact.",
     "@failedToRemoveContact": {},
-    "contactTitle": "Contacts",
-    "@contactTitle": {},
     "cameraPermissionDenied": "Camera permission is required.",
     "@cameraPermissionDenied": {},
     "openSettings": "Open settings",
     "@openSettings": {},
-    "contacts": "Contacts",
-    "@contacts": {},
-    "yourQR": "Your QR",
-    "@yourQR": {},
     "searchHint": "Search",
     "@searchHint": {}
 }

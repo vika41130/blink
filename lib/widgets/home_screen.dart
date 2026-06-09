@@ -6,7 +6,7 @@ import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/notification_screen.dart';
-import 'package:blink/widgets/search_screen.dart';
+import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +19,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Widget content = const SearchScreen();
+  Widget content = const ContactScreen();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: appBarHeight,
         title: Text(
           getIt<AppLocalizations>().homeTitle,
           style: TextStyle(
@@ -85,6 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       // stop here
       bottomNavigationBar: BottomAppBar(
+        height: appBarHeight,
+        padding: EdgeInsets.zero,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -92,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.home_filled),
               onPressed: () {
                 setState(() {
-                  content = const SearchScreen();
+                  content = const ContactScreen();
                 });
               },
             ),

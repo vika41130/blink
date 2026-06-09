@@ -1,13 +1,18 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
-import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/home_screen.dart';
-import 'package:blink/widgets/qr_image_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,12 +22,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final GlobalKey _qrKey = GlobalKey();
+  bool _isSaving = false;
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // Prevents default back navigation
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        // safety check: if the system somehow already popped, don't repeat it
         if (didPop) return;
         Navigator.pushAndRemoveUntil(
           context,
@@ -52,12 +59,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               right: appPadding,
               bottom: appPadding,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
                     getIt<CacheService>().getString(cacheKeyUsername) ?? '',
                     style: TextStyle(
                       fontSize: appTitleFontSize * 1.5,
@@ -65,105 +72,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                ),
-                SizedBox(height: appFormItemMargin),
-                SizedBox(height: appFormItemMargin),
-                SizedBox(height: appFormItemMargin),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(
-                            appTextInputBorderRadius,
-                          ),
-                          splashColor: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.05),
-                          highlightColor: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.05),
-                          onTap: () {
-                            navigatorKey.currentState?.push(
-                              MaterialPageRoute(
-                                builder: (context) => const ContactScreen(),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: appPadding,
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.contact_page,
-                                  size: appIconExtraLargeSize,
-                                ),
-                                SizedBox(height: appPadding),
-                                Text(
-                                  getIt<AppLocalizations>().contacts,
-                                  style: TextStyle(fontSize: fontSizeSmall),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                  SizedBox(height: appFormItemMargin),
+                  SizedBox(height: appFormItemMargin),
+                  RepaintBoundary(
+                    key: _qrKey,
+                    child: QrImageView(
+                      data:
+                          getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+                      version: QrVersions.auto,
+                      size: appQrImageViewSize,
+                      gapless: false,
+                      dataModuleStyle: QrDataModuleStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      eyeStyle: QrEyeStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        eyeShape: QrEyeShape.square,
                       ),
                     ),
-                    Expanded(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(
-                            appTextInputBorderRadius,
-                          ),
-                          splashColor: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.05),
-                          highlightColor: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.05),
-                          onTap: () {
-                            navigatorKey.currentState?.push(
-                              MaterialPageRoute(
-                                builder: (context) => const QrImageScreen(),
+                  ),
+                  SizedBox(height: appFormItemMargin),
+                  ElevatedButton.icon(
+                    onPressed: _isSaving ? null : _downloadQrCode,
+                    icon:
+                        _isSaving
+                            ? const SizedBox(
+                              width: appLoadingIndicatorSizeSmall,
+                              height: appLoadingIndicatorSizeSmall,
+                              child: CircularProgressIndicator(
+                                strokeWidth: appLoadingstrokeWidthSmall,
                               ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: appPadding,
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.qr_code_scanner,
-                                  size: appIconExtraLargeSize,
-                                ),
-                                SizedBox(height: appPadding),
-                                Text(
-                                  getIt<AppLocalizations>().yourQR,
-                                  style: TextStyle(fontSize: fontSizeSmall),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                            )
+                            : const Icon(Icons.download),
+                    label: Text(
+                      _isSaving
+                          ? getIt<AppLocalizations>().saving
+                          : getIt<AppLocalizations>().saveToGallery,
                     ),
-                  ],
-                ),
-                SizedBox(height: appFormItemMargin),
-                SizedBox(height: appFormItemMargin),
-                SizedBox(height: appFormItemMargin),
-                SizedBox(height: appFormItemMargin),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _downloadQrCode() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+    try {
+      final RenderRepaintBoundary? boundary =
+          _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) throw Exception("Boundary not found");
+      final ui.Image image = await boundary.toImage(
+        pixelRatio: appImagePixelRatio,
+      );
+      final ByteData? byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      if (byteData != null) {
+        final Uint8List pngBytes = byteData.buffer.asUint8List();
+        final result = await ImageGallerySaverPlus.saveImage(
+          pngBytes,
+          quality: appImageQuality,
+          name:
+              "$appImageFileNamePrefix${DateTime.now().millisecondsSinceEpoch}",
+        );
+        if (mounted) {
+          if (result['isSuccess'] == true) {
+            getIt<ToastificationService>().showSuccess(
+              getIt<AppLocalizations>().qrCodeSaved,
+            );
+          } else {
+            throw Exception("Gallery saving failed");
+          }
+        }
+      }
+    } catch (e) {
+      getIt<ToastificationService>().showError(
+        getIt<AppLocalizations>().failedToSaveQRCode,
+      );
+    } finally {
+      setState(() => _isSaving = false);
+    }
   }
 }
