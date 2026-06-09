@@ -172,30 +172,55 @@ class _MessageWidgetState extends State<MessageWidget> {
                     constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.65,
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(appBorderRadius),
-                      child: Image.memory(
-                        _imageBytes!,
-                        width: 180,
-                        height: 180,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const SizedBox(
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(appBorderRadius),
+                          child: Image.memory(
+                            _imageBytes!,
                             width: 180,
                             height: 180,
-                            child: Center(
-                              child: Icon(Icons.broken_image, size: 40),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const SizedBox(
+                                width: 180,
+                                height: 180,
+                                child: Center(
+                                  child: Icon(Icons.broken_image, size: 40),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          right: 4,
+                          bottom: 6,
+                          child: Text(
+                            DateFormat(
+                              'HH:mm',
+                            ).format(widget.message.timestamp),
+                            style: TextStyle(
+                              fontSize: fontSizeSmall - 3,
+                              color: Colors.white,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 )
                 : Container(
-                  padding: const EdgeInsets.all(appMessagePadding),
+                  padding: const EdgeInsets.only(
+                    left: 12,
+                    right: 4,
+                    top: 8,
+                    bottom: 8,
+                  ),
                   margin: const EdgeInsets.symmetric(
                     vertical: appMessageMarginVertical,
+                  ),
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.75,
                   ),
                   decoration: BoxDecoration(
                     color:
@@ -205,37 +230,56 @@ class _MessageWidgetState extends State<MessageWidget> {
                                 .themeData
                                 .colorScheme
                                 .secondary,
-                    borderRadius: BorderRadius.circular(
-                      appTextInputBorderRadius,
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(16),
+                      topRight: const Radius.circular(16),
+                      bottomLeft: Radius.circular(widget.isMe ? 16 : 4),
+                      bottomRight: Radius.circular(widget.isMe ? 4 : 16),
                     ),
                   ),
-                  child: Text(
-                    widget.message.text,
-                    style: TextStyle(
-                      color:
-                          widget.isMe
-                              ? getIt<AppThemes>()
-                                  .themeData
-                                  .colorScheme
-                                  .surfaceContainerHighest
-                              : getIt<AppThemes>()
-                                  .themeData
-                                  .colorScheme
-                                  .surfaceBright,
-                    ),
+                  child: Wrap(
+                    alignment: WrapAlignment.end,
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    spacing: 6,
+                    children: [
+                      Text(
+                        widget.message.text,
+                        style: TextStyle(
+                          fontSize: fontSizeMedium,
+                          color:
+                              widget.isMe
+                                  ? getIt<AppThemes>()
+                                      .themeData
+                                      .colorScheme
+                                      .surfaceContainerHighest
+                                  : getIt<AppThemes>()
+                                      .themeData
+                                      .colorScheme
+                                      .surfaceBright,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          DateFormat('HH:mm').format(widget.message.timestamp),
+                          style: TextStyle(
+                            fontSize: fontSizeSmall - 3,
+                            color:
+                                widget.isMe
+                                    ? getIt<AppThemes>()
+                                        .themeData
+                                        .colorScheme
+                                        .surfaceContainerHighest
+                                    : getIt<AppThemes>()
+                                        .themeData
+                                        .colorScheme
+                                        .surfaceBright,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-            Padding(
-              padding: const EdgeInsets.only(top: 2.0),
-              child: Text(
-                DateFormat('dd/MM HH:mm').format(widget.message.timestamp),
-                style: TextStyle(
-                  fontSize: fontSizeSmall - 2,
-                  color: getIt<AppThemes>().themeData.colorScheme.onSurface
-                      .withValues(alpha: 0.4),
-                ),
-              ),
-            ),
           ],
         ),
       ),

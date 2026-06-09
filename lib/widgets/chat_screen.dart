@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
+import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
+import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/themes/app_theme.dart';
@@ -32,6 +34,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   late final Stream<List<MessageModel>> _messagesStream;
+  bool _hasText = false;
 
   @override
   void initState() {
@@ -40,6 +43,12 @@ class _ChatScreenState extends State<ChatScreen> {
       widget.currentUserId,
       widget.receiverId,
     );
+    _messageController.addListener(() {
+      final hasText = _messageController.text.trim().isNotEmpty;
+      if (hasText != _hasText) {
+        setState(() => _hasText = hasText);
+      }
+    });
     _enableProtection();
     getIt<NotificationService>().setCurrentChat(widget.receiverId);
   }
@@ -120,6 +129,39 @@ class _ChatScreenState extends State<ChatScreen> {
               );
             },
           ),
+          actions: [
+            FutureBuilder<bool>(
+              future: getIt<ContactService>().isContactAdded(
+                getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+                widget.receiverName,
+              ),
+              builder: (context, snapshot) {
+                final isAdded = snapshot.data == true;
+                return IconButton(
+                  icon: Icon(
+                    isAdded ? Icons.star : Icons.star_border,
+                    size: appIconMidSize,
+                  ),
+                  onPressed: () async {
+                    final currentUserId =
+                        getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+                    if (isAdded) {
+                      await getIt<ContactService>().removeContact(
+                        currentUserId,
+                        widget.receiverName,
+                      );
+                    } else {
+                      await getIt<ContactService>().saveContact(
+                        currentUserId,
+                        widget.receiverName,
+                      );
+                    }
+                    setState(() {});
+                  },
+                );
+              },
+            ),
+          ],
         ),
         body: SafeArea(
           child: Padding(
@@ -141,9 +183,11 @@ class _ChatScreenState extends State<ChatScreen> {
                         return const SizedBox.shrink();
                       }
                       final messages = snapshot.data!;
-                      return ListView.builder(
+                      return ListView.separated(
                         reverse: true,
                         itemCount: messages.length,
+                        separatorBuilder:
+                            (context, index) => const SizedBox.shrink(),
                         itemBuilder: (context, index) {
                           final message = messages[index];
                           final bool isMe =
@@ -161,65 +205,85 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                 ),
+                SizedBox(height: appMessageMarginVertical),
                 Row(
                   children: [
-                    GestureDetector(
-                      onTap: _pickAndSendImage,
-                      child: Icon(
-                        Icons.photo_outlined,
-                        size: appIconSmallSize,
-                        color:
-                            getIt<AppThemes>().themeData.colorScheme.tertiary,
-                      ),
-                    ),
-                    SizedBox(width: appPadding),
                     Expanded(
-                      child: SizedBox(
-                        height: appTextInputHeight,
-                        child: Center(
-                          child: TextField(
-                            controller: _messageController,
-                            maxLines: appTextInputMaxLines,
-                            minLines: appTextInputMinLines,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(
-                                appMessageMaxLength,
-                              ),
-                            ],
-                            style: const TextStyle(
-                              fontSize: appTextInputFontSize,
-                            ),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: appTextInputContentPadding,
-                                vertical: appTextInputContentPadding,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  appTextInputBorderRadius,
-                                ),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor:
-                                  getIt<AppThemes>()
-                                      .themeData
-                                      .colorScheme
-                                      .surfaceContainerHighest,
-                            ),
+                      child: TextField(
+                        controller: _messageController,
+                        maxLines: 5,
+                        minLines: 1,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(appMessageMaxLength),
+                        ],
+                        style: const TextStyle(fontSize: appTextInputFontSize),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: appTextInputContentPadding,
+                            vertical: appTextInputContentPadding,
                           ),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (!_hasText)
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(
+                                      appTextInputBorderRadius,
+                                    ),
+                                    onTap: _pickAndSendImage,
+                                    child: Icon(
+                                      Icons.photo_outlined,
+                                      size: appIconLargeSize,
+                                      color:
+                                          getIt<AppThemes>()
+                                              .themeData
+                                              .colorScheme
+                                              .tertiary,
+                                    ),
+                                  ),
+                                ),
+                              if (_hasText)
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(
+                                      appTextInputBorderRadius,
+                                    ),
+                                    onTap: _sendMessage,
+                                    child: Icon(
+                                      Icons.send,
+                                      size: appIconLargeSize,
+                                      color:
+                                          getIt<AppThemes>()
+                                              .themeData
+                                              .colorScheme
+                                              .tertiary,
+                                    ),
+                                  ),
+                                ),
+                              SizedBox(width: appTextInputContentPadding / 2),
+                            ],
+                          ),
+                          suffixIconConstraints: const BoxConstraints(
+                            minWidth: 0,
+                            minHeight: 0,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              appTextInputBorderRadius,
+                            ),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor:
+                              getIt<AppThemes>()
+                                  .themeData
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                         ),
-                      ),
-                    ),
-                    SizedBox(width: appPadding),
-                    GestureDetector(
-                      onTap: _sendMessage,
-                      child: Icon(
-                        Icons.send,
-                        size: appIconSmallSize,
-                        color:
-                            getIt<AppThemes>().themeData.colorScheme.tertiary,
                       ),
                     ),
                   ],

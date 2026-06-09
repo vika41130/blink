@@ -65,5 +65,7 @@
     "openSettings": "Open settings",
     "@openSettings": {},
     "searchHint": "Search",
-    "@searchHint": {}
+    "@searchHint": {},
+    "newChat": "New chat",
+    "@newChat": {}
 }

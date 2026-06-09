@@ -9,6 +9,7 @@ import 'package:blink/widgets/notification_screen.dart';
 import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
+import 'package:blink/widgets/search_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -83,7 +84,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      // stop here
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        mini: true,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SearchScreen()),
+          );
+        },
+        child: Icon(Icons.add, size: appIconMidSize),
+      ),
       bottomNavigationBar: BottomAppBar(
         height: appBarHeight,
         padding: EdgeInsets.zero,

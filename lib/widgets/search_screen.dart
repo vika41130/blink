@@ -15,10 +15,10 @@ class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _HomeContenttState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _HomeContenttState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen> {
   late final FocusNode searchFieldFocusNode;
   List<User> searchResults = [];
 
@@ -36,107 +36,135 @@ class _HomeContenttState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: appPadding),
-        SizedBox(
-          height: appTextInputHeight,
-          child: Center(
-            child: TextField(
-              focusNode: searchFieldFocusNode,
-              onTapOutside: (event) {
-                setState(() {});
-                searchFieldFocusNode.unfocus();
-              },
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(pinInputMaxLength),
-              ],
-              style: const TextStyle(fontSize: appTextInputFontSize),
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.only(
-                  right: appTextInputContentPadding,
-                  top: appTextInputContentPadding,
-                  bottom: appTextInputContentPadding,
-                ),
-                hintText: getIt<AppLocalizations>().searchUsername,
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(
-                    left: appTextInputContentPadding,
-                    right: appTextInputContentPadding / 2,
-                  ),
-                  child: Icon(Icons.search, size: appIconSmallSize),
-                ),
-                prefixIconConstraints: const BoxConstraints(
-                  minWidth: 0,
-                  minHeight: 0,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(appTextInputBorderRadius),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
-              onChanged: (value) async {
-                final user = await getIt<AuthService>().getUserByUsername(
-                  value.trim(),
-                );
-                if (user != null) {
-                  setState(() {
-                    searchResults = [user];
-                  });
-                } else {
-                  setState(() {
-                    searchResults = [];
-                  });
-                }
-              },
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          getIt<AppLocalizations>().newChat,
+          style: TextStyle(
+            fontSize: appTitleFontSize,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        SizedBox(height: appFormItemMargin),
-        searchResults.isNotEmpty
-            ? ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: searchResults.length,
-              itemBuilder: (context, index) {
-                final user = searchResults[index];
-                return _buildUserListTile(user);
-              },
-            )
-            : searchFieldFocusNode.hasFocus && searchResults.isEmpty
-            ? Text(
-              getIt<AppLocalizations>().noUserFound,
-              style: TextStyle(
-                color:
-                    getIt<AppThemes>().themeData.colorScheme.onSurfaceVariant,
-                fontSize: fontSizeMedium,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: appPadding,
+            right: appPadding,
+            bottom: appPadding,
+          ),
+          child: Column(
+            children: [
+              SizedBox(height: appPadding),
+              SizedBox(
+                height: appTextInputHeight,
+                child: Center(
+                  child: TextField(
+                    focusNode: searchFieldFocusNode,
+                    onTapOutside: (event) {
+                      setState(() {});
+                      searchFieldFocusNode.unfocus();
+                    },
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(pinInputMaxLength),
+                    ],
+                    style: const TextStyle(fontSize: appTextInputFontSize),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.only(
+                        right: appTextInputContentPadding,
+                        top: appTextInputContentPadding,
+                        bottom: appTextInputContentPadding,
+                      ),
+                      hintText: getIt<AppLocalizations>().searchUsername,
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.only(
+                          left: appTextInputContentPadding,
+                          right: appTextInputContentPadding / 2,
+                        ),
+                        child: Icon(Icons.search, size: appIconSmallSize),
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          appTextInputBorderRadius,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                    ),
+                    onChanged: (value) async {
+                      final user = await getIt<AuthService>().getUserByUsername(
+                        value.trim(),
+                      );
+                      if (user != null) {
+                        setState(() {
+                          searchResults = [user];
+                        });
+                      } else {
+                        setState(() {
+                          searchResults = [];
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
-            )
-            : const SizedBox.shrink(),
-      ],
+              SizedBox(height: appFormItemMargin),
+              searchResults.isNotEmpty
+                  ? Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: searchResults.length,
+                      itemBuilder: (context, index) {
+                        final user = searchResults[index];
+                        return _buildUserListTile(user);
+                      },
+                    ),
+                  )
+                  : searchFieldFocusNode.hasFocus && searchResults.isEmpty
+                  ? Text(
+                    getIt<AppLocalizations>().noUserFound,
+                    style: TextStyle(
+                      color:
+                          getIt<AppThemes>()
+                              .themeData
+                              .colorScheme
+                              .onSurfaceVariant,
+                      fontSize: fontSizeMedium,
+                    ),
+                  )
+                  : const SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildUserListTile(User user) {
     return ListTile(
+      dense: true,
+      visualDensity: const VisualDensity(vertical: -3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(appTextInputBorderRadius),
       ),
-      contentPadding: EdgeInsets.zero,
+      contentPadding: EdgeInsets.symmetric(horizontal: appPadding / 2),
       minLeadingWidth: 0,
       horizontalTitleGap: appPadding,
       leading: Icon(
         Icons.person,
-        size: appIconMidSize,
+        size: appIconSmallSize,
         color: getIt<AppThemes>().themeData.colorScheme.primary,
       ),
       title: Text(
         user.username,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: fontSizeMedium),
       ),
       trailing: FutureBuilder<bool>(
         future: getIt<ContactService>().isContactAdded(
@@ -149,7 +177,7 @@ class _HomeContenttState extends State<SearchScreen> {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             icon: Icon(isAdded ? Icons.star : Icons.star_border),
-            iconSize: appIconMidSize,
+            iconSize: appIconSmallSize,
             onPressed: () async {
               final String currentUserId =
                   getIt<CacheService>().getString(cacheKeyUserId) ?? '';

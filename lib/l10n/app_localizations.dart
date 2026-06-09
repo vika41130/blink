@@ -290,6 +290,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get searchHint;
+
+  /// No description provided for @newChat.
+  ///
+  /// In en, this message translates to:
+  /// **'New chat'**
+  String get newChat;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
