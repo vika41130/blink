@@ -1,3 +1,4 @@
+import 'package:blink/settings/fixed_settings.dart';
 import 'package:flutter/material.dart';
 
 const _darkBlue900 = Color(0xFF0D1B2A);
@@ -23,13 +24,11 @@ class AppThemes {
     ),
     appBarTheme: AppBarTheme(
       elevation: 0,
-      iconTheme: IconThemeData(color: _darkBlue700),
+      iconTheme: IconThemeData(color: _darkBlue700, size: 18),
+      titleSpacing: appPadding,
     ),
     extensions: <ThemeExtension<dynamic>>[
-      const AppColors(
-        success: Color(0xFF2E7D6E),
-        error: Color(0xFFD32F2F),
-      ),
+      const AppColors(success: Color(0xFF2E7D6E), error: Color(0xFFD32F2F)),
     ],
   );
 
@@ -48,13 +47,11 @@ class AppThemes {
     ),
     appBarTheme: AppBarTheme(
       elevation: 0,
-      iconTheme: IconThemeData(color: _darkBlue300),
+      iconTheme: IconThemeData(color: _darkBlue300, size: 18),
+      titleSpacing: appPadding,
     ),
     extensions: <ThemeExtension<dynamic>>[
-      const AppColors(
-        success: Color(0xFF4DB6AC),
-        error: Color(0xFFEF5350),
-      ),
+      const AppColors(success: Color(0xFF4DB6AC), error: Color(0xFFEF5350)),
     ],
   );
 

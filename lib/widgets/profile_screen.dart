@@ -39,6 +39,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, size: 18),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
           actions: [
             IconButton(
               icon: Icon(Icons.power_settings_new),
@@ -67,8 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     getIt<CacheService>().getString(cacheKeyUsername) ?? '',
                     style: TextStyle(
-                      fontSize: appTitleFontSize * 1.5,
-                      fontWeight: FontWeight.w600,
+                      fontSize: appTitleFontSize * 1.2,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),

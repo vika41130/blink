@@ -29,8 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(
           getIt<AppLocalizations>().homeTitle,
           style: TextStyle(
-            fontSize: appTitleFontSize,
-            fontWeight: FontWeight.w600,
+            fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
@@ -92,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: Icon(Icons.home_filled),
+              icon: Icon(Icons.home_filled, size: appIconMidSize),
               onPressed: () {
                 setState(() {
                   content = const ContactScreen();
@@ -100,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.qr_code_scanner),
+              icon: Icon(Icons.qr_code_scanner, size: appIconMidSize),
               onPressed: () {
                 navigatorKey.currentState?.push(
                   MaterialPageRoute(
@@ -110,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.person, size: appIconMidSize),
               onPressed: () {
                 navigatorKey.currentState?.push(
                   MaterialPageRoute(

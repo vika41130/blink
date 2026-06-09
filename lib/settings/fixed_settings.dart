@@ -5,7 +5,7 @@ const auth = 'auth';
 
 // assets
 
-const appTitleFontSize = 20.0;
+const appTitleFontSize = 16.0;
 const fontSizeSmall = 12.0;
 const fontSizeMedium = 15.0;
 const fontSizeLarge = 18.0;
@@ -63,10 +63,10 @@ const appImagePixelRatio = 3.0;
 const appImageQuality = 100;
 const appImageFileNamePrefix = "qr_code_";
 
-const appIconSmallSize = 15.0;
-const appIconMidSize = 20.0;
-const appIconLargeSize = 30.0;
-const appIconExtraLargeSize = 40.0;
+const appIconSmallSize = 13.0;
+const appIconMidSize = 18.0;
+const appIconLargeSize = 26.0;
+const appIconExtraLargeSize = 34.0;
 
 const appBlinkSize = 30.0;
 

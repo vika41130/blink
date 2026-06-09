@@ -111,9 +111,11 @@ class _ContactScreenState extends State<ContactScreen> {
           child:
               isLoading
                   ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
+                  : ListView.separated(
                     controller: _scrollController,
                     itemCount: contacts.length,
+                    separatorBuilder:
+                        (context, index) => SizedBox(height: appPadding / 2),
                     itemBuilder: (context, index) {
                       return _buildUserListTile(contacts[index]);
                     },
@@ -125,59 +127,20 @@ class _ContactScreenState extends State<ContactScreen> {
 
   Widget _buildUserListTile(String username) {
     return ListTile(
+      dense: true,
+      visualDensity: const VisualDensity(vertical: -3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(appTextInputBorderRadius),
       ),
-      contentPadding: EdgeInsets.zero,
+      contentPadding: EdgeInsets.symmetric(horizontal: appPadding / 2),
       minLeadingWidth: 0,
       horizontalTitleGap: appPadding,
       leading: Icon(
         Icons.person,
-        size: appIconMidSize,
+        size: appIconSmallSize,
         color: getIt<AppThemes>().themeData.colorScheme.primary,
       ),
-      title: Text(
-        username,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      trailing: FutureBuilder<bool>(
-        future: getIt<ContactService>().isContactAdded(
-          getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-          username,
-        ),
-        builder: (context, snapshot) {
-          final isAdded = snapshot.data == true;
-          return Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(appTextInputBorderRadius),
-              onTap: () async {
-                final String currentUserId =
-                    getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-                if (isAdded) {
-                  await getIt<ContactService>().removeContact(
-                    currentUserId,
-                    username,
-                  );
-                } else {
-                  await getIt<ContactService>().saveContact(
-                    currentUserId,
-                    username,
-                  );
-                }
-                setState(() {});
-              },
-              child: Padding(
-                padding: EdgeInsets.zero,
-                child: Icon(
-                  isAdded ? Icons.star : Icons.star_border,
-                  size: appIconMidSize,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+      title: Text(username, style: const TextStyle(fontSize: fontSizeMedium)),
       onTap: () async {
         final String currentUserId =
             getIt<CacheService>().getString(cacheKeyUserId) ?? '';
