@@ -94,13 +94,10 @@ class _SplashScreenState extends State<SplashScreen>
       body: Center(
         child: FadeTransition(
           opacity: _fadeIn,
-          child: Text(
-            'Blink',
-            style: TextStyle(
-              fontSize: appTitleFontSize * 2,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          child: Image.asset(
+            'assets/icons/lightning_solt_icon.png',
+            width: appIconExtraLargeSize * 2,
+            height: appIconExtraLargeSize * 2,
           ),
         ),
       ),
