@@ -40,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, size: 22),
+            icon: const Icon(Icons.arrow_back, size: appBarIconSize),
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,

@@ -154,106 +154,126 @@ class _QRScannerScreenState extends State<QRScannerScreen>
           (Route<dynamic> route) => false,
         );
       },
-      child: Stack(
-        children: [
-          MobileScanner(
-            controller: _cameraController!,
-            errorBuilder: (context, error) => const SizedBox.shrink(),
-            onDetect: (capture) async {
-              if (_isScanCompleted) return;
-              final List<Barcode> barcodes = capture.barcodes;
-              if (barcodes.isNotEmpty) {
-                setState(() {
-                  _isScanCompleted = true;
-                });
-                final String? qrCodeValue = barcodes.first.rawValue;
-                await _processScannedQRCode(qrCodeValue);
-              } else {
-                getIt<ToastificationService>().showError(
-                  getIt<AppLocalizations>().noQRCodeDetected,
-                );
-              }
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, size: appBarIconSize),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (Route<dynamic> route) => false,
+              );
             },
           ),
-          Container(color: Colors.black.withAlpha(10)),
-          Center(
-            child: CustomPaint(
-              painter: CornerBorderPainter(
-                strokeColor: getIt<AppThemes>().themeData.colorScheme.primary,
-                strokeWidth: appBorderWidth,
-                cornerLength: appCameraCornerLength,
-                cornerRadius: appBorderRadius,
-              ),
-              child: SizedBox(
-                width: appCameraScanFrameSize,
-                height: appCameraScanFrameSize,
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.transparent,
+        ),
+        body: Stack(
+          children: [
+            MobileScanner(
+              controller: _cameraController!,
+              errorBuilder: (context, error) => const SizedBox.shrink(),
+              onDetect: (capture) async {
+                if (_isScanCompleted) return;
+                final List<Barcode> barcodes = capture.barcodes;
+                if (barcodes.isNotEmpty) {
+                  setState(() {
+                    _isScanCompleted = true;
+                  });
+                  final String? qrCodeValue = barcodes.first.rawValue;
+                  await _processScannedQRCode(qrCodeValue);
+                } else {
+                  getIt<ToastificationService>().showError(
+                    getIt<AppLocalizations>().noQRCodeDetected,
+                  );
+                }
+              },
+            ),
+            Container(color: Colors.black.withAlpha(10)),
+            Center(
+              child: CustomPaint(
+                painter: CornerBorderPainter(
+                  strokeColor: getIt<AppThemes>().themeData.colorScheme.primary,
+                  strokeWidth: appBorderWidth,
+                  cornerLength: appCameraCornerLength,
+                  cornerRadius: appBorderRadius,
+                ),
+                child: SizedBox(
+                  width: appCameraScanFrameSize,
+                  height: appCameraScanFrameSize,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: appTorchPositionBottom,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: appSixedBoxSizeMedium,
-                  child: SizedBox.shrink(),
-                ),
-                SizedBox(
-                  width: appSixedBoxSizeMedium,
-                  child: IconButton(
-                    icon: ValueListenableBuilder<MobileScannerState>(
-                      valueListenable: _cameraController!,
-                      builder: (context, state, child) {
-                        if (!state.isInitialized ||
-                            state.torchState == TorchState.unavailable) {
-                          return const SizedBox.shrink();
-                        }
-                        switch (state.torchState) {
-                          case TorchState.off:
-                            return const Icon(
-                              Icons.flash_off,
-                              color: Colors.grey,
-                              size: appIconLargeSize,
-                            );
-                          case TorchState.on:
-                            return const Icon(
-                              Icons.flash_on,
-                              color: Colors.yellow,
-                              size: appIconLargeSize,
-                            );
-                          case TorchState.auto:
-                            throw UnimplementedError();
-                          case TorchState.unavailable:
-                            throw UnimplementedError();
-                        }
-                      },
+            Positioned(
+              bottom: appTorchPositionBottom,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: appSixedBoxSizeMedium,
+                    child: SizedBox.shrink(),
+                  ),
+                  SizedBox(
+                    width: appSixedBoxSizeMedium,
+                    child: IconButton(
+                      icon: ValueListenableBuilder<MobileScannerState>(
+                        valueListenable: _cameraController!,
+                        builder: (context, state, child) {
+                          if (!state.isInitialized ||
+                              state.torchState == TorchState.unavailable) {
+                            return const SizedBox.shrink();
+                          }
+                          switch (state.torchState) {
+                            case TorchState.off:
+                              return const Icon(
+                                Icons.flash_off,
+                                color: Colors.grey,
+                                size: appIconLargeSize,
+                              );
+                            case TorchState.on:
+                              return const Icon(
+                                Icons.flash_on,
+                                color: Colors.yellow,
+                                size: appIconLargeSize,
+                              );
+                            case TorchState.auto:
+                              throw UnimplementedError();
+                            case TorchState.unavailable:
+                              throw UnimplementedError();
+                          }
+                        },
+                      ),
+                      onPressed: () => _cameraController!.toggleTorch(),
                     ),
-                    onPressed: () => _cameraController!.toggleTorch(),
                   ),
-                ),
-                SizedBox(
-                  width: appSixedBoxSizeMedium,
-                  child: IconButton(
-                    icon: const Icon(Icons.photo_library, size: appIconLargeSize),
-                    onPressed: _scanImageFromGallery,
+                  SizedBox(
+                    width: appSixedBoxSizeMedium,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.photo_library,
+                        size: appIconLargeSize,
+                      ),
+                      onPressed: _scanImageFromGallery,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

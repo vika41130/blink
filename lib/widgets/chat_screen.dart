@@ -117,7 +117,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, size: 22),
+            icon: const Icon(Icons.arrow_back, size: appBarIconSize),
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -137,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 return IconButton(
                   icon: Icon(
                     isAdded ? Icons.star : Icons.star_border,
-                    size: appIconLargeSize,
+                    size: appBarIconSize,
                   ),
                   onPressed: () async {
                     final currentUserId =
@@ -160,130 +160,139 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: appPadding,
-              right: appPadding,
-              bottom: appPadding,
-            ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: StreamBuilder<List<MessageModel>>(
-                    stream: _messagesStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox.shrink();
-                      }
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-                      final messages = snapshot.data!;
-                      return ListView.separated(
-                        reverse: true,
-                        itemCount: messages.length,
-                        separatorBuilder:
-                            (context, index) => const SizedBox.shrink(),
-                        itemBuilder: (context, index) {
-                          final message = messages[index];
-                          final bool isMe =
-                              message.senderId == widget.currentUserId;
-                          return MessageWidget(
-                            key: ValueKey(message.messageId),
-                            message: message,
-                            isMe: isMe,
-                            currentUserId: widget.currentUserId,
-                            receiverId: widget.receiverId,
-                            messageId: message.messageId,
-                          );
-                        },
-                      );
-                    },
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: appPadding,
+                right: appPadding,
+                bottom: appPadding,
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: StreamBuilder<List<MessageModel>>(
+                      stream: _messagesStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox.shrink();
+                        }
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        final messages = snapshot.data!;
+                        return ListView.separated(
+                          reverse: true,
+                          itemCount: messages.length,
+                          separatorBuilder:
+                              (context, index) => const SizedBox.shrink(),
+                          itemBuilder: (context, index) {
+                            final message = messages[index];
+                            final bool isMe =
+                                message.senderId == widget.currentUserId;
+                            return MessageWidget(
+                              key: ValueKey(message.messageId),
+                              message: message,
+                              isMe: isMe,
+                              currentUserId: widget.currentUserId,
+                              receiverId: widget.receiverId,
+                              messageId: message.messageId,
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(height: appMessageMarginVertical),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        maxLines: 5,
-                        minLines: 1,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(appMessageMaxLength),
-                        ],
-                        style: const TextStyle(fontSize: appTextInputFontSize),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: appTextInputContentPadding * 1.5,
-                            vertical: appTextInputContentPadding,
+                  SizedBox(height: appMessageMarginVertical),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _messageController,
+                          maxLines: 5,
+                          minLines: 1,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(
+                              appMessageMaxLength,
+                            ),
+                          ],
+                          style: const TextStyle(
+                            fontSize: appTextInputFontSize,
                           ),
-                          suffixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (!_hasText)
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(
-                                      appTextInputBorderRadius,
-                                    ),
-                                    onTap: _pickAndSendImage,
-                                    child: Icon(
-                                      Icons.photo_outlined,
-                                      size: appIconLargeSize,
-                                      color:
-                                          getIt<AppThemes>()
-                                              .themeData
-                                              .colorScheme
-                                              .tertiary,
-                                    ),
-                                  ),
-                                ),
-                              if (_hasText)
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(
-                                      appTextInputBorderRadius,
-                                    ),
-                                    onTap: _sendMessage,
-                                    child: Icon(
-                                      Icons.send,
-                                      size: appIconLargeSize,
-                                      color:
-                                          getIt<AppThemes>()
-                                              .themeData
-                                              .colorScheme
-                                              .tertiary,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: appTextInputContentPadding * 1.5,
+                              vertical: appTextInputContentPadding,
+                            ),
+                            suffixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (!_hasText)
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(
+                                        appTextInputBorderRadius,
+                                      ),
+                                      onTap: _pickAndSendImage,
+                                      child: Icon(
+                                        Icons.photo_outlined,
+                                        size: appIconLargeSize,
+                                        color:
+                                            getIt<AppThemes>()
+                                                .themeData
+                                                .colorScheme
+                                                .tertiary,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              SizedBox(width: appTextInputContentPadding / 2),
-                            ],
+                                if (_hasText)
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(
+                                        appTextInputBorderRadius,
+                                      ),
+                                      onTap: _sendMessage,
+                                      child: Icon(
+                                        Icons.send,
+                                        size: appIconLargeSize,
+                                        color:
+                                            getIt<AppThemes>()
+                                                .themeData
+                                                .colorScheme
+                                                .tertiary,
+                                      ),
+                                    ),
+                                  ),
+                                SizedBox(width: appTextInputContentPadding / 2),
+                              ],
+                            ),
+                            suffixIconConstraints: const BoxConstraints(
+                              minWidth: 0,
+                              minHeight: 0,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor:
+                                getIt<AppThemes>()
+                                    .themeData
+                                    .colorScheme
+                                    .surfaceContainerHighest,
                           ),
-                          suffixIconConstraints: const BoxConstraints(
-                            minWidth: 0,
-                            minHeight: 0,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor:
-                              getIt<AppThemes>()
-                                  .themeData
-                                  .colorScheme
-                                  .surfaceContainerHighest,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

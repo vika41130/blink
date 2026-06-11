@@ -24,7 +24,8 @@ class AppThemes {
     ),
     appBarTheme: AppBarTheme(
       elevation: 0,
-      iconTheme: IconThemeData(color: _darkBlue700, size: 22),
+      centerTitle: false,
+      iconTheme: IconThemeData(color: _darkBlue700, size: appBarIconSize),
       titleSpacing: appPadding,
     ),
     extensions: <ThemeExtension<dynamic>>[
@@ -47,7 +48,8 @@ class AppThemes {
     ),
     appBarTheme: AppBarTheme(
       elevation: 0,
-      iconTheme: IconThemeData(color: _darkBlue300, size: 22),
+      centerTitle: false,
+      iconTheme: IconThemeData(color: _darkBlue300, size: appBarIconSize),
       titleSpacing: appPadding,
     ),
     extensions: <ThemeExtension<dynamic>>[

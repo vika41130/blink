@@ -17,6 +17,8 @@ const appPaddingSmall = 12.0;
 const appPadding = 8.0;
 const appTitleMarginLarge = 98.0;
 
+const appBarIconSize = 22.0;
+
 const appBarHeight = 44.0;
 
 const appBorderRadius = 2.0;
