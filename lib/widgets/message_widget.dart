@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
@@ -31,13 +32,16 @@ class MessageWidget extends StatefulWidget {
   State<MessageWidget> createState() => _MessageWidgetState();
 }
 
-class _MessageWidgetState extends State<MessageWidget> {
+class _MessageWidgetState extends State<MessageWidget>
+    with SingleTickerProviderStateMixin {
   Timer? _deleteTimer;
   Timer? _animationTimer;
   Timer? _fadeTimer;
   bool _isRemoving = false;
   double _fadeProgress = 0.0; // 0.0 = full color, 1.0 = ghost gray
   Uint8List? _imageBytes;
+  late final AnimationController _floatController;
+  late final Animation<double> _floatAnimation;
 
   static const _ghostGray = Color(0xFF2C2C2E);
   static const _fadeDuration = 3; // seconds before deletion to start fading
@@ -45,6 +49,13 @@ class _MessageWidgetState extends State<MessageWidget> {
   @override
   void initState() {
     super.initState();
+    _floatController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3500),
+    )..repeat(reverse: true);
+    _floatAnimation = Tween<double>(begin: -3.0, end: 3.0).animate(
+      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
+    );
     _decodeImage();
     _scheduleDeletion();
     _scheduleWithAnimation();
@@ -192,154 +203,191 @@ class _MessageWidgetState extends State<MessageWidget> {
     _deleteTimer?.cancel();
     _animationTimer?.cancel();
     _fadeTimer?.cancel();
+    _floatController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MessageRemovalWrapper(
-      isRemoving: _isRemoving,
-      onAnimationComplete: () {},
-      child: Align(
-        alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: Column(
-          crossAxisAlignment:
-              widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            widget.message.isImage && _imageBytes != null
-                ? GestureDetector(
-                  onTap: () => _openFullScreenImage(context),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: appMessageMarginVertical,
-                    ),
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.65,
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(appBorderRadius),
-                          child: Image.memory(
-                            _imageBytes!,
-                            width: 180,
-                            height: 180,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const SizedBox(
-                                width: 180,
-                                height: 180,
-                                child: Center(
-                                  child: Icon(Icons.broken_image, size: 40),
-                                ),
-                              );
-                            },
+    return AnimatedBuilder(
+      animation: _floatAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _floatAnimation.value),
+          child: child,
+        );
+      },
+      child: MessageRemovalWrapper(
+        isRemoving: _isRemoving,
+        onAnimationComplete: () {},
+        child: Align(
+          alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
+          child: Column(
+            crossAxisAlignment:
+                widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              widget.message.isImage && _imageBytes != null
+                  ? GestureDetector(
+                    onTap: () => _openFullScreenImage(context),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: appMessageMarginVertical,
+                      ),
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.65,
+                      ),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              appBorderRadius,
+                            ),
+                            child: Image.memory(
+                              _imageBytes!,
+                              width: 180,
+                              height: 180,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const SizedBox(
+                                  width: 180,
+                                  height: 180,
+                                  child: Center(
+                                    child: Icon(Icons.broken_image, size: 40),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        Positioned(
-                          right: 6,
-                          bottom: 6,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.5),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              DateFormat(
-                                'HH:mm',
-                              ).format(widget.message.timestamp),
-                              style: TextStyle(
-                                fontSize: fontSizeSmall - 3,
-                                color: Colors.white,
+                          Positioned(
+                            right: 6,
+                            bottom: 6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                DateFormat(
+                                  'HH:mm',
+                                ).format(widget.message.timestamp),
+                                style: TextStyle(
+                                  fontSize: fontSizeSmall - 3,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                : Container(
-                  padding: const EdgeInsets.only(
-                    left: 12,
-                    right: 4,
-                    top: 8,
-                    bottom: 8,
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    vertical: appMessageMarginVertical,
-                  ),
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.75,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors:
-                          widget.isMe
-                              ? [
-                                _lerpGradientColor(const Color(0xFF00F2FE)),
-                                _lerpGradientColor(const Color(0xFF4FACFE)),
-                              ]
-                              : [
-                                _lerpGradientColor(const Color(0xFF7F00FF)),
-                                _lerpGradientColor(const Color(0xFFE100FF)),
-                              ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16),
-                      topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(widget.isMe ? 16 : 4),
-                      bottomRight: Radius.circular(widget.isMe ? 4 : 16),
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 0),
-                        child: RichText(
-                          text: TextSpan(
-                            text: widget.message.text,
-                            style: TextStyle(
-                              fontSize: fontSizeMedium,
-                              color: Colors.white,
-                            ),
-                            children: [WidgetSpan(child: SizedBox(width: 52))],
-                          ),
-                        ),
+                        ],
                       ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
+                    ),
+                  )
+                  : Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: appMessageMarginVertical,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(16),
+                        topRight: const Radius.circular(16),
+                        bottomLeft: Radius.circular(widget.isMe ? 16 : 4),
+                        bottomRight: Radius.circular(widget.isMe ? 4 : 16),
+                      ),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
+                          padding: const EdgeInsets.only(
+                            left: 12,
+                            right: 4,
+                            top: 8,
+                            bottom: 8,
+                          ),
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.75,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            DateFormat(
-                              'HH:mm',
-                            ).format(widget.message.timestamp),
-                            style: TextStyle(
-                              fontSize: fontSizeSmall - 3,
-                              color: Colors.white,
+                            gradient: LinearGradient(
+                              colors:
+                                  widget.isMe
+                                      ? [
+                                        _lerpGradientColor(
+                                          const Color(0xFF00F2FE),
+                                        ).withValues(alpha: 0.7),
+                                        _lerpGradientColor(
+                                          const Color(0xFF4FACFE),
+                                        ).withValues(alpha: 0.7),
+                                      ]
+                                      : [
+                                        _lerpGradientColor(
+                                          const Color(0xFF7F00FF),
+                                        ).withValues(alpha: 0.7),
+                                        _lerpGradientColor(
+                                          const Color(0xFFE100FF),
+                                        ).withValues(alpha: 0.7),
+                                      ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(16),
+                              topRight: const Radius.circular(16),
+                              bottomLeft: Radius.circular(widget.isMe ? 16 : 4),
+                              bottomRight: Radius.circular(
+                                widget.isMe ? 4 : 16,
+                              ),
+                            ),
+                          ),
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 0),
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: widget.message.text,
+                                    style: TextStyle(
+                                      fontSize: fontSizeMedium,
+                                      color: Colors.white,
+                                    ),
+                                    children: [
+                                      WidgetSpan(child: SizedBox(width: 52)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                right: 0,
+                                bottom: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    DateFormat(
+                                      'HH:mm',
+                                    ).format(widget.message.timestamp),
+                                    style: TextStyle(
+                                      fontSize: fontSizeSmall - 3,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-          ],
+            ],
+          ),
         ),
       ),
     );
