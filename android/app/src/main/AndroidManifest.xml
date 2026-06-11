@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
     <application
-        android:label="Blink"
+        android:label="Vapor"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

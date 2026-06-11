@@ -117,10 +117,10 @@ packages:
     dependency: "direct main"
     description:
       name: connectivity_plus
-      sha256: "62ffa266d9a23b79fb3fcbc206afc00bb979417ba57b1324c546b5aab95ba057"
+      sha256: b5e72753cf63becce2c61fd04dfe0f1c430cc5278b53a1342dc5ad839eab29ec
       url: "https://pub.dev"
     source: hosted
-    version: "7.1.1"
+    version: "6.1.5"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -273,30 +273,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.7"
-  firebase_storage:
-    dependency: "direct main"
-    description:
-      name: firebase_storage
-      sha256: ceb51aeb981826b6b6c3ec293c84d54c2667c7005b110b356a1e3d6374f81bab
-      url: "https://pub.dev"
-    source: hosted
-    version: "13.4.1"
-  firebase_storage_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_storage_platform_interface
-      sha256: "14ae6a777e1e66e085c26d94f1252d5933dab74004d4400463ac4e23e2e71c4d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.1"
-  firebase_storage_web:
-    dependency: transitive
-    description:
-      name: firebase_storage_web
-      sha256: "98cc7365f1c931cd2943f2396753b155b0781074f8c2fbf2916d2c4182790449"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.11.7"
   fixnum:
     dependency: transitive
     description:
@@ -741,14 +717,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
-  screen_protector:
-    dependency: "direct main"
-    description:
-      name: screen_protector
-      sha256: "0b526fd945c2e9e405288a124bdca3012589d31c30f19bc15247e8826d6ff094"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.2"
   shared_preferences:
     dependency: "direct main"
     description:

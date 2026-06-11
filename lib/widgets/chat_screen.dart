@@ -13,7 +13,6 @@ import 'package:blink/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:screen_protector/screen_protector.dart';
 
 class ChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -61,13 +60,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _enableProtection() async {
-    await ScreenProtector.protectDataLeakageOn();
-    await ScreenProtector.preventScreenshotOn();
+    // Screen protection disabled - screen_protector incompatible with Xcode 16
   }
 
   Future<void> _disableProtection() async {
-    await ScreenProtector.protectDataLeakageOff();
-    await ScreenProtector.preventScreenshotOff();
+    // Screen protection disabled - screen_protector incompatible with Xcode 16
   }
 
   void _sendMessage() async {
