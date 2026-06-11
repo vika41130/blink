@@ -237,29 +237,33 @@ class _MessageWidgetState extends State<MessageWidget> {
                       bottomRight: Radius.circular(widget.isMe ? 4 : 16),
                     ),
                   ),
-                  child: Wrap(
-                    alignment: WrapAlignment.end,
-                    crossAxisAlignment: WrapCrossAlignment.end,
-                    spacing: 6,
+                  child: Stack(
                     children: [
-                      Text(
-                        widget.message.text,
-                        style: TextStyle(
-                          fontSize: fontSizeMedium,
-                          color:
-                              widget.isMe
-                                  ? getIt<AppThemes>()
-                                      .themeData
-                                      .colorScheme
-                                      .surfaceContainerHighest
-                                  : getIt<AppThemes>()
-                                      .themeData
-                                      .colorScheme
-                                      .surfaceBright,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 0),
+                        child: RichText(
+                          text: TextSpan(
+                            text: widget.message.text,
+                            style: TextStyle(
+                              fontSize: fontSizeMedium,
+                              color:
+                                  widget.isMe
+                                      ? getIt<AppThemes>()
+                                          .themeData
+                                          .colorScheme
+                                          .surfaceContainerHighest
+                                      : getIt<AppThemes>()
+                                          .themeData
+                                          .colorScheme
+                                          .surfaceBright,
+                            ),
+                            children: [WidgetSpan(child: SizedBox(width: 42))],
+                          ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
                         child: Text(
                           DateFormat('HH:mm').format(widget.message.timestamp),
                           style: TextStyle(
