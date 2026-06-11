@@ -13,6 +13,34 @@ class ChatService {
     return ids.join('_');
   }
 
+  Future<DateTime?> getLastChatTime(
+    String currentUserId,
+    String contactUsername,
+  ) async {
+    try {
+      final querySnapshot =
+          await getIt<FirebaseFirestore>()
+              .collection('users')
+              .where('username', isEqualTo: contactUsername)
+              .limit(1)
+              .get();
+      if (querySnapshot.docs.isEmpty) return null;
+      final contactUserId = querySnapshot.docs.first.id;
+
+      final chatRoomId = getChatRoomId(currentUserId, contactUserId);
+      final doc =
+          await getIt<FirebaseFirestore>()
+              .collection('chats')
+              .doc(chatRoomId)
+              .get();
+      if (!doc.exists) return null;
+      final timestamp = doc.data()?['lastMessageTimestamp'] as Timestamp?;
+      return timestamp?.toDate();
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> sendMessage({
     required String currentUserId,
     required String receiverId,

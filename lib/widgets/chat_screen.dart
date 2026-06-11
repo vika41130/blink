@@ -13,6 +13,7 @@ import 'package:blink/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -109,12 +110,38 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            widget.receiverName,
-            style: TextStyle(
-              fontSize: appTitleFontSize,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                widget.receiverName,
+                style: TextStyle(
+                  fontSize: appTitleFontSize,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: appPaddingSmall),
+              FutureBuilder<DateTime?>(
+                future: getIt<ChatService>().getLastChatTime(
+                  widget.currentUserId,
+                  widget.receiverName,
+                ),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    return const SizedBox.shrink();
+                  }
+                  return Text(
+                    DateFormat('yyyy-MM-dd HH:mm').format(snapshot.data!),
+                    style: TextStyle(
+                      fontSize: fontSizeSmall - 2,
+                      fontFamily: 'monospace',
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, size: appBarIconSize),
