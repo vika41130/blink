@@ -22,7 +22,7 @@
     "@createUserSuccess": {},
     "signUpFailed": "Sign up failed.",
     "@signUpFailed": {},
-    "homeTitle": "Blink",
+    "homeTitle": "Vapor",
     "@homeTitle": {},
     "userNameAlreadyExisted": "Username already exists.",
     "@userNameAlreadyExisted": {},

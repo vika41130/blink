@@ -162,7 +162,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Blink'**
+  /// **'Vapor'**
   String get homeTitle;
 
   /// No description provided for @userNameAlreadyExisted.

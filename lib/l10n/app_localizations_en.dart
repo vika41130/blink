@@ -42,7 +42,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signUpFailed => 'Sign up failed.';
 
   @override
-  String get homeTitle => 'Blink';
+  String get homeTitle => 'Vapor';
 
   @override
   String get userNameAlreadyExisted => 'Username already exists.';
