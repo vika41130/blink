@@ -35,10 +35,12 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   late final Stream<List<MessageModel>> _messagesStream;
   bool _hasText = false;
+  DateTime? _lastChatTime;
 
   @override
   void initState() {
     super.initState();
+    _loadLastChatTime();
     _messagesStream = getIt<ChatService>().getMessages(
       widget.currentUserId,
       widget.receiverId,
@@ -77,6 +79,7 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.receiverId,
       messageText: text,
     );
+    _refreshLastChatTime();
   }
 
   Future<void> _pickAndSendImage() async {
@@ -94,6 +97,25 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.receiverId,
       imageFile: imageFile,
     );
+    _refreshLastChatTime();
+  }
+
+  void _refreshLastChatTime() {
+    setState(() {
+      _lastChatTime = DateTime.now();
+    });
+  }
+
+  Future<void> _loadLastChatTime() async {
+    final time = await getIt<ChatService>().getLastChatTime(
+      widget.currentUserId,
+      widget.receiverName,
+    );
+    if (mounted) {
+      setState(() {
+        _lastChatTime = time;
+      });
+    }
   }
 
   @override
@@ -122,25 +144,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               const SizedBox(width: appPaddingSmall),
-              FutureBuilder<DateTime?>(
-                future: getIt<ChatService>().getLastChatTime(
-                  widget.currentUserId,
-                  widget.receiverName,
+              if (_lastChatTime != null)
+                Text(
+                  DateFormat('yyyy.MM.dd HH:mm').format(_lastChatTime!),
+                  style: TextStyle(
+                    fontSize: fontSizeSmall - 2,
+                    fontFamily: 'monospace',
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data == null) {
-                    return const SizedBox.shrink();
-                  }
-                  return Text(
-                    DateFormat('yyyy-MM-dd HH:mm').format(snapshot.data!),
-                    style: TextStyle(
-                      fontSize: fontSizeSmall - 2,
-                      fontFamily: 'monospace',
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  );
-                },
-              ),
             ],
           ),
           leading: IconButton(

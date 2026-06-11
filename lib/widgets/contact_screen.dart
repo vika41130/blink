@@ -187,7 +187,7 @@ class _ContactScreenState extends State<ContactScreen> {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  DateFormat('yyyy-MM-dd HH:mm').format(snapshot.data!),
+                  DateFormat('yyyy.MM.dd HH:mm').format(snapshot.data!),
                   style: TextStyle(
                     fontSize: fontSizeSmall - 2,
                     fontFamily: 'monospace',
