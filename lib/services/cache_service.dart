@@ -1,4 +1,5 @@
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/services/contact_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheService {
@@ -13,6 +14,7 @@ class CacheService {
     getIt<CacheService>().setString(cacheKeyUsername, '');
     getIt<CacheService>().setBool(cacheKeyIsSignedIn, false);
     getIt<CacheService>().setString(cacheKeyUserId, '');
+    getIt<ContactService>().clearCache();
   }
 }
 

@@ -28,6 +28,11 @@ class _ContactScreenState extends State<ContactScreen> {
     super.initState();
     searchFieldFocusNode = FocusNode();
     _loadContacts();
+    getIt<ContactService>().contactsVersion.addListener(_onContactsChanged);
+  }
+
+  void _onContactsChanged() {
+    _loadContacts();
   }
 
   Future<void> _loadContacts() async {
@@ -44,6 +49,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   void dispose() {
+    getIt<ContactService>().contactsVersion.removeListener(_onContactsChanged);
     searchFieldFocusNode.dispose();
     _scrollController.dispose();
     super.dispose();
