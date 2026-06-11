@@ -217,7 +217,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         decoration: InputDecoration(
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: appTextInputContentPadding,
+                            horizontal: appTextInputContentPadding * 1.5,
                             vertical: appTextInputContentPadding,
                           ),
                           suffixIcon: Row(
@@ -233,7 +233,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     onTap: _pickAndSendImage,
                                     child: Icon(
                                       Icons.photo_outlined,
-                                      size: appIconExtraLargeSize,
+                                      size: appIconLargeSize,
                                       color:
                                           getIt<AppThemes>()
                                               .themeData
@@ -252,7 +252,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     onTap: _sendMessage,
                                     child: Icon(
                                       Icons.send,
-                                      size: appIconExtraLargeSize,
+                                      size: appIconLargeSize,
                                       color:
                                           getIt<AppThemes>()
                                               .themeData
@@ -269,9 +269,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             minHeight: 0,
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              appTextInputBorderRadius,
-                            ),
+                            borderRadius: BorderRadius.circular(20),
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
