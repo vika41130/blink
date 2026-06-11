@@ -82,7 +82,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           left: appTextInputContentPadding,
                           right: appTextInputContentPadding / 2,
                         ),
-                        child: Icon(Icons.search, size: appIconSmallSize),
+                        child: Icon(Icons.search, size: appIconMidSize),
                       ),
                       prefixIconConstraints: const BoxConstraints(
                         minWidth: 0,
@@ -159,7 +159,7 @@ class _SearchScreenState extends State<SearchScreen> {
       horizontalTitleGap: appPadding,
       leading: Icon(
         Icons.person,
-        size: appIconSmallSize,
+        size: appIconMidSize,
         color: getIt<AppThemes>().themeData.colorScheme.primary,
       ),
       title: Text(
@@ -177,7 +177,7 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             icon: Icon(isAdded ? Icons.star : Icons.star_border),
-            iconSize: appIconSmallSize,
+            iconSize: appIconMidSize,
             onPressed: () async {
               final String currentUserId =
                   getIt<CacheService>().getString(cacheKeyUserId) ?? '';

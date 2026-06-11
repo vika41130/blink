@@ -225,13 +225,13 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                             return const Icon(
                               Icons.flash_off,
                               color: Colors.grey,
-                              size: appIconMidSize,
+                              size: appIconLargeSize,
                             );
                           case TorchState.on:
                             return const Icon(
                               Icons.flash_on,
                               color: Colors.yellow,
-                              size: appIconMidSize,
+                              size: appIconLargeSize,
                             );
                           case TorchState.auto:
                             throw UnimplementedError();
@@ -246,7 +246,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                 SizedBox(
                   width: appSixedBoxSizeMedium,
                   child: IconButton(
-                    icon: const Icon(Icons.photo_library, size: appIconMidSize),
+                    icon: const Icon(Icons.photo_library, size: appIconLargeSize),
                     onPressed: _scanImageFromGallery,
                   ),
                 ),

@@ -65,7 +65,7 @@ class _InAppNotificationBanner extends StatelessWidget {
             child: Row(
               children: [
                 Icon(Icons.chat_bubble_outline,
-                    size: appIconMidSize, color: theme.colorScheme.primary),
+                    size: appIconLargeSize, color: theme.colorScheme.primary),
                 const SizedBox(width: appPaddingSmall),
                 Expanded(
                   child: Column(

@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(builder: (context) => const SearchScreen()),
           );
         },
-        child: Icon(Icons.add, size: appIconMidSize),
+        child: Icon(Icons.add, size: appIconLargeSize),
       ),
       bottomNavigationBar: BottomAppBar(
         height: appBarHeight,
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: Icon(Icons.home_filled, size: appIconMidSize),
+              icon: Icon(Icons.home_filled, size: appIconLargeSize),
               onPressed: () {
                 setState(() {
                   content = const ContactScreen();
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.qr_code_scanner, size: appIconMidSize),
+              icon: Icon(Icons.qr_code_scanner, size: appIconLargeSize),
               onPressed: () {
                 navigatorKey.currentState?.push(
                   MaterialPageRoute(
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.person, size: appIconMidSize),
+              icon: Icon(Icons.person, size: appIconLargeSize),
               onPressed: () {
                 navigatorKey.currentState?.push(
                   MaterialPageRoute(

@@ -117,7 +117,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, size: 18),
+            icon: const Icon(Icons.arrow_back, size: 22),
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -137,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 return IconButton(
                   icon: Icon(
                     isAdded ? Icons.star : Icons.star_border,
-                    size: appIconMidSize,
+                    size: appIconLargeSize,
                   ),
                   onPressed: () async {
                     final currentUserId =
@@ -233,7 +233,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     onTap: _pickAndSendImage,
                                     child: Icon(
                                       Icons.photo_outlined,
-                                      size: appIconLargeSize,
+                                      size: appIconExtraLargeSize,
                                       color:
                                           getIt<AppThemes>()
                                               .themeData
@@ -252,7 +252,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     onTap: _sendMessage,
                                     child: Icon(
                                       Icons.send,
-                                      size: appIconLargeSize,
+                                      size: appIconExtraLargeSize,
                                       color:
                                           getIt<AppThemes>()
                                               .themeData

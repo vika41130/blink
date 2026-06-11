@@ -79,7 +79,7 @@ class _ContactScreenState extends State<ContactScreen> {
                   left: appTextInputContentPadding,
                   right: appTextInputContentPadding / 2,
                 ),
-                child: Icon(Icons.search, size: appIconSmallSize),
+                child: Icon(Icons.search, size: appIconMidSize),
               ),
               prefixIconConstraints: const BoxConstraints(
                 minWidth: 0,
@@ -137,7 +137,7 @@ class _ContactScreenState extends State<ContactScreen> {
       horizontalTitleGap: appPadding,
       leading: Icon(
         Icons.person,
-        size: appIconSmallSize,
+        size: appIconMidSize,
         color: getIt<AppThemes>().themeData.colorScheme.primary,
       ),
       title: Text(username, style: const TextStyle(fontSize: fontSizeMedium)),

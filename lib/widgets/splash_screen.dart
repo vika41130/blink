@@ -74,7 +74,7 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.wifi_off, size: appIconExtraLargeSize),
+              Icon(Icons.wifi_off, size: appIconHugeSize),
               const SizedBox(height: appFormItemMargin),
               const Text('Network error. Please check your connection.'),
               const SizedBox(height: appFormItemMargin),
@@ -96,8 +96,8 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeIn,
           child: Image.asset(
             'assets/icons/lightning_solt_icon.png',
-            width: appIconExtraLargeSize * 2,
-            height: appIconExtraLargeSize * 2,
+            width: appIconHugeSize * 2,
+            height: appIconHugeSize * 2,
           ),
         ),
       ),
