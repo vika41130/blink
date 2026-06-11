@@ -59,7 +59,7 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: appPadding),
+        SizedBox(height: appPaddingSmall),
         SizedBox(
           height: appTextInputHeight,
           child: TextField(
@@ -112,7 +112,7 @@ class _ContactScreenState extends State<ContactScreen> {
             },
           ),
         ),
-        SizedBox(height: appPaddingSmall),
+        SizedBox(height: appPaddingMid),
         Expanded(
           child:
               isLoading
@@ -121,7 +121,7 @@ class _ContactScreenState extends State<ContactScreen> {
                     controller: _scrollController,
                     itemCount: contacts.length,
                     separatorBuilder:
-                        (context, index) => SizedBox(height: appPadding / 2),
+                        (context, index) => SizedBox(height: appPaddingSmall / 2),
                     itemBuilder: (context, index) {
                       return _buildUserListTile(contacts[index]);
                     },
@@ -138,9 +138,9 @@ class _ContactScreenState extends State<ContactScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(appTextInputBorderRadius),
       ),
-      contentPadding: EdgeInsets.symmetric(horizontal: appPadding / 2),
+      contentPadding: EdgeInsets.symmetric(horizontal: appPaddingSmall / 2),
       minLeadingWidth: 0,
-      horizontalTitleGap: appPadding,
+      horizontalTitleGap: appPaddingSmall,
       leading: Icon(
         Icons.person,
         size: appIconMidSize,

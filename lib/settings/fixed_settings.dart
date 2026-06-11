@@ -13,8 +13,9 @@ const fontSizeLarge = 18.0;
 const smallBorderWidth = 0.5;
 const mediumBorderWidth = 1.0;
 
-const appPaddingSmall = 12.0;
-const appPadding = 8.0;
+const appPaddingSmall = 8.0;
+const appPaddingMid = 12.0;
+const appPaddingLarge = 16.0;
 const appTitleMarginLarge = 98.0;
 
 const appBarIconSize = 22.0;

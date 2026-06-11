@@ -29,9 +29,9 @@ class _QrImageScreenState extends State<QrImageScreen> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
-            left: appPadding,
-            right: appPadding,
-            bottom: appPadding,
+            left: appPaddingSmall,
+            right: appPaddingSmall,
+            bottom: appPaddingSmall,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

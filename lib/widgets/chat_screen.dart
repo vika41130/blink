@@ -166,9 +166,9 @@ class _ChatScreenState extends State<ChatScreen> {
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.only(
-                left: appPadding,
-                right: appPadding,
-                bottom: appPadding,
+                left: appPaddingSmall,
+                right: appPaddingSmall,
+                bottom: appPaddingSmall,
               ),
               child: Column(
                 children: [

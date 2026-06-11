@@ -50,23 +50,23 @@ class _InAppNotificationBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Positioned(
-      top: MediaQuery.of(context).padding.top + appPaddingSmall,
-      left: appPadding,
-      right: appPadding,
+      top: MediaQuery.of(context).padding.top + appPaddingMid,
+      left: appPaddingSmall,
+      right: appPaddingSmall,
       child: GestureDetector(
         onTap: onTap,
         onVerticalDragEnd: (_) => onDismiss(),
         child: Material(
           elevation: 4,
-          borderRadius: BorderRadius.circular(appPaddingSmall),
+          borderRadius: BorderRadius.circular(appPaddingMid),
           color: theme.colorScheme.surfaceContainerHighest,
           child: Padding(
-            padding: const EdgeInsets.all(appPaddingSmall),
+            padding: const EdgeInsets.all(appPaddingMid),
             child: Row(
               children: [
                 Icon(Icons.chat_bubble_outline,
                     size: appIconLargeSize, color: theme.colorScheme.primary),
-                const SizedBox(width: appPaddingSmall),
+                const SizedBox(width: appPaddingMid),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

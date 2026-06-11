@@ -65,9 +65,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.only(
-              left: appPadding,
-              right: appPadding,
-              bottom: appPadding,
+              left: appPaddingSmall,
+              right: appPaddingSmall,
+              bottom: appPaddingSmall,
             ),
             child: SizedBox(
               width: double.infinity,

@@ -45,9 +45,9 @@ class _AuthScreenState extends State<AuthScreen> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
-            left: appPadding,
-            right: appPadding,
-            bottom: appPadding,
+            left: appPaddingSmall,
+            right: appPaddingSmall,
+            bottom: appPaddingSmall,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,7 +236,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         separatorBuilder:
-                            (index) => const SizedBox(width: appPaddingSmall),
+                            (index) => const SizedBox(width: appPaddingMid),
                         hapticFeedbackType: HapticFeedbackType.lightImpact,
                         onCompleted: (pin) {
                           AuthService().goIn(
@@ -259,7 +259,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              SizedBox(height: appPadding),
+              SizedBox(height: appPaddingSmall),
               Text.rich(
                 style: TextStyle(
                   fontSize: fontSizeSmall,

@@ -17,6 +17,7 @@ class LoadingService {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircularProgressIndicator(),
+                    SizedBox(height: appPaddingLarge),
                     message.isNotEmpty
                         ? Text(
                           message,

@@ -49,13 +49,13 @@ class _SearchScreenState extends State<SearchScreen> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
-            left: appPadding,
-            right: appPadding,
-            bottom: appPadding,
+            left: appPaddingSmall,
+            right: appPaddingSmall,
+            bottom: appPaddingSmall,
           ),
           child: Column(
             children: [
-              SizedBox(height: appPadding),
+              SizedBox(height: appPaddingSmall),
               SizedBox(
                 height: appTextInputHeight,
                 child: Center(
@@ -154,9 +154,9 @@ class _SearchScreenState extends State<SearchScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(appTextInputBorderRadius),
       ),
-      contentPadding: EdgeInsets.symmetric(horizontal: appPadding / 2),
+      contentPadding: EdgeInsets.symmetric(horizontal: appPaddingSmall / 2),
       minLeadingWidth: 0,
-      horizontalTitleGap: appPadding,
+      horizontalTitleGap: appPaddingSmall,
       leading: Icon(
         Icons.person,
         size: appIconMidSize,

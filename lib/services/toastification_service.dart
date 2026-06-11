@@ -11,7 +11,7 @@ class ToastificationService {
       autoCloseDuration: Duration(seconds: 2),
       builder: (context, item) {
         return Padding(
-          padding: const EdgeInsets.all(appPadding),
+          padding: const EdgeInsets.all(appPaddingSmall),
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.all(appBoxPadding),
@@ -38,7 +38,7 @@ class ToastificationService {
       autoCloseDuration: Duration(seconds: 2),
       builder: (context, item) {
         return Padding(
-          padding: const EdgeInsets.all(appPadding),
+          padding: const EdgeInsets.all(appPaddingSmall),
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.all(appBoxPadding),
