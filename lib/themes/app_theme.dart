@@ -1,12 +1,9 @@
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:flutter/material.dart';
 
-const _darkBlue900 = Color(0xFF0D1B2A);
-const _darkBlue800 = Color(0xFF1B2838);
 const _darkBlue700 = Color(0xFF1B3A5C);
 const _darkBlue500 = Color(0xFF2E6399);
 const _darkBlue400 = Color(0xFF3D7AB8);
-const _darkBlue300 = Color(0xFF5C9AD6);
 const _darkBlue200 = Color(0xFF8BBAE8);
 const _darkBlue100 = Color(0xFFB8D4F0);
 
@@ -36,22 +33,30 @@ class AppThemes {
   static final darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
+    scaffoldBackgroundColor: const Color(0xFF000000),
     colorScheme: ColorScheme.dark(
-      primary: _darkBlue300,
-      secondary: _darkBlue400,
-      tertiary: _darkBlue200,
-      error: const Color(0xFFEF5350),
-      surface: _darkBlue900,
-      surfaceContainerHighest: _darkBlue800,
-      onSurface: _darkBlue100,
-      onSurfaceVariant: _darkBlue200,
+      primary: const Color(0xFFFFFFFF),
+      secondary: const Color(0xFFFFFFFF),
+      tertiary: const Color(0xFFFFFFFF),
+      error: const Color(0xFFFFFFFF),
+      surface: const Color(0xFF000000),
+      surfaceContainerHighest: const Color(0xFF1A1A1A),
+      surfaceBright: const Color(0xFFFFFFFF),
+      onSurface: const Color(0xFFFFFFFF),
+      onSurfaceVariant: const Color(0xFFFFFFFF),
     ),
     appBarTheme: AppBarTheme(
       elevation: 0,
       centerTitle: false,
-      iconTheme: IconThemeData(color: _darkBlue300, size: appBarIconSize),
+      backgroundColor: const Color(0xFF000000),
+      iconTheme: IconThemeData(
+        color: const Color(0xFFFFFFFF),
+        size: appBarIconSize,
+      ),
       titleSpacing: appPaddingSmall,
     ),
+    bottomAppBarTheme: const BottomAppBarTheme(color: Color(0xFF000000)),
+    iconTheme: const IconThemeData(color: Color(0xFFFFFFFF)),
     extensions: <ThemeExtension<dynamic>>[
       const AppColors(success: Color(0xFF4DB6AC), error: Color(0xFFEF5350)),
     ],

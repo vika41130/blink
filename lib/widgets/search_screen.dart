@@ -7,7 +7,6 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -134,9 +133,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     getIt<AppLocalizations>().noUserFound,
                     style: TextStyle(
                       color:
-                          getIt<AppThemes>()
-                              .themeData
-                              .colorScheme
+                          Theme.of(context).colorScheme
                               .onSurfaceVariant,
                       fontSize: fontSizeMedium,
                     ),
@@ -165,7 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
           leading: Icon(
             Icons.person,
             size: appIconMidSize,
-            color: getIt<AppThemes>().themeData.colorScheme.primary,
+            color: Theme.of(context).colorScheme.primary,
           ),
           title: Text(
             user.username,
@@ -239,9 +236,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     fontSize: fontSizeSmall - 2,
                     fontFamily: 'monospace',
                     color:
-                        getIt<AppThemes>()
-                            .themeData
-                            .colorScheme
+                        Theme.of(context).colorScheme
                             .onSurfaceVariant,
                   ),
                 ),

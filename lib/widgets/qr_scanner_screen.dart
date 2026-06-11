@@ -5,7 +5,6 @@ import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/custom_widgets/corner_border.dart';
 import 'package:blink/widgets/home_screen.dart';
@@ -195,7 +194,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
             Center(
               child: CustomPaint(
                 painter: CornerBorderPainter(
-                  strokeColor: getIt<AppThemes>().themeData.colorScheme.primary,
+                  strokeColor: Theme.of(context).colorScheme.primary,
                   strokeWidth: appBorderWidth,
                   cornerLength: appCameraCornerLength,
                   cornerRadius: appBorderRadius,

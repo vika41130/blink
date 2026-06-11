@@ -6,7 +6,6 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/custom_widgets/message_removal_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
@@ -35,8 +34,13 @@ class MessageWidget extends StatefulWidget {
 class _MessageWidgetState extends State<MessageWidget> {
   Timer? _deleteTimer;
   Timer? _animationTimer;
+  Timer? _fadeTimer;
   bool _isRemoving = false;
+  double _fadeProgress = 0.0; // 0.0 = full color, 1.0 = ghost gray
   Uint8List? _imageBytes;
+
+  static const _ghostGray = Color(0xFF2C2C2E);
+  static const _fadeDuration = 3; // seconds before deletion to start fading
 
   @override
   void initState() {
@@ -44,6 +48,40 @@ class _MessageWidgetState extends State<MessageWidget> {
     _decodeImage();
     _scheduleDeletion();
     _scheduleWithAnimation();
+    _scheduleFade();
+  }
+
+  void _scheduleFade() {
+    final remaining = widget.message.deleteAt.difference(DateTime.now());
+    final fadeStart = remaining - Duration(seconds: _fadeDuration);
+
+    if (fadeStart <= Duration.zero) {
+      // Already within fade window
+      _startFadeTimer();
+    } else {
+      _fadeTimer = Timer(fadeStart, _startFadeTimer);
+    }
+  }
+
+  void _startFadeTimer() {
+    _fadeTimer?.cancel();
+    _fadeTimer = Timer.periodic(const Duration(milliseconds: 50), (_) {
+      if (!mounted) return;
+      final remaining = widget.message.deleteAt.difference(DateTime.now());
+      final progress =
+          1.0 -
+          (remaining.inMilliseconds / (_fadeDuration * 1000)).clamp(0.0, 1.0);
+      setState(() {
+        _fadeProgress = progress;
+      });
+      if (progress >= 1.0) {
+        _fadeTimer?.cancel();
+      }
+    });
+  }
+
+  Color _lerpGradientColor(Color original) {
+    return Color.lerp(original, _ghostGray, _fadeProgress)!;
   }
 
   void _decodeImage() {
@@ -101,13 +139,18 @@ class _MessageWidgetState extends State<MessageWidget> {
       MaterialPageRoute(
         builder:
             (_) => Scaffold(
-              backgroundColor: Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: AppBar(
-                backgroundColor: Colors.black,
-                iconTheme: const IconThemeData(color: Colors.white),
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                iconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.save_alt, color: Colors.white),
+                    icon: Icon(
+                      Icons.save_alt,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     onPressed: () => _saveToGallery(context),
                   ),
                 ],
@@ -148,6 +191,7 @@ class _MessageWidgetState extends State<MessageWidget> {
   void dispose() {
     _deleteTimer?.cancel();
     _animationTimer?.cancel();
+    _fadeTimer?.cancel();
     super.dispose();
   }
 
@@ -193,15 +237,25 @@ class _MessageWidgetState extends State<MessageWidget> {
                           ),
                         ),
                         Positioned(
-                          right: 4,
+                          right: 6,
                           bottom: 6,
-                          child: Text(
-                            DateFormat(
-                              'HH:mm',
-                            ).format(widget.message.timestamp),
-                            style: TextStyle(
-                              fontSize: fontSizeSmall - 3,
-                              color: Colors.white,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              DateFormat(
+                                'HH:mm',
+                              ).format(widget.message.timestamp),
+                              style: TextStyle(
+                                fontSize: fontSizeSmall - 3,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -223,13 +277,20 @@ class _MessageWidgetState extends State<MessageWidget> {
                     maxWidth: MediaQuery.of(context).size.width * 0.75,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        widget.isMe
-                            ? getIt<AppThemes>().themeData.colorScheme.primary
-                            : getIt<AppThemes>()
-                                .themeData
-                                .colorScheme
-                                .secondary,
+                    gradient: LinearGradient(
+                      colors:
+                          widget.isMe
+                              ? [
+                                _lerpGradientColor(const Color(0xFF00F2FE)),
+                                _lerpGradientColor(const Color(0xFF4FACFE)),
+                              ]
+                              : [
+                                _lerpGradientColor(const Color(0xFF7F00FF)),
+                                _lerpGradientColor(const Color(0xFFE100FF)),
+                              ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
@@ -246,38 +307,32 @@ class _MessageWidgetState extends State<MessageWidget> {
                             text: widget.message.text,
                             style: TextStyle(
                               fontSize: fontSizeMedium,
-                              color:
-                                  widget.isMe
-                                      ? getIt<AppThemes>()
-                                          .themeData
-                                          .colorScheme
-                                          .surfaceContainerHighest
-                                      : getIt<AppThemes>()
-                                          .themeData
-                                          .colorScheme
-                                          .surfaceBright,
+                              color: Colors.white,
                             ),
-                            children: [WidgetSpan(child: SizedBox(width: 42))],
+                            children: [WidgetSpan(child: SizedBox(width: 52))],
                           ),
                         ),
                       ),
                       Positioned(
                         right: 0,
                         bottom: 0,
-                        child: Text(
-                          DateFormat('HH:mm').format(widget.message.timestamp),
-                          style: TextStyle(
-                            fontSize: fontSizeSmall - 3,
-                            color:
-                                widget.isMe
-                                    ? getIt<AppThemes>()
-                                        .themeData
-                                        .colorScheme
-                                        .surfaceContainerHighest
-                                    : getIt<AppThemes>()
-                                        .themeData
-                                        .colorScheme
-                                        .surfaceBright,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            DateFormat(
+                              'HH:mm',
+                            ).format(widget.message.timestamp),
+                            style: TextStyle(
+                              fontSize: fontSizeSmall - 3,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

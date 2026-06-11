@@ -6,7 +6,6 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -150,7 +149,7 @@ class _ContactScreenState extends State<ContactScreen> {
           leading: Icon(
             Icons.person,
             size: appIconMidSize,
-            color: getIt<AppThemes>().themeData.colorScheme.primary,
+            color: Theme.of(context).colorScheme.primary,
           ),
           title: Text(
             username,
@@ -192,9 +191,7 @@ class _ContactScreenState extends State<ContactScreen> {
                     fontSize: fontSizeSmall - 2,
                     fontFamily: 'monospace',
                     color:
-                        getIt<AppThemes>()
-                            .themeData
-                            .colorScheme
+                        Theme.of(context).colorScheme
                             .onSurfaceVariant,
                   ),
                 ),

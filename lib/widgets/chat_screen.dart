@@ -7,7 +7,6 @@ import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:blink/themes/app_theme.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
@@ -282,9 +281,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         Icons.photo_outlined,
                                         size: appIconLargeSize,
                                         color:
-                                            getIt<AppThemes>()
-                                                .themeData
-                                                .colorScheme
+                                            Theme.of(context).colorScheme
                                                 .tertiary,
                                       ),
                                     ),
@@ -301,9 +298,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         Icons.send,
                                         size: appIconLargeSize,
                                         color:
-                                            getIt<AppThemes>()
-                                                .themeData
-                                                .colorScheme
+                                            Theme.of(context).colorScheme
                                                 .tertiary,
                                       ),
                                     ),
@@ -321,9 +316,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             filled: true,
                             fillColor:
-                                getIt<AppThemes>()
-                                    .themeData
-                                    .colorScheme
+                                Theme.of(context).colorScheme
                                     .surfaceContainerHighest,
                           ),
                         ),
