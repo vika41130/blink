@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "blink",
+            "name": "vapor debug",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "blink (profile mode)",
+            "name": "vapor (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "blink (release mode)",
+            "name": "vapor (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

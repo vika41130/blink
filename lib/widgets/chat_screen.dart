@@ -155,7 +155,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, size: appBarIconSize),
+            icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -281,8 +281,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                         Icons.photo_outlined,
                                         size: appIconLargeSize,
                                         color:
-                                            Theme.of(context).colorScheme
-                                                .tertiary,
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.tertiary,
                                       ),
                                     ),
                                   ),
@@ -298,8 +299,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                         Icons.send,
                                         size: appIconLargeSize,
                                         color:
-                                            Theme.of(context).colorScheme
-                                                .tertiary,
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.tertiary,
                                       ),
                                     ),
                                   ),
@@ -316,8 +318,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             filled: true,
                             fillColor:
-                                Theme.of(context).colorScheme
-                                    .surfaceContainerHighest,
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
                           ),
                         ),
                       ),

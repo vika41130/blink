@@ -12,14 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+class NewChatScreen extends StatefulWidget {
+  const NewChatScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<NewChatScreen> createState() => _NewChatScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _NewChatScreenState extends State<NewChatScreen> {
   late final FocusNode searchFieldFocusNode;
   List<User> searchResults = [];
 
@@ -39,6 +39,10 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           getIt<AppLocalizations>().newChat,
           style: TextStyle(
@@ -132,9 +136,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ? Text(
                     getIt<AppLocalizations>().noUserFound,
                     style: TextStyle(
-                      color:
-                          Theme.of(context).colorScheme
-                              .onSurfaceVariant,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontSize: fontSizeMedium,
                     ),
                   )
@@ -235,9 +237,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   style: TextStyle(
                     fontSize: fontSizeSmall - 2,
                     fontFamily: 'monospace',
-                    color:
-                        Theme.of(context).colorScheme
-                            .onSurfaceVariant,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),

@@ -9,7 +9,7 @@ import 'package:blink/widgets/notification_screen.dart';
 import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
-import 'package:blink/widgets/search_screen.dart';
+import 'package:blink/widgets/newchat_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SearchScreen()),
+            MaterialPageRoute(builder: (context) => const NewChatScreen()),
           );
         },
         child: Icon(Icons.add, size: appIconLargeSize),

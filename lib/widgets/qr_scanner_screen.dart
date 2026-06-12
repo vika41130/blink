@@ -159,7 +159,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, size: appBarIconSize),
+            icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,
