@@ -9,6 +9,7 @@ import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
+import 'package:blink/widgets/custom_widgets/smoke_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -35,6 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late final Stream<List<MessageModel>> _messagesStream;
   bool _hasText = false;
   DateTime? _lastChatTime;
+  final Set<String> _smokingMessages = {};
 
   @override
   void initState() {
@@ -219,7 +221,24 @@ class _ChatScreenState extends State<ChatScreen> {
                           return const SizedBox.shrink();
                         }
                         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const SizedBox.shrink();
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: appPaddingSmall,
+                              ),
+                              child: Text(
+                                'Swipe right to delete a message.',
+                                style: TextStyle(
+                                  fontSize: fontSizeSmall,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          );
                         }
                         final messages = snapshot.data!;
                         return ListView.separated(
@@ -231,14 +250,30 @@ class _ChatScreenState extends State<ChatScreen> {
                             final message = messages[index];
                             final bool isMe =
                                 message.senderId == widget.currentUserId;
-                            return MessageWidget(
-                              key: ValueKey(message.messageId),
-                              message: message,
-                              isMe: isMe,
-                              currentUserId: widget.currentUserId,
-                              receiverId: widget.receiverId,
-                              messageId: message.messageId,
-                            );
+                            return _smokingMessages.contains(message.messageId)
+                                ? const SizedBox.shrink()
+                                : _DismissibleMessage(
+                                  messageId: message.messageId,
+                                  onDismissed: (position) {
+                                    showSmokeEffect(context, position);
+                                    setState(() {
+                                      _smokingMessages.add(message.messageId);
+                                    });
+                                    getIt<ChatService>().deleteMessage(
+                                      currentUserId: widget.currentUserId,
+                                      receiverId: widget.receiverId,
+                                      messageId: message.messageId,
+                                    );
+                                  },
+                                  child: MessageWidget(
+                                    key: ValueKey('msg_${message.messageId}'),
+                                    message: message,
+                                    isMe: isMe,
+                                    currentUserId: widget.currentUserId,
+                                    receiverId: widget.receiverId,
+                                    messageId: message.messageId,
+                                  ),
+                                );
                           },
                         );
                       },
@@ -332,6 +367,56 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _DismissibleMessage extends StatefulWidget {
+  final String messageId;
+  final void Function(Offset position) onDismissed;
+  final Widget child;
+
+  const _DismissibleMessage({
+    required this.messageId,
+    required this.onDismissed,
+    required this.child,
+  });
+
+  @override
+  State<_DismissibleMessage> createState() => _DismissibleMessageState();
+}
+
+class _DismissibleMessageState extends State<_DismissibleMessage> {
+  Offset? _lastPosition;
+
+  void _capturePosition() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box != null && box.hasSize) {
+      final pos = box.localToGlobal(Offset.zero);
+      _lastPosition = Offset(
+        pos.dx + box.size.width / 2,
+        pos.dy + box.size.height / 2,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: ValueKey(widget.messageId),
+      direction: DismissDirection.startToEnd,
+      movementDuration: const Duration(milliseconds: 200),
+      confirmDismiss: (_) async {
+        _capturePosition();
+        return true;
+      },
+      onDismissed: (_) {
+        if (_lastPosition != null) {
+          widget.onDismissed(_lastPosition!);
+        }
+      },
+      background: const SizedBox.shrink(),
+      child: widget.child,
     );
   }
 }
