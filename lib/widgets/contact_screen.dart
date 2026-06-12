@@ -3,13 +3,11 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
-import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({super.key});
@@ -168,33 +166,6 @@ class _ContactScreenState extends State<ContactScreen> {
                       receiverId: receiverId,
                       receiverName: username,
                     ),
-              ),
-            );
-          },
-        ),
-        FutureBuilder<DateTime?>(
-          future: getIt<ChatService>().getLastChatTime(
-            getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-            username,
-          ),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData || snapshot.data == null) {
-              return const SizedBox.shrink();
-            }
-            return Padding(
-              padding: EdgeInsets.only(right: appPaddingSmall / 2),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  DateFormat('yyyy.MM.dd HH:mm').format(snapshot.data!),
-                  style: TextStyle(
-                    fontSize: fontSizeSmall - 2,
-                    fontFamily: 'monospace',
-                    color:
-                        Theme.of(context).colorScheme
-                            .onSurfaceVariant,
-                  ),
-                ),
               ),
             );
           },

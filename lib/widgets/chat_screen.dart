@@ -221,24 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           return const SizedBox.shrink();
                         }
                         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Align(
-                            alignment: Alignment.topLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: appPaddingSmall,
-                              ),
-                              child: Text(
-                                'Swipe right to delete a message.',
-                                style: TextStyle(
-                                  fontSize: fontSizeSmall,
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          );
+                          return const SizedBox.shrink();
                         }
                         final messages = snapshot.data!;
                         return ListView.separated(
