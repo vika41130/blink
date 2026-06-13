@@ -305,7 +305,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 message.senderId == widget.currentUserId;
                             return _smokingMessages.contains(message.messageId)
                                 ? const SizedBox.shrink()
-                                : _DismissibleMessage(
+                                : isMe
+                                ? _DismissibleMessage(
                                   messageId: message.messageId,
                                   onDismissed: (position) {
                                     showSmokeEffect(context, position);
@@ -326,6 +327,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                     receiverId: widget.receiverId,
                                     messageId: message.messageId,
                                   ),
+                                )
+                                : MessageWidget(
+                                  key: ValueKey('msg_${message.messageId}'),
+                                  message: message,
+                                  isMe: isMe,
+                                  currentUserId: widget.currentUserId,
+                                  receiverId: widget.receiverId,
+                                  messageId: message.messageId,
                                 );
                           },
                         );
