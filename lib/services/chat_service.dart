@@ -171,4 +171,34 @@ class ChatService {
       }
     }
   }
+
+  Future<void> setTypingStatus({
+    required String currentUserId,
+    required String receiverId,
+    required bool isTyping,
+  }) async {
+    final String chatRoomId = getChatRoomId(currentUserId, receiverId);
+    try {
+      await getIt<FirebaseFirestore>().collection('chats').doc(chatRoomId).set({
+        'typing_$currentUserId': isTyping,
+      }, SetOptions(merge: true));
+    } catch (_) {}
+  }
+
+  Stream<bool> getTypingStatus({
+    required String currentUserId,
+    required String receiverId,
+  }) {
+    final String chatRoomId = getChatRoomId(currentUserId, receiverId);
+    return getIt<FirebaseFirestore>()
+        .collection('chats')
+        .doc(chatRoomId)
+        .snapshots()
+        .map((snapshot) {
+          if (!snapshot.exists) return false;
+          final data = snapshot.data();
+          return data?['typing_$receiverId'] == true;
+        })
+        .distinct();
+  }
 }

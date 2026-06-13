@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:blink/get_it_setup.dart';
@@ -10,6 +11,7 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
 import 'package:blink/widgets/custom_widgets/smoke_animation.dart';
+import 'package:blink/widgets/custom_widgets/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,9 +36,14 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   late final Stream<List<MessageModel>> _messagesStream;
+  late final Stream<bool> _typingStream;
+  StreamSubscription<bool>? _typingSubscription;
   bool _hasText = false;
+  bool _isReceiverTyping = false;
   DateTime? _lastChatTime;
   final Set<String> _smokingMessages = {};
+  Timer? _typingTimer;
+  Timer? _typingHideTimer;
 
   @override
   void initState() {
@@ -46,11 +53,26 @@ class _ChatScreenState extends State<ChatScreen> {
       widget.currentUserId,
       widget.receiverId,
     );
+    _typingStream = getIt<ChatService>().getTypingStatus(
+      currentUserId: widget.currentUserId,
+      receiverId: widget.receiverId,
+    );
+    _typingSubscription = _typingStream.listen((isTyping) {
+      if (!mounted) return;
+      if (isTyping && !_isReceiverTyping) {
+        _typingHideTimer?.cancel();
+        setState(() => _isReceiverTyping = true);
+      } else if (!isTyping && _isReceiverTyping) {
+        _typingHideTimer?.cancel();
+        setState(() => _isReceiverTyping = false);
+      }
+    });
     _messageController.addListener(() {
       final hasText = _messageController.text.trim().isNotEmpty;
       if (hasText != _hasText) {
         setState(() => _hasText = hasText);
       }
+      _onUserTyping();
     });
     _enableProtection();
     getIt<NotificationService>().setCurrentChat(widget.receiverId);
@@ -58,6 +80,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    _typingTimer?.cancel();
+    _typingHideTimer?.cancel();
+    _typingSubscription?.cancel();
+    getIt<ChatService>().setTypingStatus(
+      currentUserId: widget.currentUserId,
+      receiverId: widget.receiverId,
+      isTyping: false,
+    );
     getIt<NotificationService>().setCurrentChat(null);
     _disableProtection();
     super.dispose();
@@ -71,10 +101,50 @@ class _ChatScreenState extends State<ChatScreen> {
     // Screen protection disabled - screen_protector incompatible with Xcode 16
   }
 
+  bool _lastTypingState = false;
+
+  void _onUserTyping() {
+    final text = _messageController.text;
+    _typingTimer?.cancel();
+    if (text.isEmpty) {
+      if (_lastTypingState) {
+        _lastTypingState = false;
+        getIt<ChatService>().setTypingStatus(
+          currentUserId: widget.currentUserId,
+          receiverId: widget.receiverId,
+          isTyping: false,
+        );
+      }
+      return;
+    }
+    if (!_lastTypingState) {
+      _lastTypingState = true;
+      getIt<ChatService>().setTypingStatus(
+        currentUserId: widget.currentUserId,
+        receiverId: widget.receiverId,
+        isTyping: true,
+      );
+    }
+    _typingTimer = Timer(const Duration(seconds: 2), () {
+      _lastTypingState = false;
+      getIt<ChatService>().setTypingStatus(
+        currentUserId: widget.currentUserId,
+        receiverId: widget.receiverId,
+        isTyping: false,
+      );
+    });
+  }
+
   void _sendMessage() async {
     final text = _messageController.text;
     if (text.trim().isEmpty) return;
     _messageController.clear();
+    _typingTimer?.cancel();
+    getIt<ChatService>().setTypingStatus(
+      currentUserId: widget.currentUserId,
+      receiverId: widget.receiverId,
+      isTyping: false,
+    );
     await getIt<ChatService>().sendMessage(
       currentUserId: widget.currentUserId,
       receiverId: widget.receiverId,
@@ -263,6 +333,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   SizedBox(height: appMessageMarginVertical),
+                  SizedBox(
+                    height: 16,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: AnimatedOpacity(
+                        opacity: _isReceiverTyping ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 200),
+                        child: const RepaintBoundary(child: TypingIndicator()),
+                      ),
+                    ),
+                  ),
                   Row(
                     children: [
                       Expanded(
