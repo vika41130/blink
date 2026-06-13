@@ -296,6 +296,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New chat'**
   String get newChat;
+
+  /// No description provided for @chatSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat settings'**
+  String get chatSettings;
+
+  /// No description provided for @savedContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved contact'**
+  String get savedContact;
+
+  /// No description provided for @saveContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Save contact'**
+  String get saveContact;
+
+  /// No description provided for @swipeRightToRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe right the message to remove.'**
+  String get swipeRightToRemove;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -67,5 +67,13 @@
     "searchHint": "Search",
     "@searchHint": {},
     "newChat": "New chat",
-    "@newChat": {}
+    "@newChat": {},
+    "chatSettings": "Chat settings",
+    "@chatSettings": {},
+    "savedContact": "Saved contact",
+    "@savedContact": {},
+    "saveContact": "Save contact",
+    "@saveContact": {},
+    "swipeRightToRemove": "Swipe right the message to remove.",
+    "@swipeRightToRemove": {}
 }

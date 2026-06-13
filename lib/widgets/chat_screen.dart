@@ -5,17 +5,16 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
-import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
+import 'package:blink/widgets/chat_settings_screen.dart';
 import 'package:blink/widgets/custom_widgets/smoke_animation.dart';
 import 'package:blink/widgets/custom_widgets/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -227,28 +226,12 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                widget.receiverName,
-                style: TextStyle(
-                  fontSize: appTitleFontSize,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: appPaddingSmall),
-              if (_lastChatTime != null)
-                Text(
-                  DateFormat('yyyy.MM.dd HH:mm').format(_lastChatTime!),
-                  style: TextStyle(
-                    fontSize: fontSizeSmall - 2,
-                    fontFamily: 'monospace',
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-            ],
+          title: Text(
+            widget.receiverName,
+            style: TextStyle(
+              fontSize: appTitleFontSize,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
@@ -261,34 +244,17 @@ class _ChatScreenState extends State<ChatScreen> {
             },
           ),
           actions: [
-            FutureBuilder<bool>(
-              future: getIt<ContactService>().isContactAdded(
-                getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-                widget.receiverName,
-              ),
-              builder: (context, snapshot) {
-                final isAdded = snapshot.data == true;
-                return IconButton(
-                  icon: Icon(
-                    isAdded ? Icons.star : Icons.star_border,
-                    size: appBarIconSize,
+            IconButton(
+              icon: Icon(Icons.more_vert, size: appBarIconSize),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => ChatSettingsScreen(
+                          receiverName: widget.receiverName,
+                        ),
                   ),
-                  onPressed: () async {
-                    final currentUserId =
-                        getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-                    if (isAdded) {
-                      await getIt<ContactService>().removeContact(
-                        currentUserId,
-                        widget.receiverName,
-                      );
-                    } else {
-                      await getIt<ContactService>().saveContact(
-                        currentUserId,
-                        widget.receiverName,
-                      );
-                    }
-                    setState(() {});
-                  },
                 );
               },
             ),

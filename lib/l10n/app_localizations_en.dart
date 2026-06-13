@@ -109,4 +109,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newChat => 'New chat';
+
+  @override
+  String get chatSettings => 'Chat settings';
+
+  @override
+  String get savedContact => 'Saved contact';
+
+  @override
+  String get saveContact => 'Save contact';
+
+  @override
+  String get swipeRightToRemove => 'Swipe right the message to remove.';
 }
