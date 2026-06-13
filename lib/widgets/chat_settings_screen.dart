@@ -1,29 +1,83 @@
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
+import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class ChatSettingsScreen extends StatefulWidget {
   final String receiverName;
+  final String? displayName;
 
-  const ChatSettingsScreen({super.key, required this.receiverName});
+  const ChatSettingsScreen({
+    super.key,
+    required this.receiverName,
+    this.displayName,
+  });
 
   @override
   State<ChatSettingsScreen> createState() => _ChatSettingsScreenState();
 }
 
 class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
+  bool _isEditingUsername = false;
+  late final TextEditingController _usernameController;
+  late final FocusNode _usernameFocusNode;
+  String _currentNickName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _currentNickName = widget.displayName ?? widget.receiverName;
+    _usernameController = TextEditingController(text: _currentNickName);
+    _usernameFocusNode = FocusNode();
+  }
+
+  Future<void> _saveNickName() async {
+    final newNickName = _usernameController.text.trim();
+    if (newNickName.isEmpty || newNickName == _currentNickName) {
+      setState(() => _isEditingUsername = false);
+      return;
+    }
+    final success = await getIt<AuthService>().updateUserNickName(
+      widget.receiverName,
+      newNickName,
+    );
+    if (!mounted) return;
+    if (success) {
+      setState(() {
+        _currentNickName = newNickName;
+        _isEditingUsername = false;
+      });
+      getIt<ContactService>().updateNickNameInCache(
+        widget.receiverName,
+        newNickName,
+      );
+      getIt<ToastificationService>().showSuccess('Nickname updated');
+    } else {
+      getIt<ToastificationService>().showError('Failed to update nickname');
+    }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _usernameFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(_currentNickName),
         ),
         title: Text(
           getIt<AppLocalizations>().chatSettings,
@@ -96,26 +150,103 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                 ],
               ),
               SizedBox(height: appPaddingSmall),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.edit,
-                      size: appIconMidSize,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    onPressed: () {},
+              _isEditingUsername
+                  ? Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.check,
+                          size: appIconMidSize,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onPressed: () {
+                          _saveNickName();
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          size: appIconMidSize,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        onPressed: () {
+                          _usernameController.text =
+                              _currentNickName.isNotEmpty
+                                  ? _currentNickName
+                                  : widget.receiverName;
+                          setState(() => _isEditingUsername = false);
+                        },
+                      ),
+                      SizedBox(width: appPaddingSmall),
+                      Expanded(
+                        child: SizedBox(
+                          height: appTextInputHeight,
+                          child: TextField(
+                            controller: _usernameController,
+                            focusNode: _usernameFocusNode,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(
+                                userNickNameMaxLength,
+                              ),
+                            ],
+                            onTapOutside: (_) {
+                              _usernameFocusNode.unfocus();
+                            },
+                            onSubmitted: (_) {
+                              setState(() => _isEditingUsername = false);
+                            },
+                            style: const TextStyle(
+                              fontSize: appTextInputFontSize,
+                            ),
+                            decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.all(
+                                appTextInputContentPadding,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                  appTextInputBorderRadius,
+                                ),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                  : Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.edit,
+                          size: appIconMidSize,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onPressed: () {
+                          setState(() => _isEditingUsername = true);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _usernameFocusNode.requestFocus();
+                          });
+                        },
+                      ),
+                      SizedBox(width: appPaddingSmall),
+                      Text(
+                        _currentNickName.isNotEmpty
+                            ? _currentNickName
+                            : widget.receiverName,
+                        style: TextStyle(
+                          fontSize: fontSizeMedium,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: appPaddingSmall),
-                  Text(
-                    widget.receiverName,
-                    style: TextStyle(
-                      fontSize: fontSizeMedium,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(height: appPaddingSmall),
               FutureBuilder<bool>(
                 future: getIt<ContactService>().isContactAdded(

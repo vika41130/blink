@@ -1,5 +1,6 @@
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/models/contact.dart';
 import 'package:blink/services/network_error_handler.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 
 class ContactService {
   List<String>? _cachedContacts;
+  List<Contact>? _cachedContactModels;
   final ValueNotifier<int> contactsVersion = ValueNotifier(0);
 
   Future<void> saveContact(String currentUserId, String username) async {
@@ -138,23 +140,24 @@ class ContactService {
     }
   }
 
-  Future<List<String>> getContacts({
+  Future<List<Contact>> getContacts({
     required String currentUserId,
     String searchText = '',
   }) async {
     if (currentUserId.isEmpty) return [];
 
     // Use cache if available and no search filter
-    if (_cachedContacts != null && searchText.isEmpty) {
-      return List.from(_cachedContacts!);
+    if (_cachedContactModels != null && searchText.isEmpty) {
+      return List.from(_cachedContactModels!);
     }
 
     // If cache exists but searching, filter from cache
-    if (_cachedContacts != null && searchText.isNotEmpty) {
-      return _cachedContacts!
+    if (_cachedContactModels != null && searchText.isNotEmpty) {
+      return _cachedContactModels!
           .where(
-            (username) =>
-                username.toLowerCase().contains(searchText.toLowerCase()),
+            (c) =>
+                c.username.toLowerCase().contains(searchText.toLowerCase()) ||
+                c.displayName.toLowerCase().contains(searchText.toLowerCase()),
           )
           .toList();
     }
@@ -172,23 +175,48 @@ class ContactService {
 
       if (contacts.isEmpty) {
         _cachedContacts = [];
+        _cachedContactModels = [];
         return [];
       }
       contacts.sort((a, b) => a.compareTo(b));
-
-      // Cache the contacts
       _cachedContacts = List.from(contacts);
 
-      if (searchText.isNotEmpty) {
-        contacts =
-            contacts
-                .where(
-                  (username) =>
-                      username.toLowerCase().contains(searchText.toLowerCase()),
-                )
-                .toList();
+      // Fetch nicknames for all contacts
+      final List<Contact> contactModels = [];
+      for (final username in contacts) {
+        final querySnapshot =
+            await getIt<FirebaseFirestore>()
+                .collection('users')
+                .where('username', isEqualTo: username)
+                .limit(1)
+                .get();
+        if (querySnapshot.docs.isNotEmpty) {
+          final data = querySnapshot.docs.first.data();
+          contactModels.add(
+            Contact(
+              username: username,
+              userNickName: data['userNickName'] as String? ?? '',
+            ),
+          );
+        } else {
+          contactModels.add(Contact(username: username));
+        }
       }
-      return contacts;
+
+      _cachedContactModels = List.from(contactModels);
+
+      if (searchText.isNotEmpty) {
+        return contactModels
+            .where(
+              (c) =>
+                  c.username.toLowerCase().contains(searchText.toLowerCase()) ||
+                  c.displayName.toLowerCase().contains(
+                    searchText.toLowerCase(),
+                  ),
+            )
+            .toList();
+      }
+      return contactModels;
     } catch (e) {
       if (NetworkErrorHandler.isNetworkError(e)) {
         await NetworkErrorHandler.handleNetworkError();
@@ -198,8 +226,24 @@ class ContactService {
     }
   }
 
+  /// Update nickname in cache without re-fetching
+  void updateNickNameInCache(String username, String newNickName) {
+    if (_cachedContactModels == null) return;
+    final index = _cachedContactModels!.indexWhere(
+      (c) => c.username == username,
+    );
+    if (index != -1) {
+      _cachedContactModels![index] = Contact(
+        username: username,
+        userNickName: newNickName,
+      );
+      contactsVersion.value++;
+    }
+  }
+
   /// Clear cached contacts on logout
   void clearCache() {
     _cachedContacts = null;
+    _cachedContactModels = null;
   }
 }

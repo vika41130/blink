@@ -1,17 +1,8 @@
 class Contact {
   final String username;
-  final String userId;
+  final String userNickName;
 
-  Contact({required this.username, this.userId = ''});
+  Contact({required this.username, this.userNickName = ''});
 
-  factory Contact.fromMap(Map<String, dynamic> map) {
-    return Contact(
-      username: map['username'] as String? ?? '',
-      userId: map['userId'] as String? ?? '',
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {'username': username, 'userId': userId};
-  }
+  String get displayName => userNickName.isNotEmpty ? userNickName : username;
 }

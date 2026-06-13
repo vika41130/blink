@@ -180,4 +180,29 @@ class AuthService {
       return null;
     }
   }
+
+  Future<bool> updateUserNickName(
+    String targetUsername,
+    String nickName,
+  ) async {
+    if (await NetworkErrorHandler.checkAndHandle()) return false;
+    try {
+      final querySnapshot =
+          await getIt<FirebaseFirestore>()
+              .collection('users')
+              .where('username', isEqualTo: targetUsername)
+              .limit(1)
+              .get();
+      if (querySnapshot.docs.isEmpty) return false;
+      await querySnapshot.docs.first.reference.update({
+        'userNickName': nickName,
+      });
+      return true;
+    } catch (e) {
+      if (NetworkErrorHandler.isNetworkError(e)) {
+        await NetworkErrorHandler.handleNetworkError();
+      }
+      return false;
+    }
+  }
 }

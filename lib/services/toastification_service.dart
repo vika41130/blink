@@ -37,21 +37,21 @@ class ToastificationService {
       alignment: Alignment.bottomCenter,
       autoCloseDuration: Duration(seconds: 2),
       builder: (context, item) {
+        final successColor =
+            getIt<AppThemes>().themeData.extension<AppColors>()?.success ??
+            Colors.green;
         return Padding(
           padding: const EdgeInsets.all(appPaddingSmall),
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.all(appBoxPadding),
             decoration: BoxDecoration(
-              color: getIt<AppThemes>().themeData.colorScheme.primary,
+              color: successColor,
               borderRadius: BorderRadius.circular(appBorderRadius),
             ),
             child: Text.rich(
               TextSpan(text: msg),
-              style: TextStyle(
-                color: getIt<AppThemes>().themeData.colorScheme.surfaceBright,
-                fontSize: fontSizeSmall,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: fontSizeSmall),
             ),
           ),
         );

@@ -40,7 +40,8 @@ const appFormItemMargin = 14.0;
 
 const pinItemWidth = 58.0;
 const pinItemHeight = 36.0;
-const pinInputMaxLength = 20;
+const userNameMaxLength = 20;
+const userNickNameMaxLength = 30;
 const pinInputMinLength = 3;
 const pinInputValueFontSize = 28.0;
 const pinInputSeparatorWidth = 3.0;

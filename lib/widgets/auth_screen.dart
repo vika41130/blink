@@ -193,7 +193,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                             counterText: '',
                           ),
-                          maxLength: pinInputMaxLength,
+                          maxLength: userNameMaxLength,
                           keyboardType: TextInputType.text,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(

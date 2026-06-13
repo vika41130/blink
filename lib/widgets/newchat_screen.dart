@@ -69,7 +69,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                       searchFieldFocusNode.unfocus();
                     },
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(pinInputMaxLength),
+                      LengthLimitingTextInputFormatter(userNameMaxLength),
                     ],
                     style: const TextStyle(fontSize: appTextInputFontSize),
                     decoration: InputDecoration(
@@ -165,7 +165,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
             color: Theme.of(context).colorScheme.primary,
           ),
           title: Text(
-            user.username,
+            user.userNickName.isNotEmpty ? user.userNickName : user.username,
             style: const TextStyle(fontSize: fontSizeMedium),
           ),
           trailing: FutureBuilder<bool>(
@@ -212,6 +212,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
                       currentUserId: currentUserId,
                       receiverId: receiverId,
                       receiverName: user.username,
+                      displayName:
+                          user.userNickName.isNotEmpty
+                              ? user.userNickName
+                              : user.username,
                     ),
               ),
             );

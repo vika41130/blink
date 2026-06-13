@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
+import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/notification_service.dart';
@@ -20,12 +21,14 @@ class ChatScreen extends StatefulWidget {
   final String currentUserId;
   final String receiverId;
   final String receiverName;
+  final String? displayName;
 
   const ChatScreen({
     super.key,
     required this.currentUserId,
     required this.receiverId,
     required this.receiverName,
+    this.displayName,
   });
 
   @override
@@ -47,11 +50,14 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showScrollToBottom = false;
   final GlobalKey _messageAreaKey = GlobalKey();
+  String _displayName = '';
 
   @override
   void initState() {
     super.initState();
+    _displayName = widget.displayName ?? widget.receiverName;
     _loadLastChatTime();
+    if (widget.displayName == null) _loadDisplayName();
     _messagesStream = getIt<ChatService>().getMessages(
       widget.currentUserId,
       widget.receiverId,
@@ -212,6 +218,15 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _loadDisplayName() async {
+    final user = await getIt<AuthService>().getUserByUsername(
+      widget.receiverName,
+    );
+    if (user != null && user.userNickName.isNotEmpty && mounted) {
+      setState(() => _displayName = user.userNickName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -227,7 +242,7 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.receiverName,
+            _displayName,
             style: TextStyle(
               fontSize: appTitleFontSize,
               color: Theme.of(context).colorScheme.primary,
@@ -246,16 +261,20 @@ class _ChatScreenState extends State<ChatScreen> {
           actions: [
             IconButton(
               icon: Icon(Icons.more_vert, size: appBarIconSize),
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                final result = await Navigator.push<String>(
                   context,
                   MaterialPageRoute(
                     builder:
                         (context) => ChatSettingsScreen(
                           receiverName: widget.receiverName,
+                          displayName: _displayName,
                         ),
                   ),
                 );
+                if (result != null && result.isNotEmpty && mounted) {
+                  setState(() => _displayName = result);
+                }
               },
             ),
           ],

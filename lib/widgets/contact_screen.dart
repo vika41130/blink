@@ -1,6 +1,7 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/models/contact.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
@@ -18,7 +19,7 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   late final FocusNode searchFieldFocusNode;
-  List<String> contacts = [];
+  List<Contact> contacts = [];
   bool isLoading = true;
   final ScrollController _scrollController = ScrollController();
 
@@ -68,7 +69,7 @@ class _ContactScreenState extends State<ContactScreen> {
               searchFieldFocusNode.unfocus();
             },
             inputFormatters: [
-              LengthLimitingTextInputFormatter(pinInputMaxLength),
+              LengthLimitingTextInputFormatter(userNameMaxLength),
             ],
             style: const TextStyle(fontSize: appTextInputFontSize),
             decoration: InputDecoration(
@@ -131,7 +132,8 @@ class _ContactScreenState extends State<ContactScreen> {
     );
   }
 
-  Widget _buildUserListTile(String username) {
+  Widget _buildUserListTile(Contact contact) {
+    final username = contact.username;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -150,7 +152,7 @@ class _ContactScreenState extends State<ContactScreen> {
             color: Theme.of(context).colorScheme.primary,
           ),
           title: Text(
-            username,
+            contact.displayName,
             style: const TextStyle(fontSize: fontSizeMedium),
           ),
           onTap: () async {
@@ -165,6 +167,7 @@ class _ContactScreenState extends State<ContactScreen> {
                       currentUserId: currentUserId,
                       receiverId: receiverId,
                       receiverName: username,
+                      displayName: contact.displayName,
                     ),
               ),
             );
