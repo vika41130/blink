@@ -44,6 +44,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final Set<String> _smokingMessages = {};
   Timer? _typingTimer;
   Timer? _typingHideTimer;
+  final ScrollController _scrollController = ScrollController();
+  bool _showScrollToBottom = false;
 
   @override
   void initState() {
@@ -76,6 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
     _enableProtection();
     getIt<NotificationService>().setCurrentChat(widget.receiverId);
+    _scrollController.addListener(_onScroll);
   }
 
   @override
@@ -83,6 +86,8 @@ class _ChatScreenState extends State<ChatScreen> {
     _typingTimer?.cancel();
     _typingHideTimer?.cancel();
     _typingSubscription?.cancel();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     getIt<ChatService>().setTypingStatus(
       currentUserId: widget.currentUserId,
       receiverId: widget.receiverId,
@@ -99,6 +104,21 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _disableProtection() async {
     // Screen protection disabled - screen_protector incompatible with Xcode 16
+  }
+
+  void _onScroll() {
+    final shouldShow = _scrollController.offset > 100;
+    if (shouldShow != _showScrollToBottom) {
+      setState(() => _showScrollToBottom = shouldShow);
+    }
+  }
+
+  void _scrollToBottom() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   bool _lastTypingState = false;
@@ -283,62 +303,97 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 children: [
                   Expanded(
-                    child: StreamBuilder<List<MessageModel>>(
-                      stream: _messagesStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SizedBox.shrink();
-                        }
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const SizedBox.shrink();
-                        }
-                        final messages = snapshot.data!;
-                        return ListView.separated(
-                          reverse: true,
-                          itemCount: messages.length,
-                          separatorBuilder:
-                              (context, index) => const SizedBox.shrink(),
-                          itemBuilder: (context, index) {
-                            final message = messages[index];
-                            final bool isMe =
-                                message.senderId == widget.currentUserId;
-                            return _smokingMessages.contains(message.messageId)
-                                ? const SizedBox.shrink()
-                                : isMe
-                                ? _DismissibleMessage(
-                                  messageId: message.messageId,
-                                  onDismissed: (position) {
-                                    showSmokeEffect(context, position);
-                                    setState(() {
-                                      _smokingMessages.add(message.messageId);
-                                    });
-                                    getIt<ChatService>().deleteMessage(
+                    child: Stack(
+                      children: [
+                        StreamBuilder<List<MessageModel>>(
+                          stream: _messagesStream,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox.shrink();
+                            }
+                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+                            final messages = snapshot.data!;
+                            return ListView.separated(
+                              controller: _scrollController,
+                              reverse: true,
+                              itemCount: messages.length,
+                              separatorBuilder:
+                                  (context, index) => const SizedBox.shrink(),
+                              itemBuilder: (context, index) {
+                                final message = messages[index];
+                                final bool isMe =
+                                    message.senderId == widget.currentUserId;
+                                return _smokingMessages.contains(
+                                      message.messageId,
+                                    )
+                                    ? const SizedBox.shrink()
+                                    : isMe
+                                    ? _DismissibleMessage(
+                                      messageId: message.messageId,
+                                      onDismissed: (position) {
+                                        showSmokeEffect(context, position);
+                                        setState(() {
+                                          _smokingMessages.add(
+                                            message.messageId,
+                                          );
+                                        });
+                                        getIt<ChatService>().deleteMessage(
+                                          currentUserId: widget.currentUserId,
+                                          receiverId: widget.receiverId,
+                                          messageId: message.messageId,
+                                        );
+                                      },
+                                      child: MessageWidget(
+                                        key: ValueKey(
+                                          'msg_${message.messageId}',
+                                        ),
+                                        message: message,
+                                        isMe: isMe,
+                                        currentUserId: widget.currentUserId,
+                                        receiverId: widget.receiverId,
+                                        messageId: message.messageId,
+                                      ),
+                                    )
+                                    : MessageWidget(
+                                      key: ValueKey('msg_${message.messageId}'),
+                                      message: message,
+                                      isMe: isMe,
                                       currentUserId: widget.currentUserId,
                                       receiverId: widget.receiverId,
                                       messageId: message.messageId,
                                     );
-                                  },
-                                  child: MessageWidget(
-                                    key: ValueKey('msg_${message.messageId}'),
-                                    message: message,
-                                    isMe: isMe,
-                                    currentUserId: widget.currentUserId,
-                                    receiverId: widget.receiverId,
-                                    messageId: message.messageId,
-                                  ),
-                                )
-                                : MessageWidget(
-                                  key: ValueKey('msg_${message.messageId}'),
-                                  message: message,
-                                  isMe: isMe,
-                                  currentUserId: widget.currentUserId,
-                                  receiverId: widget.receiverId,
-                                  messageId: message.messageId,
-                                );
+                              },
+                            );
                           },
-                        );
-                      },
+                        ),
+                        if (_showScrollToBottom)
+                          Positioned(
+                            bottom: 8,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: _scrollToBottom,
+                              child: Container(
+                                width: 34,
+                                height: 34,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainerHighest,
+                                ),
+                                child: Icon(
+                                  Icons.keyboard_arrow_down,
+                                  size: 24,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   SizedBox(height: appMessageMarginVertical),
