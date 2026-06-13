@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:blink/get_it_setup.dart';
@@ -9,6 +8,7 @@ import 'package:blink/services/chat_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/custom_widgets/message_removal_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:intl/intl.dart';
 
@@ -18,6 +18,8 @@ class MessageWidget extends StatefulWidget {
   final String currentUserId;
   final String receiverId;
   final String messageId;
+  final FocusNode? chatFocusNode;
+  final TextEditingController? chatController;
 
   const MessageWidget({
     super.key,
@@ -26,6 +28,8 @@ class MessageWidget extends StatefulWidget {
     required this.currentUserId,
     required this.receiverId,
     required this.messageId,
+    this.chatFocusNode,
+    this.chatController,
   });
 
   @override
@@ -145,59 +149,6 @@ class _MessageWidgetState extends State<MessageWidget>
     );
   }
 
-  void _openFullScreenImage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder:
-            (_) => Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                iconTheme: IconThemeData(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                actions: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.save_alt,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    onPressed: () => _saveToGallery(context),
-                  ),
-                ],
-              ),
-              body: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Center(
-                  child: Image.memory(_imageBytes!, fit: BoxFit.contain),
-                ),
-              ),
-            ),
-      ),
-    );
-  }
-
-  Future<void> _saveToGallery(BuildContext context) async {
-    try {
-      await ImageGallerySaverPlus.saveImage(
-        _imageBytes!,
-        quality: 100,
-        name: 'blink_${DateTime.now().millisecondsSinceEpoch}',
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Saved to gallery')));
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to save image')));
-      }
-    }
-  }
-
   @override
   void dispose() {
     _deleteTimer?.cancel();
@@ -205,6 +156,135 @@ class _MessageWidgetState extends State<MessageWidget>
     _fadeTimer?.cancel();
     _floatController.dispose();
     super.dispose();
+  }
+
+  void _showContextMenu(BuildContext context, Offset position) {
+    final overlay = Overlay.of(context);
+    final menuColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final screenSize = MediaQuery.of(context).size;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final topPadding = MediaQuery.of(context).padding.top;
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    const menuHeight = 96.0;
+
+    // Clamp position so menu stays within visible area
+    final maxTop =
+        screenSize.height - bottomPadding - keyboardHeight - menuHeight - 16;
+    final minTop = topPadding + 16;
+    final clampedTop = position.dy.clamp(minTop, maxTop);
+
+    late final OverlayEntry entry;
+
+    String? _textBeforeMenu;
+
+    void onTextChanged() {
+      if (_textBeforeMenu != null && widget.chatController != null) {
+        widget.chatController!.removeListener(onTextChanged);
+        widget.chatController!.text = _textBeforeMenu!;
+        widget.chatController!.selection = TextSelection.collapsed(
+          offset: _textBeforeMenu!.length,
+        );
+      }
+      if (entry.mounted) entry.remove();
+    }
+
+    _textBeforeMenu = widget.chatController?.text;
+
+    void closeMenu() {
+      widget.chatController?.removeListener(onTextChanged);
+      if (entry.mounted) entry.remove();
+    }
+
+    widget.chatController?.addListener(onTextChanged);
+
+    entry = OverlayEntry(
+      builder:
+          (ctx) => GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              closeMenu();
+            },
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: clampedTop,
+                  child: Center(
+                    child: Material(
+                      elevation: 8,
+                      color: menuColor,
+                      borderRadius: BorderRadius.circular(8),
+                      child: IntrinsicWidth(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                closeMenu();
+                                _copyMessage();
+                              },
+                              child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  child: Text('Copy'),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                closeMenu();
+                                _deleteMessage();
+                              },
+                              child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  child: Text('Delete'),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+
+    overlay.insert(entry);
+  }
+
+  void _copyMessage() {
+    if (widget.message.isImage && _imageBytes != null) {
+      ImageGallerySaverPlus.saveImage(
+        _imageBytes!,
+        quality: 100,
+        name: 'blink_${DateTime.now().millisecondsSinceEpoch}',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Image saved to gallery')));
+      }
+    } else {
+      Clipboard.setData(ClipboardData(text: widget.message.text));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Copied')));
+      }
+    }
   }
 
   @override
@@ -220,16 +300,21 @@ class _MessageWidgetState extends State<MessageWidget>
       child: MessageRemovalWrapper(
         isRemoving: _isRemoving,
         onAnimationComplete: () {},
-        child: Align(
-          alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
-          child: Column(
-            crossAxisAlignment:
-                widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              widget.message.isImage && _imageBytes != null
-                  ? GestureDetector(
-                    onTap: () => _openFullScreenImage(context),
-                    child: Container(
+        child: GestureDetector(
+          onTapUp: (details) {
+            _showContextMenu(context, details.globalPosition);
+          },
+          child: Align(
+            alignment:
+                widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment:
+                  widget.isMe
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+              children: [
+                widget.message.isImage && _imageBytes != null
+                    ? Container(
                       margin: const EdgeInsets.symmetric(
                         vertical: appMessageMarginVertical,
                       ),
@@ -283,110 +368,115 @@ class _MessageWidgetState extends State<MessageWidget>
                           ),
                         ],
                       ),
-                    ),
-                  )
-                  : Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: appMessageMarginVertical,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(16),
-                        topRight: const Radius.circular(16),
-                        bottomLeft: Radius.circular(widget.isMe ? 16 : 4),
-                        bottomRight: Radius.circular(widget.isMe ? 4 : 16),
+                    )
+                    : Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: appMessageMarginVertical,
                       ),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                            left: 12,
-                            right: 4,
-                            top: 8,
-                            bottom: 8,
-                          ),
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.75,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors:
-                                  widget.isMe
-                                      ? [
-                                        _lerpGradientColor(
-                                          const Color(0xFF00F2FE),
-                                        ).withValues(alpha: 0.7),
-                                        _lerpGradientColor(
-                                          const Color(0xFF4FACFE),
-                                        ).withValues(alpha: 0.7),
-                                      ]
-                                      : [
-                                        _lerpGradientColor(
-                                          const Color(0xFF7F00FF),
-                                        ).withValues(alpha: 0.7),
-                                        _lerpGradientColor(
-                                          const Color(0xFFE100FF),
-                                        ).withValues(alpha: 0.7),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: const Radius.circular(16),
+                          topRight: const Radius.circular(16),
+                          bottomLeft: Radius.circular(widget.isMe ? 16 : 4),
+                          bottomRight: Radius.circular(widget.isMe ? 4 : 16),
+                        ),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                              left: 12,
+                              right: 4,
+                              top: 8,
+                              bottom: 8,
+                            ),
+                            constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors:
+                                    widget.isMe
+                                        ? [
+                                          _lerpGradientColor(
+                                            const Color(0xFF00F2FE),
+                                          ).withValues(alpha: 0.7),
+                                          _lerpGradientColor(
+                                            const Color(0xFF4FACFE),
+                                          ).withValues(alpha: 0.7),
+                                        ]
+                                        : [
+                                          _lerpGradientColor(
+                                            const Color(0xFF7F00FF),
+                                          ).withValues(alpha: 0.7),
+                                          _lerpGradientColor(
+                                            const Color(0xFFE100FF),
+                                          ).withValues(alpha: 0.7),
+                                        ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(16),
+                                topRight: const Radius.circular(16),
+                                bottomLeft: Radius.circular(
+                                  widget.isMe ? 16 : 4,
+                                ),
+                                bottomRight: Radius.circular(
+                                  widget.isMe ? 4 : 16,
+                                ),
+                              ),
+                            ),
+                            child: Stack(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 0),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: widget.message.text,
+                                      style: TextStyle(
+                                        fontSize: fontSizeMedium,
+                                        color: Colors.white,
+                                      ),
+                                      children: [
+                                        WidgetSpan(child: SizedBox(width: 52)),
                                       ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(16),
-                              topRight: const Radius.circular(16),
-                              bottomLeft: Radius.circular(widget.isMe ? 16 : 4),
-                              bottomRight: Radius.circular(
-                                widget.isMe ? 4 : 16,
-                              ),
-                            ),
-                          ),
-                          child: Stack(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 0),
-                                child: RichText(
-                                  text: TextSpan(
-                                    text: widget.message.text,
-                                    style: TextStyle(
-                                      fontSize: fontSizeMedium,
-                                      color: Colors.white,
-                                    ),
-                                    children: [
-                                      WidgetSpan(child: SizedBox(width: 52)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.3),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    DateFormat(
-                                      'HH:mm',
-                                    ).format(widget.message.timestamp),
-                                    style: TextStyle(
-                                      fontSize: fontSizeSmall - 3,
-                                      color: Colors.white,
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      DateFormat(
+                                        'HH:mm',
+                                      ).format(widget.message.timestamp),
+                                      style: TextStyle(
+                                        fontSize: fontSizeSmall - 3,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

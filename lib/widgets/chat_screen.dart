@@ -35,6 +35,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  final FocusNode _messageFocusNode = FocusNode();
   late final Stream<List<MessageModel>> _messagesStream;
   late final Stream<bool> _typingStream;
   StreamSubscription<bool>? _typingSubscription;
@@ -46,6 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Timer? _typingHideTimer;
   final ScrollController _scrollController = ScrollController();
   bool _showScrollToBottom = false;
+  final GlobalKey _messageAreaKey = GlobalKey();
 
   @override
   void initState() {
@@ -88,6 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _typingSubscription?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _messageFocusNode.dispose();
     getIt<ChatService>().setTypingStatus(
       currentUserId: widget.currentUserId,
       receiverId: widget.receiverId,
@@ -159,6 +162,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _messageController.text;
     if (text.trim().isEmpty) return;
     _messageController.clear();
+    _messageFocusNode.requestFocus();
     _typingTimer?.cancel();
     getIt<ChatService>().setTypingStatus(
       currentUserId: widget.currentUserId,
@@ -292,7 +296,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         body: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => FocusScope.of(context).unfocus(),
+          onTap: () => _messageFocusNode.unfocus(),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.only(
@@ -303,6 +307,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 children: [
                   Expanded(
+                    key: _messageAreaKey,
                     child: Stack(
                       children: [
                         StreamBuilder<List<MessageModel>>(
@@ -355,6 +360,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                         currentUserId: widget.currentUserId,
                                         receiverId: widget.receiverId,
                                         messageId: message.messageId,
+                                        chatFocusNode: _messageFocusNode,
+                                        chatController: _messageController,
                                       ),
                                     )
                                     : MessageWidget(
@@ -364,6 +371,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       currentUserId: widget.currentUserId,
                                       receiverId: widget.receiverId,
                                       messageId: message.messageId,
+                                      chatFocusNode: _messageFocusNode,
+                                      chatController: _messageController,
                                     );
                               },
                             );
@@ -413,6 +422,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Expanded(
                         child: TextField(
                           controller: _messageController,
+                          focusNode: _messageFocusNode,
                           maxLines: 5,
                           minLines: 1,
                           inputFormatters: [
