@@ -35,114 +35,88 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          getIt<AppLocalizations>().newChat,
-          style: TextStyle(
-            fontSize: appTitleFontSize,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: appPaddingSmall,
-            right: appPaddingSmall,
-            bottom: appPaddingSmall,
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: appPaddingSmall),
-              SizedBox(
-                height: appTextInputHeight,
-                child: Center(
-                  child: TextField(
-                    focusNode: searchFieldFocusNode,
-                    onTapOutside: (event) {
-                      setState(() {});
-                      searchFieldFocusNode.unfocus();
-                    },
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(userNameMaxLength),
-                    ],
-                    style: const TextStyle(fontSize: appTextInputFontSize),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.only(
-                        right: appTextInputContentPadding,
-                        top: appTextInputContentPadding,
-                        bottom: appTextInputContentPadding,
-                      ),
-                      hintText: getIt<AppLocalizations>().searchUsername,
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(
-                          left: appTextInputContentPadding,
-                          right: appTextInputContentPadding / 2,
-                        ),
-                        child: Icon(Icons.search, size: appIconMidSize),
-                      ),
-                      prefixIconConstraints: const BoxConstraints(
-                        minWidth: 0,
-                        minHeight: 0,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          appTextInputBorderRadius,
-                        ),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                    ),
-                    onChanged: (value) async {
-                      final user = await getIt<AuthService>().getUserByUsername(
-                        value.trim(),
-                      );
-                      if (user != null) {
-                        setState(() {
-                          searchResults = [user];
-                        });
-                      } else {
-                        setState(() {
-                          searchResults = [];
-                        });
-                      }
-                    },
-                  ),
+    return Column(
+      children: [
+        SizedBox(height: appPaddingSmall),
+        SizedBox(
+          height: appTextInputHeight,
+          child: Center(
+            child: TextField(
+              focusNode: searchFieldFocusNode,
+              onTapOutside: (event) {
+                setState(() {});
+                searchFieldFocusNode.unfocus();
+              },
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(userNameMaxLength),
+              ],
+              style: const TextStyle(fontSize: appTextInputFontSize),
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.only(
+                  right: appTextInputContentPadding,
+                  top: appTextInputContentPadding,
+                  bottom: appTextInputContentPadding,
                 ),
+                hintText: getIt<AppLocalizations>().searchUsername,
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(
+                    left: appTextInputContentPadding,
+                    right: appTextInputContentPadding / 2,
+                  ),
+                  child: Icon(Icons.search, size: appIconMidSize),
+                ),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 0,
+                  minHeight: 0,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
-              SizedBox(height: appFormItemMargin),
-              searchResults.isNotEmpty
-                  ? Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: searchResults.length,
-                      itemBuilder: (context, index) {
-                        final user = searchResults[index];
-                        return _buildUserListTile(user);
-                      },
-                    ),
-                  )
-                  : searchFieldFocusNode.hasFocus && searchResults.isEmpty
-                  ? Text(
-                    getIt<AppLocalizations>().noUserFound,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: fontSizeMedium,
-                    ),
-                  )
-                  : const SizedBox.shrink(),
-            ],
+              onChanged: (value) async {
+                final user = await getIt<AuthService>().getUserByUsername(
+                  value.trim(),
+                );
+                if (user != null) {
+                  setState(() {
+                    searchResults = [user];
+                  });
+                } else {
+                  setState(() {
+                    searchResults = [];
+                  });
+                }
+              },
+            ),
           ),
         ),
-      ),
+        SizedBox(height: appFormItemMargin),
+        searchResults.isNotEmpty
+            ? Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: searchResults.length,
+                itemBuilder: (context, index) {
+                  final user = searchResults[index];
+                  return _buildUserListTile(user);
+                },
+              ),
+            )
+            : searchFieldFocusNode.hasFocus && searchResults.isEmpty
+            ? Text(
+              getIt<AppLocalizations>().noUserFound,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: fontSizeMedium,
+              ),
+            )
+            : const SizedBox.shrink(),
+      ],
     );
   }
 

@@ -20,7 +20,47 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Widget content = const ContactScreen();
+  int _selectedTab = 0;
+  Widget content = const NewChatScreen();
+
+  Widget _buildTabItem(IconData icon, int index, VoidCallback onTap) {
+    final isSelected = _selectedTab == index;
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Center(
+          child: Container(
+            width: 52,
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color:
+                      isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Center(
+                child: Icon(
+                  icon,
+                  size: appIconLargeSize,
+                  color:
+                      isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,51 +124,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        mini: true,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const NewChatScreen()),
-          );
-        },
-        child: Icon(Icons.add, size: appIconLargeSize),
-      ),
       bottomNavigationBar: BottomAppBar(
         height: appBarHeight,
         padding: EdgeInsets.zero,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
-              icon: Icon(Icons.home_filled, size: appIconLargeSize),
-              onPressed: () {
-                setState(() {
-                  content = const ContactScreen();
-                });
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.qr_code_scanner, size: appIconLargeSize),
-              onPressed: () {
-                navigatorKey.currentState?.push(
-                  MaterialPageRoute(
-                    builder: (context) => const QRScannerScreen(),
-                  ),
-                );
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.person, size: appIconLargeSize),
-              onPressed: () {
-                navigatorKey.currentState?.push(
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              },
-            ),
+            _buildTabItem(Icons.home_filled, 0, () {
+              setState(() {
+                _selectedTab = 0;
+                content = const NewChatScreen();
+              });
+            }),
+            _buildTabItem(Icons.contacts, 1, () {
+              setState(() {
+                _selectedTab = 1;
+                content = const ContactScreen();
+              });
+            }),
+            _buildTabItem(Icons.qr_code_scanner, 2, () {
+              navigatorKey.currentState?.push(
+                MaterialPageRoute(
+                  builder: (context) => const QRScannerScreen(),
+                ),
+              );
+            }),
+            _buildTabItem(Icons.person, 3, () {
+              navigatorKey.currentState?.push(
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            }),
           ],
         ),
       ),
