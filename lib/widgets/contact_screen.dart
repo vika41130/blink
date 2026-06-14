@@ -20,13 +20,14 @@ class ContactScreen extends StatefulWidget {
 class _ContactScreenState extends State<ContactScreen> {
   late final FocusNode searchFieldFocusNode;
   List<Contact> contacts = [];
-  bool isLoading = true;
+  bool isLoading = false;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     searchFieldFocusNode = FocusNode();
+    isLoading = false;
     _loadContacts();
     getIt<ContactService>().contactsVersion.addListener(_onContactsChanged);
   }
@@ -101,13 +102,10 @@ class _ContactScreenState extends State<ContactScreen> {
             onChanged: (value) async {
               final currentUserId =
                   getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-              isLoading = true;
-              setState(() {});
               contacts = await getIt<ContactService>().getContacts(
                 currentUserId: currentUserId,
                 searchText: value.trim(),
               );
-              isLoading = false;
               setState(() {});
             },
           ),

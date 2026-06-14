@@ -11,6 +11,8 @@ class ContactService {
   List<Contact>? _cachedContactModels;
   final ValueNotifier<int> contactsVersion = ValueNotifier(0);
 
+  bool get hasCachedContacts => _cachedContactModels != null;
+
   Future<void> saveContact(String currentUserId, String username) async {
     if (await NetworkErrorHandler.checkAndHandle()) return;
     try {
@@ -162,7 +164,18 @@ class ContactService {
           .toList();
     }
 
-    if (await NetworkErrorHandler.checkAndHandle()) return [];
+    // If no cache, return empty — use loadContactsProgressively instead
+    return [];
+  }
+
+  /// Loads contacts one by one, updating cache and notifying after each
+  Future<void> loadContactsProgressively({
+    required String currentUserId,
+  }) async {
+    if (currentUserId.isEmpty) return;
+    if (_cachedContactModels != null) return; // already loaded
+
+    if (await NetworkErrorHandler.checkAndHandle()) return;
     try {
       final userDoc = getIt<FirebaseFirestore>()
           .collection('users')
@@ -176,13 +189,12 @@ class ContactService {
       if (contacts.isEmpty) {
         _cachedContacts = [];
         _cachedContactModels = [];
-        return [];
+        return;
       }
       contacts.sort((a, b) => a.compareTo(b));
       _cachedContacts = List.from(contacts);
+      _cachedContactModels = [];
 
-      // Fetch nicknames for all contacts
-      final List<Contact> contactModels = [];
       for (final username in contacts) {
         final querySnapshot =
             await getIt<FirebaseFirestore>()
@@ -192,37 +204,23 @@ class ContactService {
                 .get();
         if (querySnapshot.docs.isNotEmpty) {
           final data = querySnapshot.docs.first.data();
-          contactModels.add(
+          _cachedContactModels!.add(
             Contact(
               username: username,
               userNickName: data['userNickName'] as String? ?? '',
             ),
           );
         } else {
-          contactModels.add(Contact(username: username));
+          _cachedContactModels!.add(Contact(username: username));
         }
+        // Notify after each contact is added
+        contactsVersion.value++;
       }
-
-      _cachedContactModels = List.from(contactModels);
-
-      if (searchText.isNotEmpty) {
-        return contactModels
-            .where(
-              (c) =>
-                  c.username.toLowerCase().contains(searchText.toLowerCase()) ||
-                  c.displayName.toLowerCase().contains(
-                    searchText.toLowerCase(),
-                  ),
-            )
-            .toList();
-      }
-      return contactModels;
     } catch (e) {
       if (NetworkErrorHandler.isNetworkError(e)) {
         await NetworkErrorHandler.handleNetworkError();
       }
       debugPrint('Error fetching contacts: $e');
-      return [];
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
@@ -22,6 +23,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTab = 0;
   Widget content = const NewChatScreen();
+
+  @override
+  void initState() {
+    super.initState();
+    // Background preload contacts progressively
+    getIt<ContactService>().loadContactsProgressively(
+      currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+    );
+  }
 
   Widget _buildTabItem(IconData icon, int index, VoidCallback onTap) {
     final isSelected = _selectedTab == index;
