@@ -17,7 +17,7 @@ class ContactService {
     if (await NetworkErrorHandler.checkAndHandle()) return;
     try {
       if (currentUserId.isEmpty) {
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().userNotFound,
         );
         return;
@@ -34,7 +34,7 @@ class ContactService {
           [];
 
       if (contacts.contains(username)) {
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().contactAlreadyAdded,
         );
         return;
@@ -51,14 +51,14 @@ class ContactService {
       }
       contactsVersion.value++;
 
-      getIt<ToastificationService>().showSuccess(
+      getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().contactSavedSuccessfully,
       );
     } catch (e) {
       if (NetworkErrorHandler.isNetworkError(e)) {
         await NetworkErrorHandler.handleNetworkError();
       } else {
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().failedToSaveContact,
         );
         debugPrint('Error saving contact: $e');
@@ -70,7 +70,7 @@ class ContactService {
     if (await NetworkErrorHandler.checkAndHandle()) return;
     try {
       if (currentUserId.isEmpty) {
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().userNotFound,
         );
         return;
@@ -87,7 +87,7 @@ class ContactService {
           [];
 
       if (!contacts.contains(username)) {
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().contactNotAdded,
         );
         return;
@@ -100,14 +100,14 @@ class ContactService {
       _cachedContacts?.remove(username);
       contactsVersion.value++;
 
-      getIt<ToastificationService>().showSuccess(
+      getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().contactRemovedSuccessfully,
       );
     } catch (e) {
       if (NetworkErrorHandler.isNetworkError(e)) {
         await NetworkErrorHandler.handleNetworkError();
       } else {
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().failedToSaveContact,
         );
         debugPrint('Error removing contact: $e');

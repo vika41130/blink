@@ -60,9 +60,9 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         widget.receiverName,
         newNickName,
       );
-      getIt<ToastificationService>().showSuccess('Nickname updated');
+      getIt<ToastificationService>().showToast('Nickname updated');
     } else {
-      getIt<ToastificationService>().showError('Failed to update nickname');
+      getIt<ToastificationService>().showToast('Failed to update nickname');
     }
   }
 
@@ -357,7 +357,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                                 isBlocked: !isBlocked,
                               );
                           if (success) {
-                            getIt<ToastificationService>().showSuccess(
+                            getIt<ToastificationService>().showToast(
                               !isBlocked ? 'Chat blocked' : 'Chat unblocked',
                             );
                           }

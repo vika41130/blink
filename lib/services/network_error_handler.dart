@@ -22,7 +22,7 @@ class NetworkErrorHandler {
   }
 
   static Future<void> handleNetworkError() async {
-    getIt<ToastificationService>().showError('Network error. Signing out.');
+    getIt<ToastificationService>().showToast('Network error. Signing out.');
     await Future.delayed(const Duration(seconds: 2));
     getIt<CacheService>().clearCache();
     navigatorKey.currentState?.pushAndRemoveUntil(

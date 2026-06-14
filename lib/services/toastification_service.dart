@@ -5,53 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
 class ToastificationService {
-  showError(String msg) {
+  void showToast(String msg) {
     toastification.showCustom(
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.center,
       autoCloseDuration: Duration(seconds: 2),
       builder: (context, item) {
-        return Padding(
-          padding: const EdgeInsets.all(appPaddingSmall),
+        return Center(
           child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(appBoxPadding),
-            decoration: BoxDecoration(
-              color: getIt<AppThemes>().themeData.colorScheme.error,
-              borderRadius: BorderRadius.circular(appBorderRadius),
+            padding: EdgeInsets.symmetric(
+              horizontal: appBoxPadding * 2,
+              vertical: appBoxPadding,
             ),
-            child: Text.rich(
-              TextSpan(text: msg),
-              style: TextStyle(
-                color: getIt<AppThemes>().themeData.colorScheme.surfaceBright,
-                fontSize: fontSizeSmall,
+            decoration: BoxDecoration(
+              color:
+                  getIt<AppThemes>()
+                      .themeData
+                      .colorScheme
+                      .surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(appBorderRadius * 4),
+              border: Border.all(
+                color: getIt<AppThemes>().themeData.colorScheme.secondary,
+                width: smallBorderWidth,
               ),
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  showSuccess(String msg) {
-    toastification.showCustom(
-      alignment: Alignment.bottomCenter,
-      autoCloseDuration: Duration(seconds: 2),
-      builder: (context, item) {
-        final successColor =
-            getIt<AppThemes>().themeData.extension<AppColors>()?.success ??
-            Colors.green;
-        return Padding(
-          padding: const EdgeInsets.all(appPaddingSmall),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(appBoxPadding),
-            decoration: BoxDecoration(
-              color: successColor,
-              borderRadius: BorderRadius.circular(appBorderRadius),
-            ),
-            child: Text.rich(
-              TextSpan(text: msg),
-              style: TextStyle(color: Colors.white, fontSize: fontSizeSmall),
+            child: Text(
+              msg,
+              style: TextStyle(
+                color: getIt<AppThemes>().themeData.colorScheme.primary,
+                fontSize: fontSizeSmall,
+              ),
             ),
           ),
         );

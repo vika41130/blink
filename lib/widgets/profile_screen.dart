@@ -102,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
         if (mounted) {
           if (result['isSuccess'] == true) {
-            getIt<ToastificationService>().showSuccess(
+            getIt<ToastificationService>().showToast(
               getIt<AppLocalizations>().qrCodeSaved,
             );
           } else {
@@ -111,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       }
     } catch (e) {
-      getIt<ToastificationService>().showError(
+      getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().failedToSaveQRCode,
       );
     } finally {

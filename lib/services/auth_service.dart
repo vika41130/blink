@@ -18,7 +18,7 @@ class AuthService {
 
   goIn(String username, String passcode, bool isSignInMode) async {
     if (await NetworkErrorHandler.isOffline()) {
-      getIt<ToastificationService>().showError('Network error');
+      getIt<ToastificationService>().showToast('Network error');
       return;
     }
     final userCollection = getIt<FirebaseFirestore>().collection('users');
@@ -32,7 +32,7 @@ class AuthService {
                 .get();
         getIt<LoadingService>().hideLoading();
         if (querySnapshot.docs.isEmpty) {
-          getIt<ToastificationService>().showError(
+          getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().userNameNotExisting,
           );
         } else {
@@ -52,7 +52,7 @@ class AuthService {
             getIt<CacheService>().setString(cacheKeyUserId, doc.id);
             await getIt<NotificationService>().init();
           } else {
-            getIt<ToastificationService>().showError(
+            getIt<ToastificationService>().showToast(
               getIt<AppLocalizations>().passcodeNotCorrect,
             );
           }
@@ -61,9 +61,9 @@ class AuthService {
         getIt<LoadingService>().hideLoading();
         await Future.delayed(const Duration(milliseconds: 100));
         if (NetworkErrorHandler.isNetworkError(e)) {
-          getIt<ToastificationService>().showError('Network error');
+          getIt<ToastificationService>().showToast('Network error');
         } else {
-          getIt<ToastificationService>().showError(
+          getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().signUpFailed,
           );
         }
@@ -78,7 +78,7 @@ class AuthService {
                 .get();
         if (querySnapshot.docs.isNotEmpty) {
           getIt<LoadingService>().hideLoading();
-          getIt<ToastificationService>().showError(
+          getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().userNameAlreadyExisted,
           );
           return;
@@ -103,9 +103,9 @@ class AuthService {
         getIt<LoadingService>().hideLoading();
         await Future.delayed(const Duration(milliseconds: 100));
         if (NetworkErrorHandler.isNetworkError(e)) {
-          getIt<ToastificationService>().showError('Network error');
+          getIt<ToastificationService>().showToast('Network error');
         } else {
-          getIt<ToastificationService>().showError(
+          getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().signUpFailed,
           );
         }

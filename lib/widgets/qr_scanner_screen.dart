@@ -184,7 +184,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   final String? qrCodeValue = barcodes.first.rawValue;
                   await _processScannedQRCode(qrCodeValue);
                 } else {
-                  getIt<ToastificationService>().showError(
+                  getIt<ToastificationService>().showToast(
                     getIt<AppLocalizations>().noQRCodeDetected,
                   );
                 }
@@ -295,13 +295,13 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         await _processScannedQRCode(qrCodeValue);
       } else {
         _cameraController?.start();
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().noQRCodeDetected,
         );
       }
     } catch (e) {
       _cameraController?.start();
-      getIt<ToastificationService>().showError(
+      getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().noQRCodeDetected,
       );
     }
@@ -316,7 +316,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
           getIt<CacheService>().getString(cacheKeyUserId) ?? '';
       if (user != null) {
         if (qrCodeValue == currentUserId) {
-          getIt<ToastificationService>().showError(
+          getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().cannotChatWithYourself,
           );
           _cameraController?.start();
@@ -337,12 +337,12 @@ class _QRScannerScreenState extends State<QRScannerScreen>
           );
         }
       } else {
-        getIt<ToastificationService>().showError(
+        getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().userNotFound,
         );
       }
     } else {
-      getIt<ToastificationService>().showError(
+      getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().failedToReadQRCode,
       );
     }

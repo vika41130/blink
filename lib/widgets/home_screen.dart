@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           content = const ContactScreen();
                         });
                       } else {
-                        getIt<ToastificationService>().showError(
+                        getIt<ToastificationService>().showToast(
                           'Incorrect passcode',
                         );
                         pinController.setText('');

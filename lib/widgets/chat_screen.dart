@@ -177,7 +177,7 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.currentUserId,
     );
     if (blockedByMe || blockedByThem) {
-      getIt<ToastificationService>().showError('Chat is blocked');
+      getIt<ToastificationService>().showToast('Chat is blocked');
       return;
     }
     _messageController.clear();
@@ -206,7 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.currentUserId,
     );
     if (blockedByMe || blockedByThem) {
-      getIt<ToastificationService>().showError('Chat is blocked');
+      getIt<ToastificationService>().showToast('Chat is blocked');
       return;
     }
     final picker = ImagePicker();

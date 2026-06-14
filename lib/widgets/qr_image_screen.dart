@@ -109,7 +109,7 @@ class _QrImageScreenState extends State<QrImageScreen> {
         );
         if (context.mounted) {
           if (result['isSuccess'] == true) {
-            getIt<ToastificationService>().showSuccess(
+            getIt<ToastificationService>().showToast(
               getIt<AppLocalizations>().qrCodeSaved,
             );
           } else {
@@ -118,7 +118,7 @@ class _QrImageScreenState extends State<QrImageScreen> {
         }
       }
     } catch (e) {
-      getIt<ToastificationService>().showError(
+      getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().failedToSaveQRCode,
       );
     } finally {
