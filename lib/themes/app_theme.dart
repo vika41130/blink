@@ -11,6 +11,7 @@ class AppThemes {
   static final lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
+    fontFamily: 'monospace',
     colorScheme: ColorScheme.light(
       primary: _darkBlue700,
       secondary: _darkBlue500,
@@ -33,6 +34,7 @@ class AppThemes {
   static final darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
+    fontFamily: 'monospace',
     scaffoldBackgroundColor: const Color(0xFF000000),
     colorScheme: ColorScheme.dark(
       primary: const Color(0xFFFFFFFF),
