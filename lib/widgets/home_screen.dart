@@ -75,6 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: Icon(Icons.qr_code_scanner),
+            onPressed: () {
+              navigatorKey.currentState?.push(
+                MaterialPageRoute(
+                  builder: (context) => const QRScannerScreen(),
+                ),
+              );
+            },
+          ),
           ValueListenableBuilder<int>(
             valueListenable: getIt<NotificationService>().unreadCount,
             builder:
@@ -141,14 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 content = const ContactScreen();
               });
             }),
-            _buildTabItem(Icons.qr_code_scanner, 2, () {
-              navigatorKey.currentState?.push(
-                MaterialPageRoute(
-                  builder: (context) => const QRScannerScreen(),
-                ),
-              );
-            }),
-            _buildTabItem(Icons.person, 3, () {
+            _buildTabItem(Icons.person, 2, () {
               navigatorKey.currentState?.push(
                 MaterialPageRoute(builder: (context) => const ProfileScreen()),
               );

@@ -108,9 +108,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchHint => 'Search';
 
   @override
-  String get newChat => 'New chat';
-
-  @override
   String get chatSettings => 'Chat settings';
 
   @override

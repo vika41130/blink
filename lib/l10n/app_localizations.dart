@@ -291,12 +291,6 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get searchHint;
 
-  /// No description provided for @newChat.
-  ///
-  /// In en, this message translates to:
-  /// **'New chat'**
-  String get newChat;
-
   /// No description provided for @chatSettings.
   ///
   /// In en, this message translates to:
