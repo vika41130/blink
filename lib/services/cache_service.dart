@@ -14,6 +14,7 @@ class CacheService {
     getIt<CacheService>().setString(cacheKeyUsername, '');
     getIt<CacheService>().setBool(cacheKeyIsSignedIn, false);
     getIt<CacheService>().setString(cacheKeyUserId, '');
+    getIt<CacheService>().setString('lastPinVerified', '');
     getIt<ContactService>().clearCache();
   }
 }

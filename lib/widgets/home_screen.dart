@@ -1,9 +1,11 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/notification_service.dart';
+import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/notification_screen.dart';
@@ -12,6 +14,7 @@ import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
 import 'package:blink/widgets/newchat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,13 +26,111 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTab = 0;
   Widget content = const NewChatScreen();
+  DateTime? _lastPinVerified;
 
   @override
   void initState() {
     super.initState();
+    // Load cached pin verification time
+    final cachedTime = getIt<CacheService>().getString('lastPinVerified');
+    if (cachedTime != null && cachedTime.isNotEmpty) {
+      _lastPinVerified = DateTime.tryParse(cachedTime);
+    }
     // Background preload contacts progressively
     getIt<ContactService>().loadContactsProgressively(
       currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+    );
+  }
+
+  void _showPinDialog() {
+    final pinController = TextEditingController();
+    showDialog(
+      context: context,
+      builder:
+          (ctx) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(appBorderRadius * 4),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.secondary,
+                width: smallBorderWidth,
+              ),
+            ),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 80),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: appPaddingSmall,
+                vertical: appPaddingSmall,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Enter passcode',
+                    style: TextStyle(fontSize: fontSizeSmall),
+                  ),
+                  const SizedBox(height: 6),
+                  Pinput(
+                    controller: pinController,
+                    autofocus: true,
+                    obscureText: true,
+                    defaultPinTheme: PinTheme(
+                      width: 28,
+                      height: 28,
+                      textStyle: TextStyle(
+                        fontSize: fontSizeMedium,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary,
+                          width: smallBorderWidth,
+                        ),
+                      ),
+                    ),
+                    showCursor: true,
+                    cursor: Center(
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    separatorBuilder:
+                        (index) => const SizedBox(width: appPaddingMid),
+                    hapticFeedbackType: HapticFeedbackType.lightImpact,
+                    onCompleted: (pin) async {
+                      final userId =
+                          getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+                      final user = await getIt<AuthService>().getUserById(
+                        userId,
+                      );
+                      if (user != null && user.passcode == pin) {
+                        if (ctx.mounted) Navigator.of(ctx).pop();
+                        _lastPinVerified = DateTime.now();
+                        getIt<CacheService>().setString(
+                          'lastPinVerified',
+                          _lastPinVerified!.toIso8601String(),
+                        );
+                        setState(() {
+                          _selectedTab = 1;
+                          content = const ContactScreen();
+                        });
+                      } else {
+                        getIt<ToastificationService>().showError(
+                          'Incorrect passcode',
+                        );
+                        pinController.setText('');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
     );
   }
 
@@ -156,10 +257,16 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             }),
             _buildTabItem(Icons.contacts, 1, () {
-              setState(() {
-                _selectedTab = 1;
-                content = const ContactScreen();
-              });
+              if (_lastPinVerified != null &&
+                  DateTime.now().difference(_lastPinVerified!) <
+                      const Duration(hours: 6)) {
+                setState(() {
+                  _selectedTab = 1;
+                  content = const ContactScreen();
+                });
+              } else {
+                _showPinDialog();
+              }
             }),
             _buildTabItem(Icons.person, 2, () {
               setState(() {
