@@ -182,6 +182,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
               SizedBox(height: appPaddingSmall),
               _isEditingUsername
                   ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       IconButton(
                         icon: Icon(
@@ -193,6 +194,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                           _saveNickName();
                         },
                       ),
+                      SizedBox(width: appPaddingSmall),
                       IconButton(
                         icon: Icon(
                           Icons.close,
@@ -209,42 +211,38 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                       ),
                       SizedBox(width: appPaddingSmall),
                       Expanded(
-                        child: SizedBox(
-                          height: appTextInputHeight,
-                          child: TextField(
-                            controller: _usernameController,
-                            focusNode: _usernameFocusNode,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(
-                                userNickNameMaxLength,
-                              ),
-                            ],
-                            onTapOutside: (_) {
-                              _usernameFocusNode.unfocus();
-                            },
-                            onSubmitted: (_) {
-                              setState(() => _isEditingUsername = false);
-                            },
-                            style: const TextStyle(
-                              fontSize: appTextInputFontSize,
+                        child: TextField(
+                          controller: _usernameController,
+                          focusNode: _usernameFocusNode,
+                          maxLines: 2,
+                          minLines: 1,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(
+                              userNickNameMaxLength,
                             ),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.all(
-                                appTextInputContentPadding,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  appTextInputBorderRadius,
-                                ),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerHighest,
+                          ],
+                          onTapOutside: (_) {
+                            _usernameFocusNode.unfocus();
+                          },
+                          style: const TextStyle(
+                            fontSize: appTextInputFontSize,
+                          ),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: EdgeInsets.all(
+                              appTextInputContentPadding,
                             ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                appTextInputBorderRadius,
+                              ),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
                           ),
                         ),
                       ),
