@@ -12,11 +12,13 @@ import 'package:intl/intl.dart';
 
 class ChatSettingsScreen extends StatefulWidget {
   final String receiverName;
+  final String receiverId;
   final String? displayName;
 
   const ChatSettingsScreen({
     super.key,
     required this.receiverName,
+    required this.receiverId,
     this.displayName,
   });
 
@@ -88,7 +90,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: appPaddingSmall * 2,
             vertical: appPaddingSmall,
@@ -116,12 +118,15 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                         onPressed: null,
                       ),
                       SizedBox(width: appPaddingSmall),
-                      Text(
-                        DateFormat('yyyy.MM.dd HH:mm').format(snapshot.data!),
-                        style: TextStyle(
-                          fontSize: fontSizeMedium,
-                          fontFamily: 'monospace',
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      Expanded(
+                        child: Text(
+                          DateFormat('yyyy.MM.dd HH:mm').format(snapshot.data!),
+                          style: TextStyle(
+                            fontSize: fontSizeMedium,
+                            fontFamily: 'monospace',
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                     ],
@@ -140,11 +145,36 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     onPressed: null,
                   ),
                   SizedBox(width: appPaddingSmall),
-                  Text(
-                    getIt<AppLocalizations>().swipeRightToRemove,
-                    style: TextStyle(
-                      fontSize: fontSizeMedium,
+                  Expanded(
+                    child: Text(
+                      getIt<AppLocalizations>().swipeRightToRemove,
+                      style: TextStyle(
+                        fontSize: fontSizeMedium,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: appPaddingSmall),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.touch_app,
+                      size: appIconMidSize,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: null,
+                  ),
+                  SizedBox(width: appPaddingSmall),
+                  Expanded(
+                    child: Text(
+                      getIt<AppLocalizations>().tripleTapToBlock,
+                      style: TextStyle(
+                        fontSize: fontSizeMedium,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -236,13 +266,15 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                         },
                       ),
                       SizedBox(width: appPaddingSmall),
-                      Text(
-                        _currentNickName.isNotEmpty
-                            ? _currentNickName
-                            : widget.receiverName,
-                        style: TextStyle(
-                          fontSize: fontSizeMedium,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      Expanded(
+                        child: Text(
+                          _currentNickName.isNotEmpty
+                              ? _currentNickName
+                              : widget.receiverName,
+                          style: TextStyle(
+                            fontSize: fontSizeMedium,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
                     ],
@@ -282,13 +314,66 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                         },
                       ),
                       SizedBox(width: appPaddingSmall),
-                      Text(
-                        isAdded
-                            ? getIt<AppLocalizations>().savedContact
-                            : getIt<AppLocalizations>().saveContact,
-                        style: TextStyle(
-                          fontSize: fontSizeMedium,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      Expanded(
+                        child: Text(
+                          isAdded
+                              ? getIt<AppLocalizations>().savedContact
+                              : getIt<AppLocalizations>().saveContact,
+                          style: TextStyle(
+                            fontSize: fontSizeMedium,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              SizedBox(height: appPaddingSmall),
+              FutureBuilder<bool>(
+                future: getIt<ChatService>().isChatBlocked(
+                  currentUserId:
+                      getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+                  receiverId: widget.receiverId,
+                ),
+                builder: (context, snapshot) {
+                  final isBlocked = snapshot.data == true;
+                  return Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          isBlocked ? Icons.lock_open : Icons.lock,
+                          size: appIconMidSize,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onPressed: () async {
+                          final currentUserId =
+                              getIt<CacheService>().getString(cacheKeyUserId) ??
+                              '';
+                          final success = await getIt<ChatService>()
+                              .setChatBlocked(
+                                currentUserId: currentUserId,
+                                receiverId: widget.receiverId,
+                                isBlocked: !isBlocked,
+                              );
+                          if (success) {
+                            getIt<ToastificationService>().showSuccess(
+                              !isBlocked ? 'Chat blocked' : 'Chat unblocked',
+                            );
+                          }
+                          setState(() {});
+                        },
+                      ),
+                      SizedBox(width: appPaddingSmall),
+                      Expanded(
+                        child: Text(
+                          isBlocked
+                              ? getIt<AppLocalizations>().unblockChat
+                              : getIt<AppLocalizations>().blockChat,
+                          style: TextStyle(
+                            fontSize: fontSizeMedium,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
                     ],

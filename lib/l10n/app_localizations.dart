@@ -320,6 +320,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Swipe right the message to remove.'**
   String get swipeRightToRemove;
+
+  /// No description provided for @tripleTapToBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Triple-tap the title to temporarily block the chat screen.'**
+  String get tripleTapToBlock;
+
+  /// No description provided for @blockChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Block chat'**
+  String get blockChat;
+
+  /// No description provided for @unblockChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock chat'**
+  String get unblockChat;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

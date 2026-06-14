@@ -121,4 +121,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get swipeRightToRemove => 'Swipe right the message to remove.';
+
+  @override
+  String get tripleTapToBlock => 'Triple-tap the title to temporarily block the chat screen.';
+
+  @override
+  String get blockChat => 'Block chat';
+
+  @override
+  String get unblockChat => 'Unblock chat';
 }

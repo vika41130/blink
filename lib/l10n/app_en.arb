@@ -75,5 +75,11 @@
     "saveContact": "Save contact",
     "@saveContact": {},
     "swipeRightToRemove": "Swipe right the message to remove.",
-    "@swipeRightToRemove": {}
+    "@swipeRightToRemove": {},
+    "tripleTapToBlock": "Triple-tap the title to temporarily block the chat screen.",
+    "@tripleTapToBlock": {},
+    "blockChat": "Block chat",
+    "@blockChat": {},
+    "unblockChat": "Unblock chat",
+    "@unblockChat": {}
 }

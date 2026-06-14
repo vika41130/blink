@@ -201,4 +201,43 @@ class ChatService {
         })
         .distinct();
   }
+
+  Future<bool> isChatBlocked({
+    required String currentUserId,
+    required String receiverId,
+  }) async {
+    final String chatRoomId = getChatRoomId(currentUserId, receiverId);
+    try {
+      final doc =
+          await getIt<FirebaseFirestore>()
+              .collection('chats')
+              .doc(chatRoomId)
+              .get();
+      if (!doc.exists) return false;
+      final data = doc.data();
+      return data?['blocked_$currentUserId'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> setChatBlocked({
+    required String currentUserId,
+    required String receiverId,
+    required bool isBlocked,
+  }) async {
+    if (await NetworkErrorHandler.checkAndHandle()) return false;
+    final String chatRoomId = getChatRoomId(currentUserId, receiverId);
+    try {
+      await getIt<FirebaseFirestore>().collection('chats').doc(chatRoomId).set({
+        'blocked_$currentUserId': isBlocked,
+      }, SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      if (NetworkErrorHandler.isNetworkError(e)) {
+        await NetworkErrorHandler.handleNetworkError();
+      }
+      return false;
+    }
+  }
 }

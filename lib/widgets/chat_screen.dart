@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/auth_service.dart';
-import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/notification_service.dart';
+import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/home_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
@@ -51,6 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _showScrollToBottom = false;
   final GlobalKey _messageAreaKey = GlobalKey();
   String _displayName = '';
+  bool _isBlocked = false;
 
   @override
   void initState() {
@@ -92,6 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     _typingTimer?.cancel();
     _typingHideTimer?.cancel();
+    _tapTimer?.cancel();
     _typingSubscription?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
@@ -166,6 +169,19 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage() async {
     final text = _messageController.text;
     if (text.trim().isEmpty) return;
+    // Check if either person has blocked this chat
+    final blockedByMe = await getIt<ChatService>().isChatBlocked(
+      currentUserId: widget.currentUserId,
+      receiverId: widget.receiverId,
+    );
+    final blockedByThem = await getIt<ChatService>().isChatBlocked(
+      currentUserId: widget.receiverId,
+      receiverId: widget.currentUserId,
+    );
+    if (blockedByMe || blockedByThem) {
+      getIt<ToastificationService>().showError('Chat is blocked');
+      return;
+    }
     _messageController.clear();
     _messageFocusNode.requestFocus();
     _typingTimer?.cancel();
@@ -183,6 +199,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _pickAndSendImage() async {
+    // Check if either person has blocked this chat
+    final blockedByMe = await getIt<ChatService>().isChatBlocked(
+      currentUserId: widget.currentUserId,
+      receiverId: widget.receiverId,
+    );
+    final blockedByThem = await getIt<ChatService>().isChatBlocked(
+      currentUserId: widget.receiverId,
+      receiverId: widget.currentUserId,
+    );
+    if (blockedByMe || blockedByThem) {
+      getIt<ToastificationService>().showError('Chat is blocked');
+      return;
+    }
     final picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
@@ -227,6 +256,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  int _tapCount = 0;
+  Timer? _tapTimer;
+
+  void _onAppBarTap() {
+    _tapCount++;
+    _tapTimer?.cancel();
+    _tapTimer = Timer(const Duration(milliseconds: 400), () {
+      _tapCount = 0;
+    });
+    if (_tapCount >= 3) {
+      _tapCount = 0;
+      _tapTimer?.cancel();
+      setState(() => _isBlocked = !_isBlocked);
+      if (_isBlocked) {
+        _messageFocusNode.unfocus();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -241,11 +289,15 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            _displayName,
-            style: TextStyle(
-              fontSize: appTitleFontSize,
-              color: Theme.of(context).colorScheme.primary,
+          title: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _onAppBarTap,
+            child: Text(
+              _displayName,
+              style: TextStyle(
+                fontSize: appTitleFontSize,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
           leading: IconButton(
@@ -268,6 +320,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     builder:
                         (context) => ChatSettingsScreen(
                           receiverName: widget.receiverName,
+                          receiverId: widget.receiverId,
                           displayName: _displayName,
                         ),
                   ),
@@ -279,215 +332,247 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
-        body: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => _messageFocusNode.unfocus(),
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: appPaddingSmall,
-                right: appPaddingSmall,
-                bottom: appPaddingSmall,
-              ),
-              child: Column(
-                children: [
-                  Expanded(
-                    key: _messageAreaKey,
-                    child: Stack(
-                      children: [
-                        StreamBuilder<List<MessageModel>>(
-                          stream: _messagesStream,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox.shrink();
-                            }
-                            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-                            final messages = snapshot.data!;
-                            return ListView.separated(
-                              controller: _scrollController,
-                              reverse: true,
-                              itemCount: messages.length,
-                              separatorBuilder:
-                                  (context, index) => const SizedBox.shrink(),
-                              itemBuilder: (context, index) {
-                                final message = messages[index];
-                                final bool isMe =
-                                    message.senderId == widget.currentUserId;
-                                return _smokingMessages.contains(
-                                      message.messageId,
-                                    )
-                                    ? const SizedBox.shrink()
-                                    : isMe
-                                    ? _DismissibleMessage(
-                                      messageId: message.messageId,
-                                      onDismissed: (position) {
-                                        showSmokeEffect(context, position);
-                                        setState(() {
-                                          _smokingMessages.add(
-                                            message.messageId,
-                                          );
-                                        });
-                                        getIt<ChatService>().deleteMessage(
+        body: Stack(
+          children: [
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _messageFocusNode.unfocus(),
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: appPaddingSmall,
+                    right: appPaddingSmall,
+                    bottom: appPaddingSmall,
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        key: _messageAreaKey,
+                        child: Stack(
+                          children: [
+                            StreamBuilder<List<MessageModel>>(
+                              stream: _messagesStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const SizedBox.shrink();
+                                }
+                                if (!snapshot.hasData ||
+                                    snapshot.data!.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
+                                final messages = snapshot.data!;
+                                return ListView.separated(
+                                  controller: _scrollController,
+                                  reverse: true,
+                                  itemCount: messages.length,
+                                  separatorBuilder:
+                                      (context, index) =>
+                                          const SizedBox.shrink(),
+                                  itemBuilder: (context, index) {
+                                    final message = messages[index];
+                                    final bool isMe =
+                                        message.senderId ==
+                                        widget.currentUserId;
+                                    return _smokingMessages.contains(
+                                          message.messageId,
+                                        )
+                                        ? const SizedBox.shrink()
+                                        : isMe
+                                        ? _DismissibleMessage(
+                                          messageId: message.messageId,
+                                          onDismissed: (position) {
+                                            showSmokeEffect(context, position);
+                                            setState(() {
+                                              _smokingMessages.add(
+                                                message.messageId,
+                                              );
+                                            });
+                                            getIt<ChatService>().deleteMessage(
+                                              currentUserId:
+                                                  widget.currentUserId,
+                                              receiverId: widget.receiverId,
+                                              messageId: message.messageId,
+                                            );
+                                          },
+                                          child: MessageWidget(
+                                            key: ValueKey(
+                                              'msg_${message.messageId}',
+                                            ),
+                                            message: message,
+                                            isMe: isMe,
+                                            currentUserId: widget.currentUserId,
+                                            receiverId: widget.receiverId,
+                                            messageId: message.messageId,
+                                            chatFocusNode: _messageFocusNode,
+                                            chatController: _messageController,
+                                          ),
+                                        )
+                                        : MessageWidget(
+                                          key: ValueKey(
+                                            'msg_${message.messageId}',
+                                          ),
+                                          message: message,
+                                          isMe: isMe,
                                           currentUserId: widget.currentUserId,
                                           receiverId: widget.receiverId,
                                           messageId: message.messageId,
+                                          chatFocusNode: _messageFocusNode,
+                                          chatController: _messageController,
                                         );
-                                      },
-                                      child: MessageWidget(
-                                        key: ValueKey(
-                                          'msg_${message.messageId}',
-                                        ),
-                                        message: message,
-                                        isMe: isMe,
-                                        currentUserId: widget.currentUserId,
-                                        receiverId: widget.receiverId,
-                                        messageId: message.messageId,
-                                        chatFocusNode: _messageFocusNode,
-                                        chatController: _messageController,
-                                      ),
-                                    )
-                                    : MessageWidget(
-                                      key: ValueKey('msg_${message.messageId}'),
-                                      message: message,
-                                      isMe: isMe,
-                                      currentUserId: widget.currentUserId,
-                                      receiverId: widget.receiverId,
-                                      messageId: message.messageId,
-                                      chatFocusNode: _messageFocusNode,
-                                      chatController: _messageController,
-                                    );
+                                  },
+                                );
                               },
-                            );
-                          },
-                        ),
-                        if (_showScrollToBottom)
-                          Positioned(
-                            bottom: 8,
-                            right: 0,
-                            child: GestureDetector(
-                              onTap: _scrollToBottom,
-                              child: Container(
-                                width: 34,
-                                height: 34,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.surfaceContainerHighest,
-                                ),
-                                child: Icon(
-                                  Icons.keyboard_arrow_down,
-                                  size: 24,
-                                  color: Theme.of(context).colorScheme.primary,
+                            ),
+                            if (_showScrollToBottom)
+                              Positioned(
+                                bottom: 8,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: _scrollToBottom,
+                                  child: Container(
+                                    width: 34,
+                                    height: 34,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.surfaceContainerHighest,
+                                    ),
+                                    child: Icon(
+                                      Icons.keyboard_arrow_down,
+                                      size: 24,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: appMessageMarginVertical),
-                  SizedBox(
-                    height: 16,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: AnimatedOpacity(
-                        opacity: _isReceiverTyping ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 200),
-                        child: const RepaintBoundary(child: TypingIndicator()),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          focusNode: _messageFocusNode,
-                          maxLines: 5,
-                          minLines: 1,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(
-                              appMessageMaxLength,
-                            ),
                           ],
-                          style: const TextStyle(
-                            fontSize: appTextInputFontSize,
-                          ),
-                          decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: appTextInputContentPadding * 1.5,
-                              vertical: appTextInputContentPadding,
+                        ),
+                      ),
+                      SizedBox(height: appMessageMarginVertical),
+                      SizedBox(
+                        height: 16,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: AnimatedOpacity(
+                            opacity: _isReceiverTyping ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 200),
+                            child: const RepaintBoundary(
+                              child: TypingIndicator(),
                             ),
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (!_hasText)
-                                  Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(
-                                        appTextInputBorderRadius,
-                                      ),
-                                      onTap: _pickAndSendImage,
-                                      child: Icon(
-                                        Icons.photo_outlined,
-                                        size: appIconLargeSize,
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.tertiary,
-                                      ),
-                                    ),
-                                  ),
-                                if (_hasText)
-                                  Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(
-                                        appTextInputBorderRadius,
-                                      ),
-                                      onTap: _sendMessage,
-                                      child: Icon(
-                                        Icons.send,
-                                        size: appIconLargeSize,
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.tertiary,
-                                      ),
-                                    ),
-                                  ),
-                                SizedBox(width: appTextInputContentPadding / 2),
-                              ],
-                            ),
-                            suffixIconConstraints: const BoxConstraints(
-                              minWidth: 0,
-                              minHeight: 0,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerHighest,
                           ),
                         ),
                       ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _messageController,
+                              focusNode: _messageFocusNode,
+                              maxLines: 5,
+                              minLines: 1,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(
+                                      appMessageMaxLength,
+                                    ),
+                                  ],
+                                  style: const TextStyle(
+                                    fontSize: appTextInputFontSize,
+                                  ),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          appTextInputContentPadding * 1.5,
+                                      vertical: appTextInputContentPadding,
+                                    ),
+                                    suffixIcon: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (!_hasText)
+                                          Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    appTextInputBorderRadius,
+                                                  ),
+                                              onTap: _pickAndSendImage,
+                                              child: Icon(
+                                                Icons.photo_outlined,
+                                                size: appIconLargeSize,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.tertiary,
+                                              ),
+                                            ),
+                                          ),
+                                        if (_hasText)
+                                          Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    appTextInputBorderRadius,
+                                                  ),
+                                              onTap: _sendMessage,
+                                              child: Icon(
+                                                Icons.send,
+                                                size: appIconLargeSize,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.tertiary,
+                                              ),
+                                            ),
+                                          ),
+                                        SizedBox(
+                                          width: appTextInputContentPadding / 2,
+                                        ),
+                                      ],
+                                    ),
+                                    suffixIconConstraints: const BoxConstraints(
+                                      minWidth: 0,
+                                      minHeight: 0,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                    fillColor:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainerHighest,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            if (_isBlocked)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () {},
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                      child: Container(
+                        color: Colors.black.withValues(alpha: 0.3),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
