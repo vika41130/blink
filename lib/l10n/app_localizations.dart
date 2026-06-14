@@ -171,18 +171,6 @@ abstract class AppLocalizations {
   /// **'Username already exists.'**
   String get userNameAlreadyExisted;
 
-  /// No description provided for @searchContact.
-  ///
-  /// In en, this message translates to:
-  /// **'Search contact'**
-  String get searchContact;
-
-  /// No description provided for @searchUsername.
-  ///
-  /// In en, this message translates to:
-  /// **'Search username'**
-  String get searchUsername;
-
   /// No description provided for @cannotChatWithYourself.
   ///
   /// In en, this message translates to:
@@ -284,12 +272,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open settings'**
   String get openSettings;
-
-  /// No description provided for @searchHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Search'**
-  String get searchHint;
 
   /// No description provided for @chatSettings.
   ///

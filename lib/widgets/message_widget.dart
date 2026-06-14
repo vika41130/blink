@@ -175,20 +175,21 @@ class _MessageWidgetState extends State<MessageWidget>
 
     late final OverlayEntry entry;
 
-    String? _textBeforeMenu;
+    String? textBeforeMenu;
 
     void onTextChanged() {
-      if (_textBeforeMenu != null && widget.chatController != null) {
+      final savedText = textBeforeMenu;
+      if (savedText != null && widget.chatController != null) {
         widget.chatController!.removeListener(onTextChanged);
-        widget.chatController!.text = _textBeforeMenu!;
+        widget.chatController!.text = savedText;
         widget.chatController!.selection = TextSelection.collapsed(
-          offset: _textBeforeMenu!.length,
+          offset: savedText.length,
         );
       }
       if (entry.mounted) entry.remove();
     }
 
-    _textBeforeMenu = widget.chatController?.text;
+    textBeforeMenu = widget.chatController?.text;
 
     void closeMenu() {
       widget.chatController?.removeListener(onTextChanged);

@@ -28,7 +28,7 @@ class NotificationScreen extends StatelessWidget {
           valueListenable: getIt<NotificationService>().notifications,
           builder: (_, items, __) {
             if (items.isEmpty) {
-              return const Center(child: Text('No notifications'));
+              return const SizedBox.shrink();
             }
             return ListView.builder(
               itemCount: items.length,

@@ -44,7 +44,6 @@ class _ChatScreenState extends State<ChatScreen> {
   StreamSubscription<bool>? _typingSubscription;
   bool _hasText = false;
   bool _isReceiverTyping = false;
-  DateTime? _lastChatTime;
   final Set<String> _smokingMessages = {};
   Timer? _typingTimer;
   Timer? _typingHideTimer;
@@ -58,7 +57,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _displayName = widget.displayName ?? widget.receiverName;
-    _loadLastChatTime();
     if (widget.displayName == null) _loadDisplayName();
     _messagesStream = getIt<ChatService>().getMessages(
       widget.currentUserId,
@@ -195,7 +193,6 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.receiverId,
       messageText: text,
     );
-    _refreshLastChatTime();
   }
 
   Future<void> _pickAndSendImage() async {
@@ -226,25 +223,6 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.receiverId,
       imageFile: imageFile,
     );
-    _refreshLastChatTime();
-  }
-
-  void _refreshLastChatTime() {
-    setState(() {
-      _lastChatTime = DateTime.now();
-    });
-  }
-
-  Future<void> _loadLastChatTime() async {
-    final time = await getIt<ChatService>().getLastChatTime(
-      widget.currentUserId,
-      widget.receiverName,
-    );
-    if (mounted) {
-      setState(() {
-        _lastChatTime = time;
-      });
-    }
   }
 
   Future<void> _loadDisplayName() async {

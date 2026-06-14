@@ -48,12 +48,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userNameAlreadyExisted => 'Username already exists.';
 
   @override
-  String get searchContact => 'Search contact';
-
-  @override
-  String get searchUsername => 'Search username';
-
-  @override
   String get cannotChatWithYourself => 'You cannot chat with yourself.';
 
   @override
@@ -103,9 +97,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openSettings => 'Open settings';
-
-  @override
-  String get searchHint => 'Search';
 
   @override
   String get chatSettings => 'Chat settings';

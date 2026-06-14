@@ -1,6 +1,5 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
-import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/models/contact.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
@@ -19,6 +18,7 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   late final FocusNode searchFieldFocusNode;
+  late final TextEditingController _searchController;
   List<Contact> contacts = [];
   bool isLoading = false;
   final ScrollController _scrollController = ScrollController();
@@ -27,6 +27,7 @@ class _ContactScreenState extends State<ContactScreen> {
   void initState() {
     super.initState();
     searchFieldFocusNode = FocusNode();
+    _searchController = TextEditingController();
     isLoading = false;
     _loadContacts();
     getIt<ContactService>().contactsVersion.addListener(_onContactsChanged);
@@ -52,6 +53,7 @@ class _ContactScreenState extends State<ContactScreen> {
   void dispose() {
     getIt<ContactService>().contactsVersion.removeListener(_onContactsChanged);
     searchFieldFocusNode.dispose();
+    _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -64,6 +66,7 @@ class _ContactScreenState extends State<ContactScreen> {
         SizedBox(
           height: appTextInputHeight,
           child: TextField(
+            controller: _searchController,
             focusNode: searchFieldFocusNode,
             onTapOutside: (event) {
               setState(() {});
@@ -80,7 +83,6 @@ class _ContactScreenState extends State<ContactScreen> {
                 top: appTextInputContentPadding,
                 bottom: appTextInputContentPadding,
               ),
-              hintText: getIt<AppLocalizations>().searchContact,
               prefixIcon: Padding(
                 padding: const EdgeInsets.only(
                   left: appTextInputContentPadding,
@@ -89,6 +91,26 @@ class _ContactScreenState extends State<ContactScreen> {
                 child: Icon(Icons.search, size: appIconMidSize),
               ),
               prefixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 0,
+              ),
+              suffixIcon:
+                  _searchController.text.isNotEmpty
+                      ? GestureDetector(
+                        onTap: () {
+                          _searchController.clear();
+                          searchFieldFocusNode.unfocus();
+                          _loadContacts();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            right: appTextInputContentPadding,
+                          ),
+                          child: Icon(Icons.close, size: appIconMidSize),
+                        ),
+                      )
+                      : null,
+              suffixIconConstraints: const BoxConstraints(
                 minWidth: 0,
                 minHeight: 0,
               ),

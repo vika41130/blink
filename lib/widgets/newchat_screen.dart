@@ -1,7 +1,6 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/user.dart';
-import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
@@ -19,17 +18,20 @@ class NewChatScreen extends StatefulWidget {
 
 class _NewChatScreenState extends State<NewChatScreen> {
   late final FocusNode searchFieldFocusNode;
+  late final TextEditingController _searchController;
   List<User> searchResults = [];
 
   @override
   void initState() {
     super.initState();
     searchFieldFocusNode = FocusNode();
+    _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
     searchFieldFocusNode.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -42,6 +44,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           height: appTextInputHeight,
           child: Center(
             child: TextField(
+              controller: _searchController,
               focusNode: searchFieldFocusNode,
               onTapOutside: (event) {
                 setState(() {});
@@ -58,7 +61,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
                   top: appTextInputContentPadding,
                   bottom: appTextInputContentPadding,
                 ),
-                hintText: getIt<AppLocalizations>().searchUsername,
                 prefixIcon: Padding(
                   padding: const EdgeInsets.only(
                     left: appTextInputContentPadding,
@@ -67,6 +69,26 @@ class _NewChatScreenState extends State<NewChatScreen> {
                   child: Icon(Icons.search, size: appIconMidSize),
                 ),
                 prefixIconConstraints: const BoxConstraints(
+                  minWidth: 0,
+                  minHeight: 0,
+                ),
+                suffixIcon:
+                    _searchController.text.isNotEmpty
+                        ? GestureDetector(
+                          onTap: () {
+                            _searchController.clear();
+                            searchFieldFocusNode.unfocus();
+                            setState(() => searchResults = []);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              right: appTextInputContentPadding,
+                            ),
+                            child: Icon(Icons.close, size: appIconMidSize),
+                          ),
+                        )
+                        : null,
+                suffixIconConstraints: const BoxConstraints(
                   minWidth: 0,
                   minHeight: 0,
                 ),
@@ -105,14 +127,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
                   final user = searchResults[index];
                   return _buildUserListTile(user);
                 },
-              ),
-            )
-            : searchFieldFocusNode.hasFocus && searchResults.isEmpty
-            ? Text(
-              getIt<AppLocalizations>().noUserFound,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontSize: fontSizeMedium,
               ),
             )
             : const SizedBox.shrink(),
