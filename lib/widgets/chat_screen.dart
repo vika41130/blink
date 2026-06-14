@@ -260,6 +260,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Timer? _tapTimer;
 
   void _onAppBarTap() {
+    _messageFocusNode.unfocus();
     _tapCount++;
     _tapTimer?.cancel();
     _tapTimer = Timer(const Duration(milliseconds: 400), () {
@@ -269,9 +270,6 @@ class _ChatScreenState extends State<ChatScreen> {
       _tapCount = 0;
       _tapTimer?.cancel();
       setState(() => _isBlocked = !_isBlocked);
-      if (_isBlocked) {
-        _messageFocusNode.unfocus();
-      }
     }
   }
 
@@ -288,49 +286,60 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _onAppBarTap,
-            child: Text(
-              _displayName,
-              style: TextStyle(
-                fontSize: appTitleFontSize,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-                (Route<dynamic> route) => false,
-              );
-            },
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.more_vert, size: appBarIconSize),
-              onPressed: () async {
-                final result = await Navigator.push<String>(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => ChatSettingsScreen(
-                          receiverName: widget.receiverName,
-                          receiverId: widget.receiverId,
-                          displayName: _displayName,
-                        ),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => _messageFocusNode.unfocus(),
+            child: AppBar(
+              title: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: _onAppBarTap,
+                child: Text(
+                  _displayName,
+                  style: TextStyle(
+                    fontSize: appTitleFontSize,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                );
-                if (result != null && result.isNotEmpty && mounted) {
-                  setState(() => _displayName = result);
-                }
-              },
+                ),
+              ),
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  size: appBarIconSize,
+                ),
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                },
+              ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.more_vert, size: appBarIconSize),
+                  onPressed: () async {
+                    final result = await Navigator.push<String>(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ChatSettingsScreen(
+                              receiverName: widget.receiverName,
+                              receiverId: widget.receiverId,
+                              displayName: _displayName,
+                            ),
+                      ),
+                    );
+                    if (result != null && result.isNotEmpty && mounted) {
+                      setState(() => _displayName = result);
+                    }
+                    _messageFocusNode.unfocus();
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
         body: Stack(
           children: [
@@ -474,85 +483,82 @@ class _ChatScreenState extends State<ChatScreen> {
                               focusNode: _messageFocusNode,
                               maxLines: 5,
                               minLines: 1,
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(
-                                      appMessageMaxLength,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(
+                                  appMessageMaxLength,
+                                ),
+                              ],
+                              style: const TextStyle(
+                                fontSize: appTextInputFontSize,
+                              ),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: appTextInputContentPadding * 1.5,
+                                  vertical: appTextInputContentPadding,
+                                ),
+                                suffixIcon: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (!_hasText)
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(
+                                            appTextInputBorderRadius,
+                                          ),
+                                          onTap: _pickAndSendImage,
+                                          child: Icon(
+                                            Icons.photo_outlined,
+                                            size: appIconLargeSize,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.tertiary,
+                                          ),
+                                        ),
+                                      ),
+                                    if (_hasText)
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(
+                                            appTextInputBorderRadius,
+                                          ),
+                                          onTap: _sendMessage,
+                                          child: Icon(
+                                            Icons.send,
+                                            size: appIconLargeSize,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.tertiary,
+                                          ),
+                                        ),
+                                      ),
+                                    SizedBox(
+                                      width: appTextInputContentPadding / 2,
                                     ),
                                   ],
-                                  style: const TextStyle(
-                                    fontSize: appTextInputFontSize,
-                                  ),
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          appTextInputContentPadding * 1.5,
-                                      vertical: appTextInputContentPadding,
-                                    ),
-                                    suffixIcon: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (!_hasText)
-                                          Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    appTextInputBorderRadius,
-                                                  ),
-                                              onTap: _pickAndSendImage,
-                                              child: Icon(
-                                                Icons.photo_outlined,
-                                                size: appIconLargeSize,
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).colorScheme.tertiary,
-                                              ),
-                                            ),
-                                          ),
-                                        if (_hasText)
-                                          Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    appTextInputBorderRadius,
-                                                  ),
-                                              onTap: _sendMessage,
-                                              child: Icon(
-                                                Icons.send,
-                                                size: appIconLargeSize,
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).colorScheme.tertiary,
-                                              ),
-                                            ),
-                                          ),
-                                        SizedBox(
-                                          width: appTextInputContentPadding / 2,
-                                        ),
-                                      ],
-                                    ),
-                                    suffixIconConstraints: const BoxConstraints(
-                                      minWidth: 0,
-                                      minHeight: 0,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainerHighest,
-                                  ),
                                 ),
+                                suffixIconConstraints: const BoxConstraints(
+                                  minWidth: 0,
+                                  minHeight: 0,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainerHighest,
                               ),
-                            ],
+                            ),
                           ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
