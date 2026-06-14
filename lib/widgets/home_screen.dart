@@ -152,9 +152,10 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             }),
             _buildTabItem(Icons.person, 2, () {
-              navigatorKey.currentState?.push(
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
+              setState(() {
+                _selectedTab = 2;
+                content = const ProfileScreen();
+              });
             }),
           ],
         ),

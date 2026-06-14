@@ -1,14 +1,11 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:blink/widgets/auth_screen.dart';
-import 'package:blink/widgets/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
@@ -27,103 +24,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (Route<dynamic> route) => false,
-        );
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-                (Route<dynamic> route) => false,
-              );
-            },
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            getIt<CacheService>().getString(cacheKeyUsername) ?? '',
+            style: TextStyle(
+              fontSize: appTitleFontSize * 1.2,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.power_settings_new),
-              onPressed: () {
-                getIt<CacheService>().clearCache();
-                navigatorKey.currentState?.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const AuthScreen()),
-                  (Route<dynamic> route) => false,
-                );
-              },
-            ),
-          ],
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: appPaddingSmall,
-              right: appPaddingSmall,
-              bottom: appPaddingSmall,
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    getIt<CacheService>().getString(cacheKeyUsername) ?? '',
-                    style: TextStyle(
-                      fontSize: appTitleFontSize * 1.2,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  SizedBox(height: appFormItemMargin),
-                  SizedBox(height: appFormItemMargin),
-                  RepaintBoundary(
-                    key: _qrKey,
-                    child: QrImageView(
-                      data:
-                          getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-                      version: QrVersions.auto,
-                      size: appQrImageViewSize,
-                      gapless: false,
-                      dataModuleStyle: QrDataModuleStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      eyeStyle: QrEyeStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        eyeShape: QrEyeShape.square,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: appFormItemMargin),
-                  ElevatedButton.icon(
-                    onPressed: _isSaving ? null : _downloadQrCode,
-                    icon:
-                        _isSaving
-                            ? const SizedBox(
-                              width: appLoadingIndicatorSizeSmall,
-                              height: appLoadingIndicatorSizeSmall,
-                              child: CircularProgressIndicator(
-                                strokeWidth: appLoadingstrokeWidthSmall,
-                              ),
-                            )
-                            : const Icon(Icons.download),
-                    label: Text(
-                      _isSaving
-                          ? getIt<AppLocalizations>().saving
-                          : getIt<AppLocalizations>().saveToGallery,
-                    ),
-                  ),
-                ],
+          SizedBox(height: appFormItemMargin),
+          SizedBox(height: appFormItemMargin),
+          RepaintBoundary(
+            key: _qrKey,
+            child: QrImageView(
+              data: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+              version: QrVersions.auto,
+              size: appQrImageViewSize,
+              gapless: false,
+              dataModuleStyle: QrDataModuleStyle(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              eyeStyle: QrEyeStyle(
+                color: Theme.of(context).colorScheme.primary,
+                eyeShape: QrEyeShape.square,
               ),
             ),
           ),
-        ),
+          SizedBox(height: appFormItemMargin),
+          ElevatedButton.icon(
+            onPressed: _isSaving ? null : _downloadQrCode,
+            icon:
+                _isSaving
+                    ? const SizedBox(
+                      width: appLoadingIndicatorSizeSmall,
+                      height: appLoadingIndicatorSizeSmall,
+                      child: CircularProgressIndicator(
+                        strokeWidth: appLoadingstrokeWidthSmall,
+                      ),
+                    )
+                    : const Icon(Icons.download),
+            label: Text(
+              _isSaving
+                  ? getIt<AppLocalizations>().saving
+                  : getIt<AppLocalizations>().saveToGallery,
+            ),
+          ),
+        ],
       ),
     );
   }
