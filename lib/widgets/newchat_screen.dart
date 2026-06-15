@@ -20,6 +20,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   late final FocusNode searchFieldFocusNode;
   late final TextEditingController _searchController;
   List<User> searchResults = [];
+  String _lastSearched = '';
 
   @override
   void initState() {
@@ -102,14 +103,18 @@ class _NewChatScreenState extends State<NewChatScreen> {
               ),
               onChanged: (value) async {
                 final keyword = value.trim();
+                _lastSearched = keyword;
                 if (keyword.isEmpty) {
                   setState(() => searchResults = []);
                   return;
                 }
                 final results = await getIt<AuthService>().searchUsers(keyword);
-                setState(() {
-                  searchResults = results;
-                });
+                // Only update if this is still the current search
+                if (_lastSearched == keyword && mounted) {
+                  setState(() {
+                    searchResults = results;
+                  });
+                }
               },
             ),
           ),

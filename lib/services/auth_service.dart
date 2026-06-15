@@ -159,17 +159,21 @@ class AuthService {
       }
 
       // Search by userNickName (exact match)
-      final byNickName =
-          await userCollection
-              .where('userNickName', isEqualTo: keyword)
-              .limit(5)
-              .get();
-      for (final doc in byNickName.docs) {
-        final user = User.fromMap(doc.data());
-        if (user.username != currentUsername &&
-            !results.any((r) => r.username == user.username)) {
-          results.add(user);
+      try {
+        final byNickName =
+            await userCollection
+                .where('userNickName', isEqualTo: keyword)
+                .limit(5)
+                .get();
+        for (final doc in byNickName.docs) {
+          final user = User.fromMap(doc.data());
+          if (user.username != currentUsername &&
+              !results.any((r) => r.username == user.username)) {
+            results.add(user);
+          }
         }
+      } catch (_) {
+        // userNickName index may not exist yet
       }
 
       return results;
