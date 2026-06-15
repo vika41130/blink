@@ -232,6 +232,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                             contentPadding: EdgeInsets.all(
                               appTextInputContentPadding,
                             ),
+                            hintText: widget.receiverName,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
                                 appTextInputBorderRadius,
@@ -257,6 +258,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         onPressed: () {
+                          _usernameController.text = _currentNickName;
                           setState(() => _isEditingUsername = true);
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             _usernameFocusNode.requestFocus();
