@@ -159,7 +159,7 @@ class ContactService {
           .where(
             (c) =>
                 c.username.toLowerCase().contains(searchText.toLowerCase()) ||
-                c.displayName.toLowerCase().contains(searchText.toLowerCase()),
+                c.userNickName.toLowerCase().contains(searchText.toLowerCase()),
           )
           .toList();
     }

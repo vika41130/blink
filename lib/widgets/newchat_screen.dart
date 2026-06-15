@@ -101,18 +101,15 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
               onChanged: (value) async {
-                final user = await getIt<AuthService>().getUserByUsername(
-                  value.trim(),
-                );
-                if (user != null) {
-                  setState(() {
-                    searchResults = [user];
-                  });
-                } else {
-                  setState(() {
-                    searchResults = [];
-                  });
+                final keyword = value.trim();
+                if (keyword.isEmpty) {
+                  setState(() => searchResults = []);
+                  return;
                 }
+                final results = await getIt<AuthService>().searchUsers(keyword);
+                setState(() {
+                  searchResults = results;
+                });
               },
             ),
           ),

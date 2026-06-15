@@ -138,6 +138,49 @@ class AuthService {
     }
   }
 
+  Future<List<User>> searchUsers(String keyword) async {
+    if (keyword.isEmpty) return [];
+    final currentUsername = getIt<CacheService>().getString(cacheKeyUsername);
+    try {
+      final userCollection = getIt<FirebaseFirestore>().collection('users');
+      final List<User> results = [];
+
+      // Search by username (exact match)
+      final byUsername =
+          await userCollection
+              .where('username', isEqualTo: keyword)
+              .limit(1)
+              .get();
+      for (final doc in byUsername.docs) {
+        final user = User.fromMap(doc.data());
+        if (user.username != currentUsername) {
+          results.add(user);
+        }
+      }
+
+      // Search by userNickName (exact match)
+      final byNickName =
+          await userCollection
+              .where('userNickName', isEqualTo: keyword)
+              .limit(5)
+              .get();
+      for (final doc in byNickName.docs) {
+        final user = User.fromMap(doc.data());
+        if (user.username != currentUsername &&
+            !results.any((r) => r.username == user.username)) {
+          results.add(user);
+        }
+      }
+
+      return results;
+    } catch (e) {
+      if (NetworkErrorHandler.isNetworkError(e)) {
+        await NetworkErrorHandler.handleNetworkError();
+      }
+      return [];
+    }
+  }
+
   Future<User?> getUserById(String userId) async {
     if (await NetworkErrorHandler.checkAndHandle()) return null;
     try {
