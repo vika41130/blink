@@ -11,8 +11,8 @@ import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/notification_screen.dart';
 import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
-import 'package:blink/widgets/qr_scanner_screen.dart';
 import 'package:blink/widgets/newchat_screen.dart';
+import 'package:blink/widgets/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
@@ -187,12 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.qr_code_scanner),
+            icon: Icon(Icons.search),
             onPressed: () {
-              navigatorKey.currentState?.push(
-                MaterialPageRoute(
-                  builder: (context) => const QRScannerScreen(),
-                ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchScreen()),
               );
             },
           ),

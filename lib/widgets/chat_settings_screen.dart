@@ -84,7 +84,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         title: Text(
           getIt<AppLocalizations>().chatSettings,
           style: TextStyle(
-            fontSize: appTitleFontSize,
+            fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),

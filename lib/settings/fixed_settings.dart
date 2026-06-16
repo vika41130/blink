@@ -5,7 +5,6 @@ const auth = 'auth';
 
 // assets
 
-const appTitleFontSize = 18.0;
 const fontSizeSmall = 12.0;
 const fontSizeMedium = 15.0;
 const fontSizeLarge = 18.0;

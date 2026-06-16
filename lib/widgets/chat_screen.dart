@@ -276,7 +276,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Text(
                   _displayName,
                   style: TextStyle(
-                    fontSize: appTitleFontSize,
+                    fontSize: fontSizeLarge,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),

@@ -18,7 +18,7 @@ class NotificationScreen extends StatelessWidget {
         title: Text(
           'Notifications',
           style: TextStyle(
-            fontSize: appTitleFontSize,
+            fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),

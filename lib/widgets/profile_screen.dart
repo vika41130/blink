@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             getIt<CacheService>().getString(cacheKeyUsername) ?? '',
             style: TextStyle(
-              fontSize: appTitleFontSize * 1.2,
+              fontSize: fontSizeLarge * 1.2,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),

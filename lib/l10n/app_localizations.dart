@@ -279,6 +279,12 @@ abstract class AppLocalizations {
   /// **'Chat settings'**
   String get chatSettings;
 
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
   /// No description provided for @savedContact.
   ///
   /// In en, this message translates to:

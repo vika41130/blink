@@ -37,7 +37,7 @@ class _AuthScreenState extends State<AuthScreen> {
         title: Text(
           AppLocalizations.of(context)!.authTitle,
           style: TextStyle(
-            fontSize: appTitleFontSize,
+            fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
