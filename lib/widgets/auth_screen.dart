@@ -71,22 +71,17 @@ class _AuthScreenState extends State<AuthScreen> {
                                   borderRadius: BorderRadius.circular(
                                     appTextInputBorderRadius,
                                   ),
-                                  color:
-                                      isSignInMode
-                                          ? Theme.of(
-                                            context,
-                                          ).colorScheme.primary
-                                          : null,
-                                  border:
-                                      isSignInMode
-                                          ? null
-                                          : Border.all(
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.secondary,
-                                            width: mediumBorderWidth,
-                                          ),
+                                  border: Border.all(
+                                    color:
+                                        isSignInMode
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.secondary,
+                                    width: mediumBorderWidth,
+                                  ),
                                 ),
                                 child: Text(
                                   AppLocalizations.of(context)!.signIn,
@@ -96,10 +91,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                         isSignInMode
                                             ? Theme.of(
                                               context,
-                                            ).colorScheme.surface
-                                            : Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
+                                            ).colorScheme.primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(alpha: 0.4),
                                   ),
                                 ),
                               ),
@@ -116,22 +112,17 @@ class _AuthScreenState extends State<AuthScreen> {
                                   borderRadius: BorderRadius.circular(
                                     appTextInputBorderRadius,
                                   ),
-                                  color:
-                                      !isSignInMode
-                                          ? Theme.of(
-                                            context,
-                                          ).colorScheme.primary
-                                          : null,
-                                  border:
-                                      !isSignInMode
-                                          ? null
-                                          : Border.all(
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.secondary,
-                                            width: mediumBorderWidth,
-                                          ),
+                                  border: Border.all(
+                                    color:
+                                        !isSignInMode
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.secondary,
+                                    width: mediumBorderWidth,
+                                  ),
                                 ),
                                 child: Text(
                                   AppLocalizations.of(context)!.signUp,
@@ -141,10 +132,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                         !isSignInMode
                                             ? Theme.of(
                                               context,
-                                            ).colorScheme.surface
-                                            : Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
+                                            ).colorScheme.primary
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(alpha: 0.4),
                                   ),
                                 ),
                               ),
