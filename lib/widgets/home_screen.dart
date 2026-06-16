@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
@@ -11,9 +13,9 @@ import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/notification_screen.dart';
 import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
-import 'package:blink/widgets/newchat_screen.dart';
 import 'package:blink/widgets/search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pinput/pinput.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,12 +27,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTab = 0;
-  Widget content = const NewChatScreen();
+  Widget content = const SizedBox.shrink();
   DateTime? _lastPinVerified;
+  late Timer _clockTimer;
+  String _time = '';
 
   @override
   void initState() {
     super.initState();
+    _time = _formatTime();
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && _selectedTab == 0) {
+        setState(() => _time = _formatTime());
+      }
+    });
     // Load cached pin verification time
     final cachedTime = getIt<CacheService>().getString('lastPinVerified');
     if (cachedTime != null && cachedTime.isNotEmpty) {
@@ -40,6 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
     getIt<ContactService>().loadContactsProgressively(
       currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
     );
+  }
+
+  String _formatTime() {
+    return DateFormat('HH:mm:ss').format(DateTime.now());
+  }
+
+  @override
+  void dispose() {
+    _clockTimer.cancel();
+    super.dispose();
   }
 
   void _showPinDialog() {
@@ -240,7 +260,41 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Expanded(child: content)],
+            children: [
+              Expanded(
+                child:
+                    _selectedTab == 0
+                        ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _time,
+                                style: TextStyle(
+                                  fontSize: fontSizeLarge * 2.5,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              SizedBox(height: appPaddingSmall),
+                              Text(
+                                DateFormat(
+                                  'EEEE, MMMM d, yyyy',
+                                ).format(DateTime.now()),
+                                style: TextStyle(
+                                  fontSize: fontSizeMedium,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                        : content,
+              ),
+            ],
           ),
         ),
       ),
@@ -252,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildTabItem(Icons.home_filled, 0, () {
               setState(() {
                 _selectedTab = 0;
-                content = const NewChatScreen();
+                content = const SizedBox.shrink();
               });
             }),
             _buildTabItem(Icons.contacts, 1, () {
