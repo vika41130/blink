@@ -38,7 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _time = _formatTime();
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && _selectedTab == 0) {
-        setState(() => _time = _formatTime());
+        final newTime = _formatTime();
+        if (newTime != _time) {
+          setState(() => _time = newTime);
+        }
       }
     });
     // Load cached pin verification time
@@ -54,6 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _formatTime() {
     return DateFormat('HH:mm:ss').format(DateTime.now());
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    if (hour < 21) return 'Good evening';
+    return 'Good night';
   }
 
   @override
@@ -269,33 +280,60 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child:
                     _selectedTab == 0
-                        ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                _time,
-                                style: TextStyle(
-                                  fontSize: fontSizeLarge * 2.5,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  letterSpacing: 2,
+                        ? Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: appPaddingSmall,
+                                ),
+                                child: Text(
+                                  _getGreeting(),
+                                  style: TextStyle(
+                                    fontSize: fontSizeLarge,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: appPaddingSmall),
-                              Text(
-                                DateFormat(
-                                  'EEEE, MMMM d, yyyy',
-                                ).format(DateTime.now()),
-                                style: TextStyle(
-                                  fontSize: fontSizeMedium,
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      _time,
+                                      style: TextStyle(
+                                        fontSize: fontSizeLarge * 2.5,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                        letterSpacing: 2,
+                                      ),
+                                    ),
+                                    SizedBox(height: appPaddingSmall),
+                                    Text(
+                                      DateFormat(
+                                        'EEEE, MMMM d, yyyy',
+                                      ).format(DateTime.now()),
+                                      style: TextStyle(
+                                        fontSize: fontSizeMedium,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         )
                         : content,
               ),
