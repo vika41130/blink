@@ -59,73 +59,98 @@ class _AuthScreenState extends State<AuthScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: 36.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            appTextInputBorderRadius,
-                          ),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: mediumBorderWidth,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GestureDetector(
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
                               onTap: () => setState(() => isSignInMode = true),
                               child: Container(
-                                width: toggleButtonWidth,
+                                height: appTextInputHeight,
                                 alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    appTextInputBorderRadius,
+                                  ),
+                                  color:
+                                      isSignInMode
+                                          ? Theme.of(
+                                            context,
+                                          ).colorScheme.primary
+                                          : null,
+                                  border:
+                                      isSignInMode
+                                          ? null
+                                          : Border.all(
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.secondary,
+                                            width: mediumBorderWidth,
+                                          ),
+                                ),
                                 child: Text(
                                   AppLocalizations.of(context)!.signIn,
                                   style: TextStyle(
-                                    fontSize: fontSizeSmall,
+                                    fontSize: fontSizeMedium,
                                     color:
                                         isSignInMode
                                             ? Theme.of(
                                               context,
-                                            ).colorScheme.primary
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(alpha: 0.3),
+                                            ).colorScheme.surface
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
                                   ),
                                 ),
                               ),
                             ),
-                            Container(
-                              width: mediumBorderWidth,
-                              height: 14,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurface.withValues(alpha: 0.5),
-                            ),
-                            GestureDetector(
+                          ),
+                          SizedBox(width: appPaddingSmall),
+                          Expanded(
+                            child: GestureDetector(
                               onTap: () => setState(() => isSignInMode = false),
                               child: Container(
-                                width: toggleButtonWidth,
+                                height: appTextInputHeight,
                                 alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    appTextInputBorderRadius,
+                                  ),
+                                  color:
+                                      !isSignInMode
+                                          ? Theme.of(
+                                            context,
+                                          ).colorScheme.primary
+                                          : null,
+                                  border:
+                                      !isSignInMode
+                                          ? null
+                                          : Border.all(
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.secondary,
+                                            width: mediumBorderWidth,
+                                          ),
+                                ),
                                 child: Text(
                                   AppLocalizations.of(context)!.signUp,
                                   style: TextStyle(
-                                    fontSize: fontSizeSmall,
+                                    fontSize: fontSizeMedium,
                                     color:
                                         !isSignInMode
                                             ? Theme.of(
                                               context,
-                                            ).colorScheme.primary
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(alpha: 0.3),
+                                            ).colorScheme.surface
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: appFormItemMargin),
                       SizedBox(height: appFormItemMargin),
