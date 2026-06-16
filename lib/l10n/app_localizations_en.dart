@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get authTitle => 'Go in';
+  String get authTitle => 'Auth';
 
   @override
   String get aboutContent => 'We don\'t store chat history. Messages will be removed after one minute.';

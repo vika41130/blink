@@ -38,9 +38,7 @@ class AuthService {
         } else {
           var doc = querySnapshot.docs.first;
           if (doc['passcode'] == passcode) {
-            getIt<LoadingService>().showGlobalLoading(
-              message: getIt<AppLocalizations>().signInSuccess,
-            );
+            getIt<LoadingService>().showGlobalLoading();
             await Future.delayed(const Duration(seconds: 1));
             getIt<LoadingService>().hideLoading();
             navigatorKey.currentState?.pushAndRemoveUntil(
@@ -89,11 +87,6 @@ class AuthService {
         getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
         getIt<CacheService>().setString(cacheKeyUserId, user.id);
         await getIt<NotificationService>().init();
-        getIt<LoadingService>().hideLoading();
-        getIt<LoadingService>().showGlobalLoading(
-          message: getIt<AppLocalizations>().createUserSuccess,
-        );
-        await Future.delayed(const Duration(seconds: 1));
         getIt<LoadingService>().hideLoading();
         navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),

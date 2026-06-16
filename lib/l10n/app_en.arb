@@ -1,6 +1,6 @@
 {
     "@@locale": "en",
-    "authTitle": "Go in",
+    "authTitle": "Auth",
     "@authTitle": {},
     "aboutContent": "We don't store chat history. Messages will be removed after one minute.",
     "@aboutContent": {},

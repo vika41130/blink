@@ -96,7 +96,7 @@ abstract class AppLocalizations {
   /// No description provided for @authTitle.
   ///
   /// In en, this message translates to:
-  /// **'Go in'**
+  /// **'Auth'**
   String get authTitle;
 
   /// No description provided for @aboutContent.

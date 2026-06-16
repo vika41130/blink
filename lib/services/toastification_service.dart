@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
 class ToastificationService {
-  void showToast(String msg) {
+  void showToast(String msg, {Duration? duration}) {
     toastification.showCustom(
       alignment: Alignment.center,
-      autoCloseDuration: Duration(seconds: 2),
+      autoCloseDuration: duration ?? const Duration(seconds: 2),
       builder: (context, item) {
         return Center(
           child: Container(
