@@ -154,7 +154,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTabItem(IconData icon, int index, VoidCallback onTap) {
+  Widget _buildTabItem(
+    IconData filledIcon,
+    IconData outlinedIcon,
+    int index,
+    VoidCallback onTap,
+  ) {
     final isSelected = _selectedTab == index;
     return Expanded(
       child: GestureDetector(
@@ -178,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(top: 4),
               child: Center(
                 child: Icon(
-                  icon,
+                  isSelected ? filledIcon : outlinedIcon,
                   size: appIconLargeSize,
                   color:
                       isSelected
@@ -303,13 +308,13 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         child: Row(
           children: [
-            _buildTabItem(Icons.home_filled, 0, () {
+            _buildTabItem(Icons.home_filled, Icons.home_outlined, 0, () {
               setState(() {
                 _selectedTab = 0;
                 content = const SizedBox.shrink();
               });
             }),
-            _buildTabItem(Icons.contacts, 1, () {
+            _buildTabItem(Icons.contacts, Icons.contacts_outlined, 1, () {
               if (_lastPinVerified != null &&
                   DateTime.now().difference(_lastPinVerified!) <
                       const Duration(hours: 6)) {
@@ -321,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _showPinDialog();
               }
             }),
-            _buildTabItem(Icons.person, 2, () {
+            _buildTabItem(Icons.person, Icons.person_outline, 2, () {
               setState(() {
                 _selectedTab = 2;
                 content = const ProfileScreen();
