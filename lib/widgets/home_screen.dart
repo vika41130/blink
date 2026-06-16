@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(appBorderRadius * 4),
               side: BorderSide(
                 color: Theme.of(context).colorScheme.secondary,
-                width: smallBorderWidth,
+                width: mediumBorderWidth,
               ),
             ),
             insetPadding: const EdgeInsets.symmetric(horizontal: 60),
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: Theme.of(context).colorScheme.secondary,
-                          width: smallBorderWidth,
+                          width: mediumBorderWidth,
                         ),
                       ),
                     ),

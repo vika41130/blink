@@ -67,7 +67,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                           border: Border.all(
                             color: Theme.of(context).colorScheme.secondary,
-                            width: smallBorderWidth,
+                            width: mediumBorderWidth,
                           ),
                         ),
                         child: Row(
@@ -96,7 +96,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ),
                             Container(
-                              width: smallBorderWidth,
+                              width: mediumBorderWidth,
                               height: 14,
                               color: Theme.of(
                                 context,
@@ -169,7 +169,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 appTextInputBorderRadius,
                               ),
                               borderSide: BorderSide(
-                                width: smallBorderWidth,
+                                width: mediumBorderWidth,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
@@ -178,7 +178,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 appTextInputBorderRadius,
                               ),
                               borderSide: BorderSide(
-                                width: smallBorderWidth,
+                                width: mediumBorderWidth,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
@@ -187,7 +187,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 appTextInputBorderRadius,
                               ),
                               borderSide: BorderSide(
-                                width: smallBorderWidth,
+                                width: mediumBorderWidth,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
@@ -220,7 +220,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Theme.of(context).colorScheme.secondary,
-                              width: smallBorderWidth,
+                              width: mediumBorderWidth,
                             ),
                           ),
                         ),
