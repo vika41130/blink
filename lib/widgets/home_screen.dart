@@ -55,11 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: smallBorderWidth,
               ),
             ),
-            insetPadding: const EdgeInsets.symmetric(horizontal: 80),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 60),
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: appPaddingSmall,
-                vertical: appPaddingSmall,
+                horizontal: appPaddingSmall * 2,
+                vertical: appPaddingSmall * 3,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Enter passcode',
                     style: TextStyle(fontSize: fontSizeSmall),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: appPaddingSmall * 2),
                   Pinput(
                     controller: pinController,
                     autofocus: true,
