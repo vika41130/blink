@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
@@ -77,88 +78,93 @@ class _HomeScreenState extends State<HomeScreen> {
     final pinController = TextEditingController();
     showDialog(
       context: context,
+      barrierColor: Colors.transparent,
       builder:
-          (ctx) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(appBorderRadius * 4),
-              side: BorderSide(
-                color: Theme.of(context).colorScheme.secondary,
-                width: mediumBorderWidth,
+          (ctx) => BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(appBorderRadius * 4),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.secondary,
+                  width: mediumBorderWidth,
+                ),
               ),
-            ),
-            insetPadding: const EdgeInsets.symmetric(horizontal: 60),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: appPaddingSmall * 2,
-                vertical: appPaddingSmall * 3,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Enter passcode',
-                    style: TextStyle(fontSize: fontSizeSmall),
-                  ),
-                  const SizedBox(height: appPaddingSmall * 2),
-                  Pinput(
-                    controller: pinController,
-                    autofocus: true,
-                    obscureText: true,
-                    defaultPinTheme: PinTheme(
-                      width: 28,
-                      height: 28,
-                      textStyle: TextStyle(
-                        fontSize: fontSizeMedium,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.secondary,
-                          width: mediumBorderWidth,
-                        ),
-                      ),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 60),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: appPaddingSmall * 2,
+                  vertical: appPaddingSmall * 3,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Enter passcode',
+                      style: TextStyle(fontSize: fontSizeSmall),
                     ),
-                    showCursor: true,
-                    cursor: Center(
-                      child: Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+                    const SizedBox(height: appPaddingSmall * 2),
+                    Pinput(
+                      controller: pinController,
+                      autofocus: true,
+                      obscureText: true,
+                      defaultPinTheme: PinTheme(
+                        width: 28,
+                        height: 28,
+                        textStyle: TextStyle(
+                          fontSize: fontSizeMedium,
                           color: Theme.of(context).colorScheme.primary,
                         ),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: mediumBorderWidth,
+                          ),
+                        ),
                       ),
+                      showCursor: true,
+                      cursor: Center(
+                        child: Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      separatorBuilder:
+                          (index) => const SizedBox(width: appPaddingMid),
+                      hapticFeedbackType: HapticFeedbackType.lightImpact,
+                      onCompleted: (pin) async {
+                        final userId =
+                            getIt<CacheService>().getString(cacheKeyUserId) ??
+                            '';
+                        final user = await getIt<AuthService>().getUserById(
+                          userId,
+                        );
+                        if (user != null && user.passcode == pin) {
+                          if (ctx.mounted) Navigator.of(ctx).pop();
+                          _lastPinVerified = DateTime.now();
+                          getIt<CacheService>().setString(
+                            'lastPinVerified',
+                            _lastPinVerified!.toIso8601String(),
+                          );
+                          setState(() {
+                            _selectedTab = 1;
+                            content = const ContactScreen();
+                          });
+                        } else {
+                          getIt<ToastificationService>().showToast(
+                            'Incorrect passcode',
+                          );
+                          pinController.setText('');
+                        }
+                      },
                     ),
-                    separatorBuilder:
-                        (index) => const SizedBox(width: appPaddingMid),
-                    hapticFeedbackType: HapticFeedbackType.lightImpact,
-                    onCompleted: (pin) async {
-                      final userId =
-                          getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-                      final user = await getIt<AuthService>().getUserById(
-                        userId,
-                      );
-                      if (user != null && user.passcode == pin) {
-                        if (ctx.mounted) Navigator.of(ctx).pop();
-                        _lastPinVerified = DateTime.now();
-                        getIt<CacheService>().setString(
-                          'lastPinVerified',
-                          _lastPinVerified!.toIso8601String(),
-                        );
-                        setState(() {
-                          _selectedTab = 1;
-                          content = const ContactScreen();
-                        });
-                      } else {
-                        getIt<ToastificationService>().showToast(
-                          'Incorrect passcode',
-                        );
-                        pinController.setText('');
-                      }
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
