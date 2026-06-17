@@ -77,5 +77,11 @@
     "unblockChat": "Unblock chat",
     "@unblockChat": {},
     "contactsPincodeDuration": "Contacts pincode duration",
-    "@contactsPincodeDuration": {}
+    "@contactsPincodeDuration": {},
+    "defaultDurationInfo": "Default duration is 6 hours.",
+    "@defaultDurationInfo": {},
+    "durationUpdated": "Duration updated",
+    "@durationUpdated": {},
+    "done": "Done",
+    "@done": {}
 }

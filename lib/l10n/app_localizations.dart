@@ -326,6 +326,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contacts pincode duration'**
   String get contactsPincodeDuration;
+
+  /// No description provided for @defaultDurationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Default duration is 6 hours.'**
+  String get defaultDurationInfo;
+
+  /// No description provided for @durationUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration updated'**
+  String get durationUpdated;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

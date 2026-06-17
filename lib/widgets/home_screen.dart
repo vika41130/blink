@@ -61,6 +61,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return DateFormat('HH:mm:ss').format(DateTime.now());
   }
 
+  Duration _getPincodeDuration() {
+    final cachedMinutes = int.tryParse(
+      getIt<CacheService>().getString('pincodeDurationMinutes') ?? '',
+    );
+    return cachedMinutes != null
+        ? Duration(minutes: cachedMinutes)
+        : const Duration(hours: 6);
+  }
+
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Good morning';
@@ -421,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildTabItem(Icons.contacts, Icons.contacts_outlined, 1, () {
               if (_lastPinVerified != null &&
                   DateTime.now().difference(_lastPinVerified!) <
-                      const Duration(hours: 6)) {
+                      _getPincodeDuration()) {
                 setState(() {
                   _selectedTab = 1;
                   content = const ContactScreen();

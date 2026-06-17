@@ -2,6 +2,7 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
+import 'package:blink/widgets/contacts_pincode_duration_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -36,7 +37,15 @@ class ProfileScreen extends StatelessWidget {
                   size: appIconMidSize,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => const ContactsPincodeDurationScreen(),
+                    ),
+                  );
+                },
               ),
               SizedBox(width: appPaddingSmall),
               Expanded(

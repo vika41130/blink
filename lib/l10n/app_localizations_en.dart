@@ -124,4 +124,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactsPincodeDuration => 'Contacts pincode duration';
+
+  @override
+  String get defaultDurationInfo => 'Default duration is 6 hours.';
+
+  @override
+  String get durationUpdated => 'Duration updated';
+
+  @override
+  String get done => 'Done';
 }
