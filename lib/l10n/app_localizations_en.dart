@@ -111,10 +111,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveContact => 'Save contact';
 
   @override
-  String get swipeRightToRemove => 'Swipe right the message to remove.';
+  String get swipeRightToRemove => 'Swipe right to delete';
 
   @override
-  String get tripleTapToBlock => 'Triple-tap the title to temporarily block the chat screen.';
+  String get tripleTapToBlock => 'Triple-tap title to lock screen';
 
   @override
   String get blockChat => 'Block chat';
@@ -123,13 +123,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unblockChat => 'Unblock chat';
 
   @override
-  String get contactsPincodeDuration => 'Contacts pincode duration';
+  String get contactsPincodeDuration => 'Pin duration';
 
   @override
-  String get defaultDurationInfo => 'Default duration is 6 hours.';
+  String get defaultDurationInfo => 'Default: 6h';
 
   @override
-  String get durationUpdated => 'Duration updated';
+  String get durationUpdated => 'Saved';
 
   @override
   String get done => 'Done';

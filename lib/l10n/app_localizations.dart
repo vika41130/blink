@@ -300,13 +300,13 @@ abstract class AppLocalizations {
   /// No description provided for @swipeRightToRemove.
   ///
   /// In en, this message translates to:
-  /// **'Swipe right the message to remove.'**
+  /// **'Swipe right to delete'**
   String get swipeRightToRemove;
 
   /// No description provided for @tripleTapToBlock.
   ///
   /// In en, this message translates to:
-  /// **'Triple-tap the title to temporarily block the chat screen.'**
+  /// **'Triple-tap title to lock screen'**
   String get tripleTapToBlock;
 
   /// No description provided for @blockChat.
@@ -324,19 +324,19 @@ abstract class AppLocalizations {
   /// No description provided for @contactsPincodeDuration.
   ///
   /// In en, this message translates to:
-  /// **'Contacts pincode duration'**
+  /// **'Pin duration'**
   String get contactsPincodeDuration;
 
   /// No description provided for @defaultDurationInfo.
   ///
   /// In en, this message translates to:
-  /// **'Default duration is 6 hours.'**
+  /// **'Default: 6h'**
   String get defaultDurationInfo;
 
   /// No description provided for @durationUpdated.
   ///
   /// In en, this message translates to:
-  /// **'Duration updated'**
+  /// **'Saved'**
   String get durationUpdated;
 
   /// No description provided for @done.
