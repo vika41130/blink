@@ -1,121 +1,106 @@
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-
+import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
-import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
-import 'package:blink/services/toastification_service.dart';
+import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
+import 'package:blink/widgets/auth_screen.dart';
+import 'package:blink/widgets/notification_screen.dart';
+import 'package:blink/widgets/qr_image_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  final GlobalKey _qrKey = GlobalKey();
-  bool _isSaving = false;
-
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            getIt<CacheService>().getString(cacheKeyUsername) ?? '',
-            style: TextStyle(
-              fontSize: fontSizeLarge * 1.2,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          SizedBox(height: appFormItemMargin),
-          SizedBox(height: appFormItemMargin),
-          RepaintBoundary(
-            key: _qrKey,
-            child: QrImageView(
-              data: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
-              version: QrVersions.auto,
-              size: appQrImageViewSize,
-              gapless: false,
-              dataModuleStyle: QrDataModuleStyle(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              eyeStyle: QrEyeStyle(
-                color: Theme.of(context).colorScheme.primary,
-                eyeShape: QrEyeShape.square,
-              ),
-            ),
-          ),
-          SizedBox(height: appFormItemMargin),
-          ElevatedButton.icon(
-            onPressed: _isSaving ? null : _downloadQrCode,
-            icon:
-                _isSaving
-                    ? const SizedBox(
-                      width: appLoadingIndicatorSizeSmall,
-                      height: appLoadingIndicatorSizeSmall,
-                      child: CircularProgressIndicator(
-                        strokeWidth: appLoadingstrokeWidthSmall,
+    return Column(
+      children: [
+        // Custom AppBar area
+        SafeArea(
+          bottom: false,
+          child: SizedBox(
+            height: appBarHeight,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: appPaddingSmall),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.qr_code,
+                      size: appIconLargeSize,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const QRImageScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ValueListenableBuilder<int>(
+                        valueListenable:
+                            getIt<NotificationService>().unreadCount,
+                        builder:
+                            (_, count, __) => IconButton(
+                              icon: Badge(
+                                isLabelVisible: count > 0,
+                                label: Text(
+                                  count > notificationBadgeMax
+                                      ? '$notificationBadgeMax+'
+                                      : '$count',
+                                ),
+                                child: Icon(Icons.notifications_outlined),
+                              ),
+                              onPressed: () {
+                                getIt<NotificationService>().resetCount();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const NotificationScreen(),
+                                  ),
+                                );
+                              },
+                            ),
                       ),
-                    )
-                    : const Icon(Icons.download),
-            label: Text(
-              _isSaving
-                  ? getIt<AppLocalizations>().saving
-                  : getIt<AppLocalizations>().saveToGallery,
+                      IconButton(
+                        icon: Icon(Icons.power_settings_new),
+                        onPressed: () {
+                          getIt<CacheService>().clearCache();
+                          navigatorKey.currentState?.pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const AuthScreen(),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
-      ),
+        ),
+        // Username below appbar
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: appPaddingSmall),
+          child: Center(
+            child: Text(
+              getIt<CacheService>().getString(cacheKeyUsername) ?? '',
+              style: TextStyle(
+                fontSize: fontSizeLarge * 1.5,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
-  }
-
-  Future<void> _downloadQrCode() async {
-    if (_isSaving) return;
-    setState(() => _isSaving = true);
-    try {
-      final RenderRepaintBoundary? boundary =
-          _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) throw Exception("Boundary not found");
-      final ui.Image image = await boundary.toImage(
-        pixelRatio: appImagePixelRatio,
-      );
-      final ByteData? byteData = await image.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
-      if (byteData != null) {
-        final Uint8List pngBytes = byteData.buffer.asUint8List();
-        final result = await ImageGallerySaverPlus.saveImage(
-          pngBytes,
-          quality: appImageQuality,
-          name:
-              "$appImageFileNamePrefix${DateTime.now().millisecondsSinceEpoch}",
-        );
-        if (mounted) {
-          if (result['isSuccess'] == true) {
-            getIt<ToastificationService>().showToast(
-              getIt<AppLocalizations>().qrCodeSaved,
-            );
-          } else {
-            throw Exception("Gallery saving failed");
-          }
-        }
-      }
-    } catch (e) {
-      getIt<ToastificationService>().showToast(
-        getIt<AppLocalizations>().failedToSaveQRCode,
-      );
-    } finally {
-      setState(() => _isSaving = false);
-    }
   }
 }

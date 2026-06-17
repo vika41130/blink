@@ -218,61 +218,68 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: appBarHeight,
-        title: Text(
-          getIt<AppLocalizations>().homeTitle,
-          style: TextStyle(
-            fontSize: fontSizeLarge,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SearchScreen()),
-              );
-            },
-          ),
-          ValueListenableBuilder<int>(
-            valueListenable: getIt<NotificationService>().unreadCount,
-            builder:
-                (_, count, __) => IconButton(
-                  icon: Badge(
-                    isLabelVisible: count > 0,
-                    label: Text(
-                      count > notificationBadgeMax
-                          ? '$notificationBadgeMax+'
-                          : '$count',
-                    ),
-                    child: Icon(Icons.notifications_outlined),
+      appBar:
+          _selectedTab == 2
+              ? null
+              : AppBar(
+                toolbarHeight: appBarHeight,
+                title: Text(
+                  getIt<AppLocalizations>().homeTitle,
+                  style: TextStyle(
+                    fontSize: fontSizeLarge,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                  onPressed: () {
-                    getIt<NotificationService>().resetCount();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationScreen(),
-                      ),
-                    );
-                  },
                 ),
-          ),
-          IconButton(
-            icon: Icon(Icons.power_settings_new),
-            onPressed: () {
-              getIt<CacheService>().clearCache();
-              navigatorKey.currentState?.pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const AuthScreen()),
-                (Route<dynamic> route) => false,
-              );
-            },
-          ),
-        ],
-      ),
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SearchScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ValueListenableBuilder<int>(
+                    valueListenable: getIt<NotificationService>().unreadCount,
+                    builder:
+                        (_, count, __) => IconButton(
+                          icon: Badge(
+                            isLabelVisible: count > 0,
+                            label: Text(
+                              count > notificationBadgeMax
+                                  ? '$notificationBadgeMax+'
+                                  : '$count',
+                            ),
+                            child: Icon(Icons.notifications_outlined),
+                          ),
+                          onPressed: () {
+                            getIt<NotificationService>().resetCount();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const NotificationScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.power_settings_new),
+                    onPressed: () {
+                      getIt<CacheService>().clearCache();
+                      navigatorKey.currentState?.pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const AuthScreen(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                  ),
+                ],
+              ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
