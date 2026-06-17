@@ -75,5 +75,7 @@
     "blockChat": "Block chat",
     "@blockChat": {},
     "unblockChat": "Unblock chat",
-    "@unblockChat": {}
+    "@unblockChat": {},
+    "contactsPincodeDuration": "Contacts pincode duration",
+    "@contactsPincodeDuration": {}
 }

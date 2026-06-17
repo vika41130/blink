@@ -320,6 +320,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unblock chat'**
   String get unblockChat;
+
+  /// No description provided for @contactsPincodeDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts pincode duration'**
+  String get contactsPincodeDuration;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

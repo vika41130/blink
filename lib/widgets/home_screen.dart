@@ -14,6 +14,7 @@ import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/notification_screen.dart';
 import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
+import 'package:blink/widgets/qr_image_screen.dart';
 import 'package:blink/widgets/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -220,7 +221,59 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar:
           _selectedTab == 2
-              ? null
+              ? AppBar(
+                toolbarHeight: appBarHeight,
+                automaticallyImplyLeading: false,
+                leading: IconButton(
+                  icon: Icon(Icons.qr_code),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const QRImageScreen(),
+                      ),
+                    );
+                  },
+                ),
+                actions: [
+                  ValueListenableBuilder<int>(
+                    valueListenable: getIt<NotificationService>().unreadCount,
+                    builder:
+                        (_, count, __) => IconButton(
+                          icon: Badge(
+                            isLabelVisible: count > 0,
+                            label: Text(
+                              count > notificationBadgeMax
+                                  ? '$notificationBadgeMax+'
+                                  : '$count',
+                            ),
+                            child: Icon(Icons.notifications_outlined),
+                          ),
+                          onPressed: () {
+                            getIt<NotificationService>().resetCount();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const NotificationScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.power_settings_new),
+                    onPressed: () {
+                      getIt<CacheService>().clearCache();
+                      navigatorKey.currentState?.pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const AuthScreen(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                  ),
+                ],
+              )
               : AppBar(
                 toolbarHeight: appBarHeight,
                 title: Text(

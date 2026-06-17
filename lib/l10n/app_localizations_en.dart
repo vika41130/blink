@@ -121,4 +121,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unblockChat => 'Unblock chat';
+
+  @override
+  String get contactsPincodeDuration => 'Contacts pincode duration';
 }
