@@ -111,11 +111,11 @@ abstract class AppLocalizations {
   /// **'Username must be 3 to 40 characters long, containing only digits, letters, or underscores.'**
   String get userNameGuide;
 
-  /// No description provided for @passcodeGuide.
+  /// No description provided for @pinGuide.
   ///
   /// In en, this message translates to:
-  /// **'Passcode must be four digits.'**
-  String get passcodeGuide;
+  /// **'Pin must be four digits.'**
+  String get pinGuide;
 
   /// No description provided for @signIn.
   ///
@@ -135,11 +135,11 @@ abstract class AppLocalizations {
   /// **'Username does not exist.'**
   String get userNameNotExisting;
 
-  /// No description provided for @passcodeNotCorrect.
+  /// No description provided for @pinNotCorrect.
   ///
   /// In en, this message translates to:
-  /// **'Passcode is incorrect.'**
-  String get passcodeNotCorrect;
+  /// **'Pin is incorrect.'**
+  String get pinNotCorrect;
 
   /// No description provided for @signInSuccess.
   ///

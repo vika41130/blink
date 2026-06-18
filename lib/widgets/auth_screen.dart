@@ -286,7 +286,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 textAlign: TextAlign.left,
               ),
               Text(
-                AppLocalizations.of(context)!.passcodeGuide,
+                AppLocalizations.of(context)!.pinGuide,
                 style: TextStyle(
                   fontSize: fontSizeSmall,
                   color: Theme.of(context).colorScheme.primary,

@@ -16,7 +16,7 @@ class AuthService {
     return CacheService().getBool(cacheKeyIsSignedIn);
   }
 
-  goIn(String username, String passcode, bool isSignInMode) async {
+  goIn(String username, String pin, bool isSignInMode) async {
     if (await NetworkErrorHandler.isOffline()) {
       getIt<ToastificationService>().showToast('Network error');
       return;
@@ -37,7 +37,7 @@ class AuthService {
           );
         } else {
           var doc = querySnapshot.docs.first;
-          if (doc['passcode'] == passcode) {
+          if (doc['pin'] == pin) {
             getIt<LoadingService>().showGlobalLoading();
             await Future.delayed(const Duration(seconds: 1));
             getIt<LoadingService>().hideLoading();
@@ -51,7 +51,7 @@ class AuthService {
             await getIt<NotificationService>().init();
           } else {
             getIt<ToastificationService>().showToast(
-              getIt<AppLocalizations>().passcodeNotCorrect,
+              getIt<AppLocalizations>().pinNotCorrect,
             );
           }
         }
@@ -81,7 +81,7 @@ class AuthService {
           );
           return;
         }
-        final userModel = User(username: username, passcode: passcode);
+        final userModel = User(username: username, pin: pin);
         final user = await userCollection.add(userModel.toMap());
         getIt<CacheService>().setString(cacheKeyUsername, username);
         getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);

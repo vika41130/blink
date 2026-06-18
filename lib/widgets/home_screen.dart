@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Enter passcode',
+                      'Enter pin',
                       style: TextStyle(fontSize: fontSizeSmall),
                     ),
                     const SizedBox(height: appPaddingSmall * 2),
@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         final user = await getIt<AuthService>().getUserById(
                           userId,
                         );
-                        if (user != null && user.passcode == pin) {
+                        if (user != null && user.pin == pin) {
                           if (ctx.mounted) Navigator.of(ctx).pop();
                           _lastPinVerified = DateTime.now();
                           getIt<CacheService>().setString(
@@ -167,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           });
                         } else {
                           getIt<ToastificationService>().showToast(
-                            'Incorrect passcode',
+                            'Incorrect pin',
                           );
                           pinController.setText('');
                         }

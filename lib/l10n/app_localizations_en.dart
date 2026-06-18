@@ -18,7 +18,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userNameGuide => 'Username must be 3 to 40 characters long, containing only digits, letters, or underscores.';
 
   @override
-  String get passcodeGuide => 'Passcode must be four digits.';
+  String get pinGuide => 'Pin must be four digits.';
 
   @override
   String get signIn => 'Sign in';
@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userNameNotExisting => 'Username does not exist.';
 
   @override
-  String get passcodeNotCorrect => 'Passcode is incorrect.';
+  String get pinNotCorrect => 'Pin is incorrect.';
 
   @override
   String get signInSuccess => 'Signed in successfully. Going in...';
