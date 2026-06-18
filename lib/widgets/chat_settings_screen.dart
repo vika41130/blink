@@ -292,7 +292,9 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          isAdded ? Icons.star : Icons.star_border,
+                          isAdded
+                              ? CupertinoIcons.star_fill
+                              : CupertinoIcons.star,
                           size: appIconMidSize,
                           color: Theme.of(context).colorScheme.primary,
                         ),

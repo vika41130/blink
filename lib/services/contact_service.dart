@@ -49,6 +49,10 @@ class ContactService {
         _cachedContacts!.add(username);
         _cachedContacts!.sort((a, b) => a.compareTo(b));
       }
+      if (_cachedContactModels != null) {
+        _cachedContactModels!.add(Contact(username: username));
+        _cachedContactModels!.sort((a, b) => a.username.compareTo(b.username));
+      }
       contactsVersion.value++;
 
       getIt<ToastificationService>().showToast(
@@ -98,6 +102,7 @@ class ContactService {
 
       // Remove from cached contacts
       _cachedContacts?.remove(username);
+      _cachedContactModels?.removeWhere((c) => c.username == username);
       contactsVersion.value++;
 
       getIt<ToastificationService>().showToast(

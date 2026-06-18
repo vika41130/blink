@@ -4,6 +4,7 @@ import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/models/user.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/contact_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
@@ -183,7 +184,58 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildUserListTile(User user) {
-    return GestureDetector(
+    return ListTile(
+      dense: true,
+      visualDensity: const VisualDensity(vertical: -3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(appTextInputBorderRadius),
+      ),
+      contentPadding: EdgeInsets.symmetric(horizontal: appPaddingSmall / 2),
+      minLeadingWidth: 0,
+      horizontalTitleGap: appPaddingSmall,
+      leading: Icon(
+        CupertinoIcons.person,
+        size: appIconMidSize,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      title: Text(
+        user.userNickName.isNotEmpty ? user.userNickName : user.username,
+        style: const TextStyle(fontSize: fontSizeMedium),
+      ),
+      trailing: FutureBuilder<bool>(
+        future: getIt<ContactService>().isContactAdded(
+          getIt<CacheService>().getString(cacheKeyUserId) ?? '',
+          user.username,
+        ),
+        builder: (context, snapshot) {
+          final isAdded = snapshot.data == true;
+          return IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: Icon(
+              isAdded ? CupertinoIcons.star_fill : CupertinoIcons.star,
+              size: appIconMidSize,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            onPressed: () async {
+              final String currentUserId =
+                  getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+              if (isAdded) {
+                await getIt<ContactService>().removeContact(
+                  currentUserId,
+                  user.username,
+                );
+              } else {
+                await getIt<ContactService>().saveContact(
+                  currentUserId,
+                  user.username,
+                );
+              }
+              setState(() {});
+            },
+          );
+        },
+      ),
       onTap: () async {
         final String currentUserId =
             getIt<CacheService>().getString(cacheKeyUserId) ?? '';
@@ -204,27 +256,6 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         );
       },
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: appPaddingSmall / 2,
-          vertical: appPaddingSmall / 2,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.person,
-              size: appIconMidSize,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            SizedBox(width: appPaddingSmall),
-            Text(
-              user.userNickName.isNotEmpty ? user.userNickName : user.username,
-              style: const TextStyle(fontSize: fontSizeMedium),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

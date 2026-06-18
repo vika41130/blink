@@ -30,16 +30,14 @@ class AuthService {
                 .where('username', isEqualTo: username)
                 .limit(1)
                 .get();
-        getIt<LoadingService>().hideLoading();
         if (querySnapshot.docs.isEmpty) {
+          getIt<LoadingService>().hideLoading();
           getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().userNameNotExisting,
           );
         } else {
           var doc = querySnapshot.docs.first;
           if ((doc['pin'] ?? doc['passcode']) == pin) {
-            getIt<LoadingService>().showGlobalLoading();
-            await Future.delayed(const Duration(seconds: 1));
             getIt<LoadingService>().hideLoading();
             navigatorKey.currentState?.pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -51,6 +49,7 @@ class AuthService {
             await getIt<NotificationService>().init();
             _backgroundFetchAndCacheUser(doc.id);
           } else {
+            getIt<LoadingService>().hideLoading();
             getIt<ToastificationService>().showToast(
               getIt<AppLocalizations>().pinNotCorrect,
             );

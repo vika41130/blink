@@ -72,7 +72,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noUserFound => 'No user found.';
 
   @override
-  String get contactSavedSuccessfully => 'Contact saved successfully.';
+  String get contactSavedSuccessfully => 'Contact saved.';
 
   @override
   String get failedToSaveContact => 'Failed to save contact.';
@@ -84,7 +84,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactNotAdded => 'Contact not added.';
 
   @override
-  String get contactRemovedSuccessfully => 'Contact removed successfully.';
+  String get contactRemovedSuccessfully => 'Contact removed.';
 
   @override
   String get failedToRemoveContact => 'Failed to remove contact.';

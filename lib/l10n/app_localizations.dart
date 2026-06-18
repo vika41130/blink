@@ -222,7 +222,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactSavedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Contact saved successfully.'**
+  /// **'Contact saved.'**
   String get contactSavedSuccessfully;
 
   /// No description provided for @failedToSaveContact.
@@ -246,7 +246,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactRemovedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Contact removed successfully.'**
+  /// **'Contact removed.'**
   String get contactRemovedSuccessfully;
 
   /// No description provided for @failedToRemoveContact.
