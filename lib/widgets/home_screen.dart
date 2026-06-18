@@ -428,7 +428,15 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             }),
             _buildTabItem(Icons.contacts, Icons.contacts_outlined, 1, () {
-              if (_lastPinVerified != null &&
+              final pinEnabled = getIt<CacheService>().getBool(
+                cacheKeyPinVerificationEnabled,
+              );
+              if (!pinEnabled) {
+                setState(() {
+                  _selectedTab = 1;
+                  content = const ContactScreen();
+                });
+              } else if (_lastPinVerified != null &&
                   DateTime.now().difference(_lastPinVerified!) <
                       _getPincodeDuration()) {
                 setState(() {

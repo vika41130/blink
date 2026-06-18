@@ -16,6 +16,7 @@ class CacheService {
     getIt<CacheService>().setString(cacheKeyUserId, '');
     getIt<CacheService>().setString('lastPinVerified', '');
     getIt<CacheService>().setString('pincodeDurationMinutes', '');
+    getIt<CacheService>().setBool(cacheKeyPinVerificationEnabled, true);
     getIt<ContactService>().clearCache();
   }
 }
@@ -23,3 +24,4 @@ class CacheService {
 const cacheKeyUsername = 'blinkCacheKeyUsername';
 const cacheKeyIsSignedIn = 'blinkCacheKeyIsSignedIn';
 const cacheKeyUserId = 'cacheKeyUserId';
+const cacheKeyPinVerificationEnabled = 'pinVerificationEnabled';

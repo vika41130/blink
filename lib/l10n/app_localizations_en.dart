@@ -123,7 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unblockChat => 'Unblock chat';
 
   @override
-  String get contactsPincodeDuration => 'Pin duration';
+  String get contactsPincodeDuration => 'Contacts pin duration';
 
   @override
   String get defaultDurationInfo => 'Default: 6h';

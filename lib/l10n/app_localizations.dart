@@ -324,7 +324,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactsPincodeDuration.
   ///
   /// In en, this message translates to:
-  /// **'Pin duration'**
+  /// **'Contacts pin duration'**
   String get contactsPincodeDuration;
 
   /// No description provided for @defaultDurationInfo.

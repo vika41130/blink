@@ -37,7 +37,7 @@ class AuthService {
           );
         } else {
           var doc = querySnapshot.docs.first;
-          if (doc['pin'] == pin) {
+          if ((doc['pin'] ?? doc['passcode']) == pin) {
             getIt<LoadingService>().showGlobalLoading();
             await Future.delayed(const Duration(seconds: 1));
             getIt<LoadingService>().hideLoading();
