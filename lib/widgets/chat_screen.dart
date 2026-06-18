@@ -483,17 +483,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                       Material(
                                         color: Colors.transparent,
                                         child: InkWell(
-                                          borderRadius: BorderRadius.circular(
-                                            appTextInputBorderRadius,
-                                          ),
+                                          customBorder: const CircleBorder(),
                                           onTap: _pickAndSendImage,
-                                          child: Icon(
-                                            CupertinoIcons.photo,
-                                            size: appIconLargeSize,
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.tertiary,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4),
+                                            child: Icon(
+                                              CupertinoIcons.photo,
+                                              size: appIconMidSize,
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.tertiary,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -501,17 +502,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                       Material(
                                         color: Colors.transparent,
                                         child: InkWell(
-                                          borderRadius: BorderRadius.circular(
-                                            appTextInputBorderRadius,
-                                          ),
+                                          customBorder: const CircleBorder(),
                                           onTap: _sendMessage,
-                                          child: Icon(
-                                            CupertinoIcons.paperplane_fill,
-                                            size: appIconLargeSize,
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.tertiary,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4),
+                                            child: Icon(
+                                              CupertinoIcons.paperplane_fill,
+                                              size: appIconMidSize,
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.tertiary,
+                                            ),
                                           ),
                                         ),
                                       ),
