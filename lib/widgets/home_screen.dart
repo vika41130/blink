@@ -419,12 +419,17 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         child: Row(
           children: [
-            _buildTabItem(CupertinoIcons.home, CupertinoIcons.home, 0, () {
-              setState(() {
-                _selectedTab = 0;
-                content = const SizedBox.shrink();
-              });
-            }),
+            _buildTabItem(
+              CupertinoIcons.house_fill,
+              CupertinoIcons.house,
+              0,
+              () {
+                setState(() {
+                  _selectedTab = 0;
+                  content = const SizedBox.shrink();
+                });
+              },
+            ),
             _buildTabItem(
               CupertinoIcons.person_2_fill,
               CupertinoIcons.person_2,
