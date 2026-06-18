@@ -18,6 +18,7 @@ class ChatService {
     String currentUserId,
     String contactUsername,
   ) async {
+    if (await NetworkErrorHandler.checkAndHandle()) return null;
     try {
       final querySnapshot =
           await getIt<FirebaseFirestore>()

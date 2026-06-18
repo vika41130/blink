@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/network_error_handler.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/settings/fixed_settings.dart';
@@ -28,6 +29,10 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
   }
 
   Future<void> _updateFirestore(int minutes) async {
+    if (await NetworkErrorHandler.isOffline()) {
+      getIt<ToastificationService>().showToast('Network error');
+      return;
+    }
     final userId = getIt<CacheService>().getString(cacheKeyUserId) ?? '';
     if (userId.isEmpty) return;
     try {

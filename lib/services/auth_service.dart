@@ -149,6 +149,7 @@ class AuthService {
 
   Future<List<User>> searchUsers(String keyword) async {
     if (keyword.isEmpty) return [];
+    if (await NetworkErrorHandler.checkAndHandle()) return [];
     final currentUsername = getIt<CacheService>().getString(cacheKeyUsername);
     try {
       final userCollection = getIt<FirebaseFirestore>().collection('users');
