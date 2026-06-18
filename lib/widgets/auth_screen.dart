@@ -59,94 +59,6 @@ class _AuthScreenState extends State<AuthScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => setState(() => isSignInMode = true),
-                              child: Container(
-                                height: appTextInputHeight,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    appTextInputBorderRadius,
-                                  ),
-                                  border: Border.all(
-                                    color:
-                                        isSignInMode
-                                            ? Theme.of(
-                                              context,
-                                            ).colorScheme.primary
-                                            : Theme.of(
-                                              context,
-                                            ).colorScheme.secondary,
-                                    width: mediumBorderWidth,
-                                  ),
-                                ),
-                                child: Text(
-                                  AppLocalizations.of(context)!.signIn,
-                                  style: TextStyle(
-                                    fontSize: fontSizeMedium,
-                                    color:
-                                        isSignInMode
-                                            ? Theme.of(
-                                              context,
-                                            ).colorScheme.primary
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(alpha: 0.4),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: appPaddingSmall),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => setState(() => isSignInMode = false),
-                              child: Container(
-                                height: appTextInputHeight,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    appTextInputBorderRadius,
-                                  ),
-                                  border: Border.all(
-                                    color:
-                                        !isSignInMode
-                                            ? Theme.of(
-                                              context,
-                                            ).colorScheme.primary
-                                            : Theme.of(
-                                              context,
-                                            ).colorScheme.secondary,
-                                    width: mediumBorderWidth,
-                                  ),
-                                ),
-                                child: Text(
-                                  AppLocalizations.of(context)!.signUp,
-                                  style: TextStyle(
-                                    fontSize: fontSizeMedium,
-                                    color:
-                                        !isSignInMode
-                                            ? Theme.of(
-                                              context,
-                                            ).colorScheme.primary
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(alpha: 0.4),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: appFormItemMargin),
-                      SizedBox(height: appFormItemMargin),
-                      SizedBox(height: appFormItemMargin),
                       SizedBox(
                         height: appTextInputHeight,
                         child: TextFormField(
@@ -264,29 +176,46 @@ class _AuthScreenState extends State<AuthScreen> {
                           pinController.setText('');
                         },
                       ),
+                      SizedBox(height: appFormItemMargin),
+                      SizedBox(height: appFormItemMargin),
+                      Row(
+                        children: [
+                          Switch(
+                            value: isSignInMode,
+                            onChanged: (value) {
+                              setState(() => isSignInMode = value);
+                            },
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
               Spacer(),
               Text(
-                AppLocalizations.of(context)!.aboutContent,
+                '• ${AppLocalizations.of(context)!.toggleGuide}',
                 style: TextStyle(
                   fontSize: fontSizeSmall,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-              ),
-              SizedBox(height: appPaddingSmall),
-              Text.rich(
-                style: TextStyle(
-                  fontSize: fontSizeSmall,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                TextSpan(text: AppLocalizations.of(context)!.userNameGuide),
-                textAlign: TextAlign.left,
               ),
               Text(
-                AppLocalizations.of(context)!.pinGuide,
+                '• ${AppLocalizations.of(context)!.aboutContent}',
+                style: TextStyle(
+                  fontSize: fontSizeSmall,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              Text(
+                '• ${AppLocalizations.of(context)!.userNameGuide}',
+                style: TextStyle(
+                  fontSize: fontSizeSmall,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              Text(
+                '• ${AppLocalizations.of(context)!.pinGuide}',
                 style: TextStyle(
                   fontSize: fontSizeSmall,
                   color: Theme.of(context).colorScheme.primary,

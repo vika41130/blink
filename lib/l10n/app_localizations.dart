@@ -102,32 +102,26 @@ abstract class AppLocalizations {
   /// No description provided for @aboutContent.
   ///
   /// In en, this message translates to:
-  /// **'We don\'t store chat history. Messages will be removed after one minute.'**
+  /// **'Messages auto-delete after 1 minute or a set duration.'**
   String get aboutContent;
 
   /// No description provided for @userNameGuide.
   ///
   /// In en, this message translates to:
-  /// **'Username must be 3 to 40 characters long, containing only digits, letters, or underscores.'**
+  /// **'Username: 3–40 chars, letters/digits/underscores.'**
   String get userNameGuide;
 
   /// No description provided for @pinGuide.
   ///
   /// In en, this message translates to:
-  /// **'Pin must be four digits.'**
+  /// **'Pin: 4 digits.'**
   String get pinGuide;
 
-  /// No description provided for @signIn.
+  /// No description provided for @toggleGuide.
   ///
   /// In en, this message translates to:
-  /// **'Sign in'**
-  String get signIn;
-
-  /// No description provided for @signUp.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign up'**
-  String get signUp;
+  /// **'Toggle: sign in / sign up.'**
+  String get toggleGuide;
 
   /// No description provided for @userNameNotExisting.
   ///

@@ -12,19 +12,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authTitle => 'Auth';
 
   @override
-  String get aboutContent => 'We don\'t store chat history. Messages will be removed after one minute.';
+  String get aboutContent => 'Messages auto-delete after 1 minute or a set duration.';
 
   @override
-  String get userNameGuide => 'Username must be 3 to 40 characters long, containing only digits, letters, or underscores.';
+  String get userNameGuide => 'Username: 3–40 chars, letters/digits/underscores.';
 
   @override
-  String get pinGuide => 'Pin must be four digits.';
+  String get pinGuide => 'Pin: 4 digits.';
 
   @override
-  String get signIn => 'Sign in';
-
-  @override
-  String get signUp => 'Sign up';
+  String get toggleGuide => 'Toggle: sign in / sign up.';
 
   @override
   String get userNameNotExisting => 'Username does not exist.';
