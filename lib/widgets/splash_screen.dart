@@ -94,10 +94,10 @@ class _SplashScreenState extends State<SplashScreen>
       body: Center(
         child: FadeTransition(
           opacity: _fadeIn,
-          child: Image.asset(
-            'assets/icons/lightning_solt_icon.png',
-            width: appIconHugeSize * 2,
-            height: appIconHugeSize * 2,
+          child: Icon(
+            Icons.bolt,
+            size: appIconHugeSize * 2,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
       ),
