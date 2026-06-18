@@ -49,6 +49,7 @@ class AuthService {
             getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
             getIt<CacheService>().setString(cacheKeyUserId, doc.id);
             await getIt<NotificationService>().init();
+            _backgroundFetchAndCacheUser(doc.id);
           } else {
             getIt<ToastificationService>().showToast(
               getIt<AppLocalizations>().pinNotCorrect,
@@ -87,6 +88,7 @@ class AuthService {
         getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
         getIt<CacheService>().setString(cacheKeyUserId, user.id);
         await getIt<NotificationService>().init();
+        getIt<CacheService>().cacheUser(userModel);
         getIt<LoadingService>().hideLoading();
         navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -104,6 +106,20 @@ class AuthService {
         }
       }
     }
+  }
+
+  void _backgroundFetchAndCacheUser(String userId) {
+    getIt<FirebaseFirestore>()
+        .collection('users')
+        .doc(userId)
+        .get()
+        .then((doc) {
+          if (doc.exists && doc.data() != null) {
+            final user = User.fromMap(doc.data()!);
+            getIt<CacheService>().cacheUser(user);
+          }
+        })
+        .catchError((_) {});
   }
 
   Future<User?> getUserByUsername(String username) async {

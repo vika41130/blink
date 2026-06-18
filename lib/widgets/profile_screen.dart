@@ -2,6 +2,7 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
+import 'package:blink/widgets/chat_message_duration_screen.dart';
 import 'package:blink/widgets/contacts_pincode_duration_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -51,6 +52,36 @@ class ProfileScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   getIt<AppLocalizations>().contactsPincodeDuration,
+                  style: TextStyle(
+                    fontSize: fontSizeMedium,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: appFormItemMargin),
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.chat_bubble_outline,
+                  size: appIconMidSize,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChatMessageDurationScreen(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(width: appPaddingSmall),
+              Expanded(
+                child: Text(
+                  'Chat message duration',
                   style: TextStyle(
                     fontSize: fontSizeMedium,
                     color: Theme.of(context).colorScheme.onSurface,

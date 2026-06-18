@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/message.dart';
+import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/network_error_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -51,15 +52,18 @@ class ChatService {
 
     final String chatRoomId = getChatRoomId(currentUserId, receiverId);
 
+    int durationMinutes =
+        getIt<CacheService>().getInt(cacheKeyChatMessageDuration) ?? 1;
+
     final now = DateTime.now();
-    final oneMinuteFromNow = now.add(const Duration(seconds: 60));
+    final deleteAt = now.add(Duration(minutes: durationMinutes));
     final message = MessageModel(
       messageId: '',
       senderId: currentUserId,
       text: messageText.trim(),
       timestamp: now,
       createdAt: now,
-      deleteAt: oneMinuteFromNow,
+      deleteAt: deleteAt,
     );
 
     try {
@@ -96,8 +100,11 @@ class ChatService {
       final bytes = await imageFile.readAsBytes();
       final base64Image = base64Encode(bytes);
 
+      int durationMinutes =
+          getIt<CacheService>().getInt(cacheKeyChatMessageDuration) ?? 1;
+
       final now = DateTime.now();
-      final deleteAt = now.add(const Duration(seconds: 60));
+      final deleteAt = now.add(Duration(minutes: durationMinutes));
 
       final message = MessageModel(
         messageId: '',

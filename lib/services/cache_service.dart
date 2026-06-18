@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/models/user.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,13 +13,31 @@ class CacheService {
   String? getString(String key) => getIt<SharedPreferences>().getString(key);
   Future<void> setString(String key, String value) =>
       getIt<SharedPreferences>().setString(key, value);
+
+  int? getInt(String key) => getIt<SharedPreferences>().getInt(key);
+  Future<void> setInt(String key, int value) =>
+      getIt<SharedPreferences>().setInt(key, value);
+
+  void cacheUser(User user) {
+    setString(cacheKeyUsername, user.username);
+    setString(cacheKeyUserPin, user.pin);
+    setString(cacheKeyUserNickName, user.userNickName);
+    setString(cacheKeyUserContacts, jsonEncode(user.contacts));
+    setInt(cacheKeyChatMessageDuration, user.chatMessageDuration);
+  }
+
   void clearCache() {
-    getIt<CacheService>().setString(cacheKeyUsername, '');
-    getIt<CacheService>().setBool(cacheKeyIsSignedIn, false);
-    getIt<CacheService>().setString(cacheKeyUserId, '');
-    getIt<CacheService>().setString('lastPinVerified', '');
-    getIt<CacheService>().setString('pincodeDurationMinutes', '');
-    getIt<CacheService>().setBool(cacheKeyPinVerificationEnabled, true);
+    setString(cacheKeyUsername, '');
+    setBool(cacheKeyIsSignedIn, false);
+    setString(cacheKeyUserId, '');
+    setString('lastPinVerified', '');
+    setString('pincodeDurationMinutes', '');
+    setBool(cacheKeyPinVerificationEnabled, true);
+    setString(cacheKeyUserPin, '');
+    setString(cacheKeyUserNickName, '');
+    setString(cacheKeyUserContacts, '');
+    setInt(cacheKeyChatMessageDuration, 1);
+    setString('chatMessageDurationMinutes', '');
     getIt<ContactService>().clearCache();
   }
 }
@@ -25,3 +46,7 @@ const cacheKeyUsername = 'blinkCacheKeyUsername';
 const cacheKeyIsSignedIn = 'blinkCacheKeyIsSignedIn';
 const cacheKeyUserId = 'cacheKeyUserId';
 const cacheKeyPinVerificationEnabled = 'pinVerificationEnabled';
+const cacheKeyUserPin = 'cacheKeyUserPin';
+const cacheKeyUserNickName = 'cacheKeyUserNickName';
+const cacheKeyUserContacts = 'cacheKeyUserContacts';
+const cacheKeyChatMessageDuration = 'cacheKeyChatMessageDuration';

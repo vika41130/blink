@@ -3,12 +3,14 @@ class User {
   final String pin;
   final String userNickName;
   final List<String> contacts;
+  final int chatMessageDuration;
 
   User({
     required this.username,
     required this.pin,
     this.userNickName = '',
     this.contacts = const [],
+    this.chatMessageDuration = 1,
   });
 
   factory User.fromMap(Map<String, dynamic> map) {
@@ -17,6 +19,7 @@ class User {
       pin: (map['pin'] ?? map['passcode']) as String? ?? '',
       userNickName: map['userNickName'] as String? ?? '',
       contacts: (map['contacts'] as List<dynamic>?)?.cast<String>() ?? [],
+      chatMessageDuration: map['chatMessageDuration'] as int? ?? 1,
     );
   }
 
@@ -26,6 +29,7 @@ class User {
       'pin': pin,
       'userNickName': userNickName,
       'contacts': contacts,
+      'chatMessageDuration': chatMessageDuration,
     };
   }
 }

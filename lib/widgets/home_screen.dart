@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
-import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/notification_service.dart';
@@ -149,13 +148,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           (index) => const SizedBox(width: appPaddingMid),
                       hapticFeedbackType: HapticFeedbackType.lightImpact,
                       onCompleted: (pin) async {
-                        final userId =
-                            getIt<CacheService>().getString(cacheKeyUserId) ??
+                        final cachedPin =
+                            getIt<CacheService>().getString(cacheKeyUserPin) ??
                             '';
-                        final user = await getIt<AuthService>().getUserById(
-                          userId,
-                        );
-                        if (user != null && user.pin == pin) {
+                        if (cachedPin == pin) {
                           if (ctx.mounted) Navigator.of(ctx).pop();
                           _lastPinVerified = DateTime.now();
                           getIt<CacheService>().setString(

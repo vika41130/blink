@@ -1,52 +1,44 @@
 import 'dart:ui';
 
 import 'package:blink/get_it_setup.dart';
-import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/toastification_service.dart';
+import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/settings/fixed_settings.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class ContactsPincodeDurationScreen extends StatefulWidget {
-  const ContactsPincodeDurationScreen({super.key});
+class ChatMessageDurationScreen extends StatefulWidget {
+  const ChatMessageDurationScreen({super.key});
 
   @override
-  State<ContactsPincodeDurationScreen> createState() =>
-      _ContactsPincodeDurationScreenState();
+  State<ChatMessageDurationScreen> createState() =>
+      _ChatMessageDurationScreenState();
 }
 
-class _ContactsPincodeDurationScreenState
-    extends State<ContactsPincodeDurationScreen> {
-  late Duration _savedDuration;
-  late bool _pinVerificationEnabled;
+class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
+  late int _savedMinute;
 
   @override
   void initState() {
     super.initState();
-    final cachedMinutes = int.tryParse(
-      getIt<CacheService>().getString('pincodeDurationMinutes') ?? '',
-    );
-    _savedDuration =
-        cachedMinutes != null
-            ? Duration(minutes: cachedMinutes)
-            : const Duration(hours: 6);
-    _pinVerificationEnabled =
-        getIt<SharedPreferences>().getBool(cacheKeyPinVerificationEnabled) ??
-        true;
+    final cached = getIt<CacheService>().getInt(cacheKeyChatMessageDuration);
+    _savedMinute = (cached != null && cached >= 1 && cached <= 3) ? cached : 1;
   }
 
-  String _formatDuration(Duration d) {
-    final hours = d.inHours;
-    final minutes = d.inMinutes % 60;
-    if (hours > 0 && minutes > 0) return '${hours}h ${minutes}m';
-    if (hours > 0) return '${hours}h';
-    return '${minutes}m';
+  Future<void> _updateFirestore(int minutes) async {
+    final userId = getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+    if (userId.isEmpty) return;
+    try {
+      await getIt<FirebaseFirestore>().collection('users').doc(userId).update({
+        'chatMessageDuration': minutes,
+      });
+    } catch (_) {}
   }
 
-  void _showTimerPickerDialog() {
-    Duration tempDuration = _savedDuration;
+  void _showMinutePickerDialog() {
+    int tempMinute = _savedMinute;
     showDialog(
       context: context,
       barrierColor: Colors.transparent,
@@ -71,13 +63,27 @@ class _ContactsPincodeDurationScreenState
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
-                      height: 180,
-                      child: CupertinoTimerPicker(
-                        mode: CupertinoTimerPickerMode.hm,
-                        initialTimerDuration: _savedDuration,
-                        onTimerDurationChanged: (Duration duration) {
-                          tempDuration = duration;
+                      height: 150,
+                      child: CupertinoPicker(
+                        scrollController: FixedExtentScrollController(
+                          initialItem: _savedMinute - 1,
+                        ),
+                        itemExtent: 40,
+                        onSelectedItemChanged: (index) {
+                          tempMinute = index + 1;
                         },
+                        children: List.generate(3, (index) {
+                          final minute = index + 1;
+                          return Center(
+                            child: Text(
+                              '$minute minute${minute > 1 ? 's' : ''}',
+                              style: TextStyle(
+                                fontSize: fontSizeMedium,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          );
+                        }),
                       ),
                     ),
                     SizedBox(height: appPaddingSmall),
@@ -91,12 +97,13 @@ class _ContactsPincodeDurationScreenState
                         TextButton(
                           onPressed: () {
                             Navigator.of(ctx).pop();
-                            if (tempDuration != _savedDuration) {
-                              setState(() => _savedDuration = tempDuration);
-                              getIt<CacheService>().setString(
-                                'pincodeDurationMinutes',
-                                tempDuration.inMinutes.toString(),
+                            if (tempMinute != _savedMinute) {
+                              setState(() => _savedMinute = tempMinute);
+                              getIt<CacheService>().setInt(
+                                cacheKeyChatMessageDuration,
+                                tempMinute,
                               );
+                              _updateFirestore(tempMinute);
                               getIt<ToastificationService>().showToast(
                                 getIt<AppLocalizations>().durationUpdated,
                               );
@@ -124,7 +131,7 @@ class _ContactsPincodeDurationScreenState
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          getIt<AppLocalizations>().contactsPincodeDuration,
+          'Chat message duration',
           style: TextStyle(
             fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,
@@ -144,41 +151,6 @@ class _ContactsPincodeDurationScreenState
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.lock_outline,
-                      size: appIconMidSize,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    onPressed: null,
-                  ),
-                  SizedBox(width: appPaddingSmall),
-                  Expanded(
-                    child: Text(
-                      'Pin verification',
-                      style: TextStyle(
-                        fontSize: fontSizeMedium,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  Switch(
-                    value: _pinVerificationEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _pinVerificationEnabled = value;
-                      });
-                      getIt<CacheService>().setBool(
-                        cacheKeyPinVerificationEnabled,
-                        value,
-                      );
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: appPaddingSmall),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(
                       Icons.info_outline,
                       size: appIconMidSize,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -188,7 +160,7 @@ class _ContactsPincodeDurationScreenState
                   SizedBox(width: appPaddingSmall),
                   Expanded(
                     child: Text(
-                      getIt<AppLocalizations>().defaultDurationInfo,
+                      'Default: 1 minute',
                       style: TextStyle(
                         fontSize: fontSizeMedium,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -206,13 +178,12 @@ class _ContactsPincodeDurationScreenState
                       size: appIconMidSize,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    onPressed:
-                        _pinVerificationEnabled ? _showTimerPickerDialog : null,
+                    onPressed: _showMinutePickerDialog,
                   ),
                   SizedBox(width: appPaddingSmall),
                   Expanded(
                     child: Text(
-                      _formatDuration(_savedDuration),
+                      '$_savedMinute minute${_savedMinute > 1 ? 's' : ''}',
                       style: TextStyle(
                         fontSize: fontSizeMedium,
                         color: Theme.of(context).colorScheme.onSurface,
