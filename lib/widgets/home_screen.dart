@@ -19,6 +19,7 @@ import 'package:blink/widgets/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pinput/pinput.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -428,9 +429,11 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             }),
             _buildTabItem(Icons.contacts, Icons.contacts_outlined, 1, () {
-              final pinEnabled = getIt<CacheService>().getBool(
-                cacheKeyPinVerificationEnabled,
-              );
+              final pinEnabled =
+                  getIt<SharedPreferences>().getBool(
+                    cacheKeyPinVerificationEnabled,
+                  ) ??
+                  true;
               if (!pinEnabled) {
                 setState(() {
                   _selectedTab = 1;

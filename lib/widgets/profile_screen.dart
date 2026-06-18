@@ -5,23 +5,8 @@ import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/contacts_pincode_duration_screen.dart';
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  late bool _pinVerificationEnabled;
-
-  @override
-  void initState() {
-    super.initState();
-    _pinVerificationEnabled = getIt<CacheService>().getBool(
-      cacheKeyPinVerificationEnabled,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,18 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-              ),
-              Switch(
-                value: _pinVerificationEnabled,
-                onChanged: (value) {
-                  setState(() {
-                    _pinVerificationEnabled = value;
-                  });
-                  getIt<CacheService>().setBool(
-                    cacheKeyPinVerificationEnabled,
-                    value,
-                  );
-                },
               ),
             ],
           ),

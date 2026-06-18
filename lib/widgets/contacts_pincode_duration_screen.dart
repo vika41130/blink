@@ -7,6 +7,7 @@ import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactsPincodeDurationScreen extends StatefulWidget {
   const ContactsPincodeDurationScreen({super.key});
@@ -19,6 +20,7 @@ class ContactsPincodeDurationScreen extends StatefulWidget {
 class _ContactsPincodeDurationScreenState
     extends State<ContactsPincodeDurationScreen> {
   late Duration _savedDuration;
+  late bool _pinVerificationEnabled;
 
   @override
   void initState() {
@@ -30,6 +32,9 @@ class _ContactsPincodeDurationScreenState
         cachedMinutes != null
             ? Duration(minutes: cachedMinutes)
             : const Duration(hours: 6);
+    _pinVerificationEnabled =
+        getIt<SharedPreferences>().getBool(cacheKeyPinVerificationEnabled) ??
+        true;
   }
 
   String _formatDuration(Duration d) {
@@ -76,21 +81,30 @@ class _ContactsPincodeDurationScreenState
                       ),
                     ),
                     SizedBox(height: appPaddingSmall),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        if (tempDuration != _savedDuration) {
-                          setState(() => _savedDuration = tempDuration);
-                          getIt<CacheService>().setString(
-                            'pincodeDurationMinutes',
-                            tempDuration.inMinutes.toString(),
-                          );
-                          getIt<ToastificationService>().showToast(
-                            getIt<AppLocalizations>().durationUpdated,
-                          );
-                        }
-                      },
-                      child: Text(getIt<AppLocalizations>().done),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            if (tempDuration != _savedDuration) {
+                              setState(() => _savedDuration = tempDuration);
+                              getIt<CacheService>().setString(
+                                'pincodeDurationMinutes',
+                                tempDuration.inMinutes.toString(),
+                              );
+                              getIt<ToastificationService>().showToast(
+                                getIt<AppLocalizations>().durationUpdated,
+                              );
+                            }
+                          },
+                          child: Text(getIt<AppLocalizations>().done),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -126,6 +140,41 @@ class _ContactsPincodeDurationScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.lock_outline,
+                      size: appIconMidSize,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: null,
+                  ),
+                  SizedBox(width: appPaddingSmall),
+                  Expanded(
+                    child: Text(
+                      'Pin verification',
+                      style: TextStyle(
+                        fontSize: fontSizeMedium,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  Switch(
+                    value: _pinVerificationEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _pinVerificationEnabled = value;
+                      });
+                      getIt<CacheService>().setBool(
+                        cacheKeyPinVerificationEnabled,
+                        value,
+                      );
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: appPaddingSmall),
               Row(
                 children: [
                   IconButton(
