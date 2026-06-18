@@ -30,12 +30,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pinNotCorrect => 'Pin is incorrect.';
 
   @override
-  String get signInSuccess => 'Signed in successfully. Going in...';
-
-  @override
-  String get createUserSuccess => 'New user created successfully. Going in...';
-
-  @override
   String get signUpFailed => 'Sign up failed.';
 
   @override
@@ -69,10 +63,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrCodeSaved => 'QR code saved to gallery!';
 
   @override
-  String get noUserFound => 'No user found.';
-
-  @override
-  String get contactSavedSuccessfully => 'Contact saved.';
+  String get contactSavedSuccessfully => 'Saved';
 
   @override
   String get failedToSaveContact => 'Failed to save contact.';
@@ -84,10 +75,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactNotAdded => 'Contact not added.';
 
   @override
-  String get contactRemovedSuccessfully => 'Contact removed.';
-
-  @override
-  String get failedToRemoveContact => 'Failed to remove contact.';
+  String get contactRemovedSuccessfully => 'Removed';
 
   @override
   String get cameraPermissionDenied => 'Camera permission is required.';

@@ -135,18 +135,6 @@ abstract class AppLocalizations {
   /// **'Pin is incorrect.'**
   String get pinNotCorrect;
 
-  /// No description provided for @signInSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Signed in successfully. Going in...'**
-  String get signInSuccess;
-
-  /// No description provided for @createUserSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'New user created successfully. Going in...'**
-  String get createUserSuccess;
-
   /// No description provided for @signUpFailed.
   ///
   /// In en, this message translates to:
@@ -213,16 +201,10 @@ abstract class AppLocalizations {
   /// **'QR code saved to gallery!'**
   String get qrCodeSaved;
 
-  /// No description provided for @noUserFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No user found.'**
-  String get noUserFound;
-
   /// No description provided for @contactSavedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Contact saved.'**
+  /// **'Saved'**
   String get contactSavedSuccessfully;
 
   /// No description provided for @failedToSaveContact.
@@ -246,14 +228,8 @@ abstract class AppLocalizations {
   /// No description provided for @contactRemovedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Contact removed.'**
+  /// **'Removed'**
   String get contactRemovedSuccessfully;
-
-  /// No description provided for @failedToRemoveContact.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to remove contact.'**
-  String get failedToRemoveContact;
 
   /// No description provided for @cameraPermissionDenied.
   ///
