@@ -294,10 +294,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(
-                    CupertinoIcons.ellipsis_vertical,
-                    size: appBarIconSize,
-                  ),
+                  icon: Icon(CupertinoIcons.ellipsis, size: appBarIconSize),
                   onPressed: () async {
                     final result = await Navigator.push<String>(
                       context,
