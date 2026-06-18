@@ -6,6 +6,7 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
@@ -231,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 toolbarHeight: appBarHeight,
                 automaticallyImplyLeading: false,
                 leading: IconButton(
-                  icon: Icon(Icons.qr_code),
+                  icon: Icon(CupertinoIcons.qrcode),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -253,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ? '$notificationBadgeMax+'
                                   : '$count',
                             ),
-                            child: Icon(Icons.notifications_outlined),
+                            child: Icon(CupertinoIcons.bell),
                           ),
                           onPressed: () {
                             getIt<NotificationService>().resetCount();
@@ -267,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.power_settings_new),
+                    icon: Icon(CupertinoIcons.power),
                     onPressed: () {
                       getIt<CacheService>().clearCache();
                       navigatorKey.currentState?.pushAndRemoveUntil(
@@ -291,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.search),
+                    icon: Icon(CupertinoIcons.search),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -312,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ? '$notificationBadgeMax+'
                                   : '$count',
                             ),
-                            child: Icon(Icons.notifications_outlined),
+                            child: Icon(CupertinoIcons.bell),
                           ),
                           onPressed: () {
                             getIt<NotificationService>().resetCount();
@@ -326,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.power_settings_new),
+                    icon: Icon(CupertinoIcons.power),
                     onPressed: () {
                       getIt<CacheService>().clearCache();
                       navigatorKey.currentState?.pushAndRemoveUntil(
@@ -418,40 +419,50 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         child: Row(
           children: [
-            _buildTabItem(Icons.home_filled, Icons.home_outlined, 0, () {
+            _buildTabItem(CupertinoIcons.home, CupertinoIcons.home, 0, () {
               setState(() {
                 _selectedTab = 0;
                 content = const SizedBox.shrink();
               });
             }),
-            _buildTabItem(Icons.contacts, Icons.contacts_outlined, 1, () {
-              final pinEnabled =
-                  getIt<SharedPreferences>().getBool(
-                    cacheKeyPinVerificationEnabled,
-                  ) ??
-                  true;
-              if (!pinEnabled) {
+            _buildTabItem(
+              CupertinoIcons.person_2_fill,
+              CupertinoIcons.person_2,
+              1,
+              () {
+                final pinEnabled =
+                    getIt<SharedPreferences>().getBool(
+                      cacheKeyPinVerificationEnabled,
+                    ) ??
+                    true;
+                if (!pinEnabled) {
+                  setState(() {
+                    _selectedTab = 1;
+                    content = const ContactScreen();
+                  });
+                } else if (_lastPinVerified != null &&
+                    DateTime.now().difference(_lastPinVerified!) <
+                        _getPincodeDuration()) {
+                  setState(() {
+                    _selectedTab = 1;
+                    content = const ContactScreen();
+                  });
+                } else {
+                  _showPinDialog();
+                }
+              },
+            ),
+            _buildTabItem(
+              CupertinoIcons.person_fill,
+              CupertinoIcons.person,
+              2,
+              () {
                 setState(() {
-                  _selectedTab = 1;
-                  content = const ContactScreen();
+                  _selectedTab = 2;
+                  content = const ProfileScreen();
                 });
-              } else if (_lastPinVerified != null &&
-                  DateTime.now().difference(_lastPinVerified!) <
-                      _getPincodeDuration()) {
-                setState(() {
-                  _selectedTab = 1;
-                  content = const ContactScreen();
-                });
-              } else {
-                _showPinDialog();
-              }
-            }),
-            _buildTabItem(Icons.person, Icons.person_outline, 2, () {
-              setState(() {
-                _selectedTab = 2;
-                content = const ProfileScreen();
-              });
-            }),
+              },
+            ),
           ],
         ),
       ),

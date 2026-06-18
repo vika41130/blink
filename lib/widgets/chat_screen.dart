@@ -14,6 +14,7 @@ import 'package:blink/widgets/message_widget.dart';
 import 'package:blink/widgets/chat_settings_screen.dart';
 import 'package:blink/widgets/custom_widgets/smoke_animation.dart';
 import 'package:blink/widgets/custom_widgets/typing_indicator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -282,10 +283,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  size: appBarIconSize,
-                ),
+                icon: const Icon(CupertinoIcons.back, size: appBarIconSize),
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
@@ -296,7 +294,10 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.more_vert, size: appBarIconSize),
+                  icon: Icon(
+                    CupertinoIcons.ellipsis_vertical,
+                    size: appBarIconSize,
+                  ),
                   onPressed: () async {
                     final result = await Navigator.push<String>(
                       context,
@@ -428,7 +429,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                           ).colorScheme.surfaceContainerHighest,
                                     ),
                                     child: Icon(
-                                      Icons.keyboard_arrow_down,
+                                      CupertinoIcons.chevron_down,
                                       size: 24,
                                       color:
                                           Theme.of(context).colorScheme.primary,
@@ -487,7 +488,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                           ),
                                           onTap: _pickAndSendImage,
                                           child: Icon(
-                                            Icons.photo_outlined,
+                                            CupertinoIcons.photo,
                                             size: appIconLargeSize,
                                             color:
                                                 Theme.of(
@@ -505,7 +506,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                           ),
                                           onTap: _sendMessage,
                                           child: Icon(
-                                            Icons.send,
+                                            CupertinoIcons.paperplane_fill,
                                             size: appIconLargeSize,
                                             color:
                                                 Theme.of(

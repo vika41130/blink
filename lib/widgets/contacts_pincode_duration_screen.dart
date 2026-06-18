@@ -120,7 +120,7 @@ class _ContactsPincodeDurationScreenState
       appBar: AppBar(
         toolbarHeight: appBarHeight,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
+          icon: const Icon(CupertinoIcons.back, size: appBarIconSize),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -144,7 +144,7 @@ class _ContactsPincodeDurationScreenState
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.lock_outline,
+                      CupertinoIcons.lock,
                       size: appIconMidSize,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -179,7 +179,7 @@ class _ContactsPincodeDurationScreenState
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.info_outline,
+                      CupertinoIcons.info,
                       size: appIconMidSize,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -202,7 +202,7 @@ class _ContactsPincodeDurationScreenState
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.edit,
+                      CupertinoIcons.pencil,
                       size: appIconMidSize,
                       color: Theme.of(context).colorScheme.primary,
                     ),

@@ -7,6 +7,7 @@ import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/custom_widgets/corner_border.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -99,7 +100,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         appBar: AppBar(
           automaticallyImplyLeading: false,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
+            icon: const Icon(CupertinoIcons.back, size: appBarIconSize),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -111,7 +112,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         appBar: AppBar(
           automaticallyImplyLeading: false,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
+            icon: const Icon(CupertinoIcons.back, size: appBarIconSize),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -210,13 +211,13 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                         switch (state.torchState) {
                           case TorchState.off:
                             return const Icon(
-                              Icons.flash_off,
+                              CupertinoIcons.bolt_slash,
                               color: Colors.grey,
                               size: appIconLargeSize,
                             );
                           case TorchState.on:
                             return const Icon(
-                              Icons.flash_on,
+                              CupertinoIcons.bolt_fill,
                               color: Colors.yellow,
                               size: appIconLargeSize,
                             );
@@ -234,7 +235,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   width: appSixedBoxSizeMedium,
                   child: IconButton(
                     icon: const Icon(
-                      Icons.photo_library,
+                      CupertinoIcons.photo_on_rectangle,
                       size: appIconLargeSize,
                     ),
                     onPressed: _scanImageFromGallery,

@@ -6,6 +6,7 @@ import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -78,7 +79,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
+          icon: const Icon(CupertinoIcons.back, size: appBarIconSize),
           onPressed: () => Navigator.of(context).pop(_currentNickName),
         ),
         title: Text(
@@ -111,7 +112,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          Icons.access_time,
+                          CupertinoIcons.clock,
                           size: appIconMidSize,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -138,7 +139,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.swipe_right,
+                      CupertinoIcons.hand_draw,
                       size: appIconMidSize,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -161,7 +162,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                 children: [
                   IconButton(
                     icon: Icon(
-                      Icons.touch_app,
+                      CupertinoIcons.hand_point_right,
                       size: appIconMidSize,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -186,7 +187,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          Icons.check,
+                          CupertinoIcons.checkmark,
                           size: appIconMidSize,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -253,7 +254,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          Icons.edit,
+                          CupertinoIcons.pencil,
                           size: appIconMidSize,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -342,7 +343,9 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          isBlocked ? Icons.lock_open : Icons.lock,
+                          isBlocked
+                              ? CupertinoIcons.lock_open
+                              : CupertinoIcons.lock,
                           size: appIconMidSize,
                           color: Theme.of(context).colorScheme.primary,
                         ),

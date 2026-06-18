@@ -7,6 +7,7 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/qr_scanner_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -45,7 +46,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
+          icon: const Icon(CupertinoIcons.back, size: appBarIconSize),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -57,7 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.qr_code_scanner),
+            icon: Icon(CupertinoIcons.qrcode_viewfinder),
             onPressed: () {
               Navigator.push(
                 context,
@@ -100,7 +101,10 @@ class _SearchScreenState extends State<SearchScreen> {
                           left: appTextInputContentPadding,
                           right: appTextInputContentPadding / 2,
                         ),
-                        child: Icon(Icons.search, size: appIconMidSize),
+                        child: Icon(
+                          CupertinoIcons.search,
+                          size: appIconMidSize,
+                        ),
                       ),
                       prefixIconConstraints: const BoxConstraints(
                         minWidth: 0,
@@ -119,7 +123,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     right: appTextInputContentPadding,
                                   ),
                                   child: Icon(
-                                    Icons.close,
+                                    CupertinoIcons.xmark,
                                     size: appIconMidSize,
                                   ),
                                 ),
