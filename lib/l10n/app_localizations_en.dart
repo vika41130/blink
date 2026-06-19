@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authTitle => 'Auth';
 
   @override
-  String get aboutContent => 'Messages auto-delete after 1 minute or a set duration.';
+  String get autoDeleteGuide => 'Chat messages auto-delete after 1 minute or a set duration.';
 
   @override
   String get userNameGuide => 'Username: 3–40 chars, letters/digits/underscores.';
@@ -22,6 +22,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toggleGuide => 'Toggle: sign in / sign up.';
+
+  @override
+  String get easyAccountGuide => 'Easily create an account.';
 
   @override
   String get userNameNotExisting => 'Username does not exist.';

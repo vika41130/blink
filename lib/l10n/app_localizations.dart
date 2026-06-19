@@ -99,11 +99,11 @@ abstract class AppLocalizations {
   /// **'Auth'**
   String get authTitle;
 
-  /// No description provided for @aboutContent.
+  /// No description provided for @autoDeleteGuide.
   ///
   /// In en, this message translates to:
-  /// **'Messages auto-delete after 1 minute or a set duration.'**
-  String get aboutContent;
+  /// **'Chat messages auto-delete after 1 minute or a set duration.'**
+  String get autoDeleteGuide;
 
   /// No description provided for @userNameGuide.
   ///
@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Toggle: sign in / sign up.'**
   String get toggleGuide;
+
+  /// No description provided for @easyAccountGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Easily create an account.'**
+  String get easyAccountGuide;
 
   /// No description provided for @userNameNotExisting.
   ///

@@ -194,19 +194,20 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               Spacer(),
               Text(
-                '• ${AppLocalizations.of(context)!.toggleGuide}',
+                '• ${AppLocalizations.of(context)!.easyAccountGuide}',
                 style: TextStyle(
                   fontSize: fontSizeSmall,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
               Text(
-                '• ${AppLocalizations.of(context)!.aboutContent}',
+                '• ${AppLocalizations.of(context)!.autoDeleteGuide}',
                 style: TextStyle(
                   fontSize: fontSizeSmall,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
+              SizedBox(height: appPaddingSmall),
               Text(
                 '• ${AppLocalizations.of(context)!.userNameGuide}',
                 style: TextStyle(
@@ -216,6 +217,13 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               Text(
                 '• ${AppLocalizations.of(context)!.pinGuide}',
+                style: TextStyle(
+                  fontSize: fontSizeSmall,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              Text(
+                '• ${AppLocalizations.of(context)!.toggleGuide}',
                 style: TextStyle(
                   fontSize: fontSizeSmall,
                   color: Theme.of(context).colorScheme.primary,
