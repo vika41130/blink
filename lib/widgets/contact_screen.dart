@@ -6,6 +6,7 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -88,7 +89,7 @@ class _ContactScreenState extends State<ContactScreen> {
                   left: appTextInputContentPadding,
                   right: appTextInputContentPadding / 2,
                 ),
-                child: Icon(Icons.search, size: appIconMidSize),
+                child: Icon(CupertinoIcons.search, size: appIconMidSize),
               ),
               prefixIconConstraints: const BoxConstraints(
                 minWidth: 0,
@@ -106,7 +107,10 @@ class _ContactScreenState extends State<ContactScreen> {
                           padding: const EdgeInsets.only(
                             right: appTextInputContentPadding,
                           ),
-                          child: Icon(Icons.close, size: appIconMidSize),
+                          child: Icon(
+                            CupertinoIcons.xmark,
+                            size: appIconMidSize,
+                          ),
                         ),
                       )
                       : null,
@@ -167,13 +171,30 @@ class _ContactScreenState extends State<ContactScreen> {
           minLeadingWidth: 0,
           horizontalTitleGap: appPaddingSmall,
           leading: Icon(
-            Icons.person,
+            CupertinoIcons.person,
             size: appIconMidSize,
             color: Theme.of(context).colorScheme.primary,
           ),
           title: Text(
             contact.displayName,
             style: const TextStyle(fontSize: fontSizeMedium),
+          ),
+          trailing: IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: Icon(
+              CupertinoIcons.star_fill,
+              size: appIconMidSize,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            onPressed: () async {
+              final String currentUserId =
+                  getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+              await getIt<ContactService>().removeContact(
+                currentUserId,
+                username,
+              );
+            },
           ),
           onTap: () async {
             final String currentUserId =
