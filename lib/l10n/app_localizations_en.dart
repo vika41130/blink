@@ -99,6 +99,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tripleTapToBlock => 'Triple-tap title to lock screen';
 
   @override
+  String get touchTextMessage => 'Touch text message to show menu';
+
+  @override
+  String get touchImageFullScreen => 'Touch image to view full screen';
+
+  @override
   String get blockChat => 'Block chat';
 
   @override

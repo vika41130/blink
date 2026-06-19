@@ -273,6 +273,18 @@ abstract class AppLocalizations {
   /// **'Triple-tap title to lock screen'**
   String get tripleTapToBlock;
 
+  /// No description provided for @touchTextMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch text message to show menu'**
+  String get touchTextMessage;
+
+  /// No description provided for @touchImageFullScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch image to view full screen'**
+  String get touchImageFullScreen;
+
   /// No description provided for @blockChat.
   ///
   /// In en, this message translates to:

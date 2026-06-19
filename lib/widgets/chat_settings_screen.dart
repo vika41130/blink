@@ -181,6 +181,52 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                 ],
               ),
               SizedBox(height: appPaddingSmall),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      CupertinoIcons.text_bubble,
+                      size: appIconMidSize,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: null,
+                  ),
+                  SizedBox(width: appPaddingSmall),
+                  Expanded(
+                    child: Text(
+                      getIt<AppLocalizations>().touchTextMessage,
+                      style: TextStyle(
+                        fontSize: fontSizeMedium,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: appPaddingSmall),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      CupertinoIcons.photo,
+                      size: appIconMidSize,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: null,
+                  ),
+                  SizedBox(width: appPaddingSmall),
+                  Expanded(
+                    child: Text(
+                      getIt<AppLocalizations>().touchImageFullScreen,
+                      style: TextStyle(
+                        fontSize: fontSizeMedium,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: appPaddingSmall),
               _isEditingUsername
                   ? Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
