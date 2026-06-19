@@ -253,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   _getGreeting(),
                                   style: TextStyle(
-                                    fontSize: fontSizeLarge,
+                                    fontSize: fontSizeLarge * 1.5,
                                     color:
                                         Theme.of(
                                           context,

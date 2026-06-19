@@ -114,14 +114,16 @@ class _SearchScreenState extends State<SearchScreen> {
                       suffixIcon:
                           _searchController.text.isNotEmpty
                               ? GestureDetector(
+                                behavior: HitTestBehavior.opaque,
                                 onTap: () {
                                   _searchController.clear();
                                   _searchFocusNode.unfocus();
                                   setState(() => _searchResults = []);
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    right: appTextInputContentPadding,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: appTextInputContentPadding,
+                                    vertical: appTextInputContentPadding,
                                   ),
                                   child: Icon(
                                     CupertinoIcons.xmark,
