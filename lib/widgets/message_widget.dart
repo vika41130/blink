@@ -369,20 +369,24 @@ class _MessageWidgetState extends State<MessageWidget>
                             borderRadius: BorderRadius.circular(
                               appBorderRadius,
                             ),
-                            child: Image.memory(
-                              _imageBytes!,
-                              width: 180,
-                              height: 180,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const SizedBox(
-                                  width: 180,
-                                  height: 180,
-                                  child: Center(
-                                    child: Icon(Icons.broken_image, size: 40),
-                                  ),
-                                );
-                              },
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 180,
+                                maxHeight: 240,
+                              ),
+                              child: Image.memory(
+                                _imageBytes!,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const SizedBox(
+                                    width: 180,
+                                    height: 180,
+                                    child: Center(
+                                      child: Icon(Icons.broken_image, size: 40),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                           Positioned(
