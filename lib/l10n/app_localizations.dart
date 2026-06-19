@@ -303,11 +303,11 @@ abstract class AppLocalizations {
   /// **'Unblock chat'**
   String get unblockChat;
 
-  /// No description provided for @contactsPincodeDuration.
+  /// No description provided for @lockContacts.
   ///
   /// In en, this message translates to:
-  /// **'Contacts pin duration'**
-  String get contactsPincodeDuration;
+  /// **'Lock contacts'**
+  String get lockContacts;
 
   /// No description provided for @defaultDurationInfo.
   ///

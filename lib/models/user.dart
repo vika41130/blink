@@ -4,6 +4,7 @@ class User {
   final String userNickName;
   final List<String> contacts;
   final int chatMessageDuration;
+  final bool contactsLocked;
 
   User({
     required this.username,
@@ -11,6 +12,7 @@ class User {
     this.userNickName = '',
     this.contacts = const [],
     this.chatMessageDuration = 1,
+    this.contactsLocked = false,
   });
 
   factory User.fromMap(Map<String, dynamic> map) {
@@ -20,6 +22,7 @@ class User {
       userNickName: map['userNickName'] as String? ?? '',
       contacts: (map['contacts'] as List<dynamic>?)?.cast<String>() ?? [],
       chatMessageDuration: map['chatMessageDuration'] as int? ?? 1,
+      contactsLocked: map['contactsLocked'] as bool? ?? false,
     );
   }
 
@@ -30,6 +33,7 @@ class User {
       'userNickName': userNickName,
       'contacts': contacts,
       'chatMessageDuration': chatMessageDuration,
+      'contactsLocked': contactsLocked,
     };
   }
 }

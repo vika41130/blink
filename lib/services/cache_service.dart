@@ -24,6 +24,7 @@ class CacheService {
     setString(cacheKeyUserNickName, user.userNickName);
     setString(cacheKeyUserContacts, jsonEncode(user.contacts));
     setInt(cacheKeyChatMessageDuration, user.chatMessageDuration);
+    setBool(cacheKeyContactsLocked, user.contactsLocked);
   }
 
   void clearCache() {
@@ -33,6 +34,7 @@ class CacheService {
     setString('lastPinVerified', '');
     setString('pincodeDurationMinutes', '');
     setBool(cacheKeyPinVerificationEnabled, true);
+    setBool(cacheKeyContactsLocked, false);
     setString(cacheKeyUserPin, '');
     setString(cacheKeyUserNickName, '');
     setString(cacheKeyUserContacts, '');
@@ -50,3 +52,4 @@ const cacheKeyUserPin = 'cacheKeyUserPin';
 const cacheKeyUserNickName = 'cacheKeyUserNickName';
 const cacheKeyUserContacts = 'cacheKeyUserContacts';
 const cacheKeyChatMessageDuration = 'cacheKeyChatMessageDuration';
+const cacheKeyContactsLocked = 'cacheKeyContactsLocked';

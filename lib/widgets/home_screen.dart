@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
@@ -8,7 +7,6 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:blink/services/notification_service.dart';
-import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
 import 'package:blink/widgets/notification_screen.dart';
@@ -18,8 +16,6 @@ import 'package:blink/widgets/qr_image_screen.dart';
 import 'package:blink/widgets/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pinput/pinput.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,13 +27,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTab = 0;
   Widget content = const SizedBox.shrink();
-  DateTime? _lastPinVerified;
   late Timer _clockTimer;
   String _time = '';
+  bool _contactsLocked = false;
 
   @override
   void initState() {
     super.initState();
+    _contactsLocked = getIt<CacheService>().getBool(cacheKeyContactsLocked);
     _time = _formatTime();
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && _selectedTab == 0) {
@@ -47,11 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     });
-    // Load cached pin verification time
-    final cachedTime = getIt<CacheService>().getString('lastPinVerified');
-    if (cachedTime != null && cachedTime.isNotEmpty) {
-      _lastPinVerified = DateTime.tryParse(cachedTime);
-    }
     // Background preload contacts progressively
     getIt<ContactService>().loadContactsProgressively(
       currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
@@ -60,15 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _formatTime() {
     return DateFormat('HH:mm:ss').format(DateTime.now());
-  }
-
-  Duration _getPincodeDuration() {
-    final cachedMinutes = int.tryParse(
-      getIt<CacheService>().getString('pincodeDurationMinutes') ?? '',
-    );
-    return cachedMinutes != null
-        ? Duration(minutes: cachedMinutes)
-        : const Duration(hours: 6);
   }
 
   String _getGreeting() {
@@ -83,100 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _clockTimer.cancel();
     super.dispose();
-  }
-
-  void _showPinDialog() {
-    final pinController = TextEditingController();
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder:
-          (ctx) => BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(appBorderRadius * 4),
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.secondary,
-                  width: mediumBorderWidth,
-                ),
-              ),
-              insetPadding: const EdgeInsets.symmetric(horizontal: 60),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: appPaddingSmall * 2,
-                  vertical: appPaddingSmall * 3,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Enter pin',
-                      style: TextStyle(fontSize: fontSizeSmall),
-                    ),
-                    const SizedBox(height: appPaddingSmall * 2),
-                    Pinput(
-                      controller: pinController,
-                      autofocus: true,
-                      obscureText: true,
-                      defaultPinTheme: PinTheme(
-                        width: 28,
-                        height: 28,
-                        textStyle: TextStyle(
-                          fontSize: fontSizeMedium,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: mediumBorderWidth,
-                          ),
-                        ),
-                      ),
-                      showCursor: true,
-                      cursor: Center(
-                        child: Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                      separatorBuilder:
-                          (index) => const SizedBox(width: appPaddingMid),
-                      hapticFeedbackType: HapticFeedbackType.lightImpact,
-                      onCompleted: (pin) async {
-                        final cachedPin =
-                            getIt<CacheService>().getString(cacheKeyUserPin) ??
-                            '';
-                        if (cachedPin == pin) {
-                          if (ctx.mounted) Navigator.of(ctx).pop();
-                          _lastPinVerified = DateTime.now();
-                          getIt<CacheService>().setString(
-                            'lastPinVerified',
-                            _lastPinVerified!.toIso8601String(),
-                          );
-                          setState(() {
-                            _selectedTab = 1;
-                            content = const ContactScreen();
-                          });
-                        } else {
-                          getIt<ToastificationService>().showToast(
-                            'Incorrect pin',
-                          );
-                          pinController.setText('');
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-    );
   }
 
   Widget _buildTabItem(
@@ -430,33 +319,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
             ),
-            _buildTabItem(
-              CupertinoIcons.person_2_fill,
-              CupertinoIcons.person_2,
-              1,
-              () {
-                final pinEnabled =
-                    getIt<SharedPreferences>().getBool(
-                      cacheKeyPinVerificationEnabled,
-                    ) ??
-                    true;
-                if (!pinEnabled) {
+            if (!_contactsLocked)
+              _buildTabItem(
+                CupertinoIcons.person_2_fill,
+                CupertinoIcons.person_2,
+                1,
+                () {
                   setState(() {
                     _selectedTab = 1;
                     content = const ContactScreen();
                   });
-                } else if (_lastPinVerified != null &&
-                    DateTime.now().difference(_lastPinVerified!) <
-                        _getPincodeDuration()) {
-                  setState(() {
-                    _selectedTab = 1;
-                    content = const ContactScreen();
-                  });
-                } else {
-                  _showPinDialog();
-                }
-              },
-            ),
+                },
+              ),
             _buildTabItem(
               CupertinoIcons.person_fill,
               CupertinoIcons.person,
@@ -464,7 +338,15 @@ class _HomeScreenState extends State<HomeScreen> {
               () {
                 setState(() {
                   _selectedTab = 2;
-                  content = const ProfileScreen();
+                  content = ProfileScreen(
+                    onLockChanged: () {
+                      setState(() {
+                        _contactsLocked = getIt<CacheService>().getBool(
+                          cacheKeyContactsLocked,
+                        );
+                      });
+                    },
+                  );
                 });
               },
             ),
