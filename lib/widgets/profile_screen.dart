@@ -4,6 +4,7 @@ import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_message_duration_screen.dart';
 import 'package:blink/widgets/lock_contacts_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -66,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.chat_bubble_outline,
+                  CupertinoIcons.chat_bubble,
                   size: appIconMidSize,
                   color: Theme.of(context).colorScheme.primary,
                 ),
