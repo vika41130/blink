@@ -273,50 +273,7 @@ class _MessageWidgetState extends State<MessageWidget>
   void _openImageViewer(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder:
-            (routeContext) => Scaffold(
-              backgroundColor: Colors.black,
-              appBar: AppBar(
-                toolbarHeight: appBarHeight,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                automaticallyImplyLeading: false,
-                leading: IconButton(
-                  icon: const Icon(
-                    CupertinoIcons.back,
-                    size: appBarIconSize,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => Navigator.of(routeContext).pop(),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(
-                      CupertinoIcons.square_arrow_down,
-                      size: appBarIconSize,
-                      color: Colors.white,
-                    ),
-                    onPressed: () async {
-                      await ImageGallerySaverPlus.saveImage(
-                        _imageBytes!,
-                        quality: 100,
-                        name: 'blink_${DateTime.now().millisecondsSinceEpoch}',
-                      );
-                      if (routeContext.mounted) {
-                        getIt<ToastificationService>().showToast(
-                          getIt<AppLocalizations>().saveToGallery,
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-              body: SafeArea(
-                child: Center(
-                  child: InteractiveViewer(child: Image.memory(_imageBytes!)),
-                ),
-              ),
-            ),
+        builder: (routeContext) => _ImageViewerScreen(imageBytes: _imageBytes!),
       ),
     );
   }
@@ -522,6 +479,97 @@ class _MessageWidgetState extends State<MessageWidget>
                       ),
                     ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageViewerScreen extends StatefulWidget {
+  final Uint8List imageBytes;
+
+  const _ImageViewerScreen({required this.imageBytes});
+
+  @override
+  State<_ImageViewerScreen> createState() => _ImageViewerScreenState();
+}
+
+class _ImageViewerScreenState extends State<_ImageViewerScreen> {
+  double _dragOffset = 0;
+  double _opacity = 1.0;
+
+  void _onVerticalDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      _dragOffset += details.delta.dy;
+      _opacity = (1.0 - (_dragOffset.abs() / 300)).clamp(0.4, 1.0);
+    });
+  }
+
+  void _onVerticalDragEnd(DragEndDetails details) {
+    if (_dragOffset.abs() > 100) {
+      Navigator.of(context).pop();
+    } else {
+      setState(() {
+        _dragOffset = 0;
+        _opacity = 1.0;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black.withValues(alpha: _opacity),
+      appBar: AppBar(
+        toolbarHeight: appBarHeight,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(
+            CupertinoIcons.back,
+            size: appBarIconSize,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              CupertinoIcons.square_arrow_down,
+              size: appBarIconSize,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              await ImageGallerySaverPlus.saveImage(
+                widget.imageBytes,
+                quality: 100,
+                name: 'blink_${DateTime.now().millisecondsSinceEpoch}',
+              );
+              if (context.mounted) {
+                getIt<ToastificationService>().showToast(
+                  getIt<AppLocalizations>().saveToGallery,
+                );
+              }
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: GestureDetector(
+          onVerticalDragUpdate: _onVerticalDragUpdate,
+          onVerticalDragEnd: _onVerticalDragEnd,
+          child: Center(
+            child: Transform.translate(
+              offset: Offset(0, _dragOffset),
+              child: Opacity(
+                opacity: _opacity,
+                child: InteractiveViewer(
+                  child: Image.memory(widget.imageBytes),
+                ),
+              ),
             ),
           ),
         ),
