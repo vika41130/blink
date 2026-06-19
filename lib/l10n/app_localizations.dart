@@ -177,29 +177,23 @@ abstract class AppLocalizations {
   /// **'No QR code detected.'**
   String get noQRCodeDetected;
 
-  /// No description provided for @saving.
-  ///
-  /// In en, this message translates to:
-  /// **'Saving...'**
-  String get saving;
-
   /// No description provided for @saveToGallery.
   ///
   /// In en, this message translates to:
-  /// **'Save to gallery'**
+  /// **'Saved to gallery.'**
   String get saveToGallery;
+
+  /// No description provided for @saveToGalleryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to gallery'**
+  String get saveToGalleryButton;
 
   /// No description provided for @failedToSaveQRCode.
   ///
   /// In en, this message translates to:
-  /// **'Failed to save QR code.'**
+  /// **'Failed to save.'**
   String get failedToSaveQRCode;
-
-  /// No description provided for @qrCodeSaved.
-  ///
-  /// In en, this message translates to:
-  /// **'QR code saved to gallery!'**
-  String get qrCodeSaved;
 
   /// No description provided for @contactSavedSuccessfully.
   ///

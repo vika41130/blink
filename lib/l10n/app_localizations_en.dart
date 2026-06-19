@@ -51,16 +51,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noQRCodeDetected => 'No QR code detected.';
 
   @override
-  String get saving => 'Saving...';
+  String get saveToGallery => 'Saved to gallery.';
 
   @override
-  String get saveToGallery => 'Save to gallery';
+  String get saveToGalleryButton => 'Save to gallery';
 
   @override
-  String get failedToSaveQRCode => 'Failed to save QR code.';
-
-  @override
-  String get qrCodeSaved => 'QR code saved to gallery!';
+  String get failedToSaveQRCode => 'Failed to save.';
 
   @override
   String get contactSavedSuccessfully => 'Saved';

@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/chat_service.dart';
+import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/custom_widgets/message_removal_wrapper.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
@@ -220,22 +223,23 @@ class _MessageWidgetState extends State<MessageWidget>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            InkWell(
-                              onTap: () {
-                                closeMenu();
-                                _copyMessage();
-                              },
-                              child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
+                            if (!widget.message.isImage)
+                              InkWell(
+                                onTap: () {
+                                  closeMenu();
+                                  _copyMessage();
+                                },
+                                child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    child: Text('Copy'),
                                   ),
-                                  child: Text('Copy'),
                                 ),
                               ),
-                            ),
                             InkWell(
                               onTap: () {
                                 closeMenu();
@@ -266,26 +270,59 @@ class _MessageWidgetState extends State<MessageWidget>
     overlay.insert(entry);
   }
 
+  void _openImageViewer(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (routeContext) => Scaffold(
+              backgroundColor: Colors.black,
+              appBar: AppBar(
+                toolbarHeight: appBarHeight,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                leading: IconButton(
+                  icon: const Icon(
+                    CupertinoIcons.back,
+                    size: appBarIconSize,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => Navigator.of(routeContext).pop(),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(
+                      CupertinoIcons.square_arrow_down,
+                      size: appBarIconSize,
+                      color: Colors.white,
+                    ),
+                    onPressed: () async {
+                      await ImageGallerySaverPlus.saveImage(
+                        _imageBytes!,
+                        quality: 100,
+                        name: 'blink_${DateTime.now().millisecondsSinceEpoch}',
+                      );
+                      if (routeContext.mounted) {
+                        getIt<ToastificationService>().showToast(
+                          getIt<AppLocalizations>().saveToGallery,
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+              body: SafeArea(
+                child: Center(
+                  child: InteractiveViewer(child: Image.memory(_imageBytes!)),
+                ),
+              ),
+            ),
+      ),
+    );
+  }
+
   void _copyMessage() {
-    if (widget.message.isImage && _imageBytes != null) {
-      ImageGallerySaverPlus.saveImage(
-        _imageBytes!,
-        quality: 100,
-        name: 'blink_${DateTime.now().millisecondsSinceEpoch}',
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Image saved to gallery')));
-      }
-    } else {
-      Clipboard.setData(ClipboardData(text: widget.message.text));
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Copied')));
-      }
-    }
+    Clipboard.setData(ClipboardData(text: widget.message.text));
   }
 
   @override
@@ -303,7 +340,11 @@ class _MessageWidgetState extends State<MessageWidget>
         onAnimationComplete: () {},
         child: GestureDetector(
           onTapUp: (details) {
-            _showContextMenu(context, details.globalPosition);
+            if (widget.message.isImage && _imageBytes != null) {
+              _openImageViewer(context);
+            } else {
+              _showContextMenu(context, details.globalPosition);
+            }
           },
           child: Align(
             alignment:

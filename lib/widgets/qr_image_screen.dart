@@ -6,6 +6,7 @@ import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
@@ -20,11 +21,8 @@ class QRImageScreen extends StatefulWidget {
 
 class _QRImageScreenState extends State<QRImageScreen> {
   final GlobalKey _qrKey = GlobalKey();
-  bool _isSaving = false;
 
   Future<void> _downloadQrCode() async {
-    if (_isSaving) return;
-    setState(() => _isSaving = true);
     try {
       final RenderRepaintBoundary? boundary =
           _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
@@ -46,7 +44,7 @@ class _QRImageScreenState extends State<QRImageScreen> {
         if (mounted) {
           if (result['isSuccess'] == true) {
             getIt<ToastificationService>().showToast(
-              getIt<AppLocalizations>().qrCodeSaved,
+              getIt<AppLocalizations>().saveToGallery,
             );
           } else {
             throw Exception("Gallery saving failed");
@@ -57,8 +55,6 @@ class _QRImageScreenState extends State<QRImageScreen> {
       getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().failedToSaveQRCode,
       );
-    } finally {
-      setState(() => _isSaving = false);
     }
   }
 
@@ -97,22 +93,9 @@ class _QRImageScreenState extends State<QRImageScreen> {
                 ),
                 SizedBox(height: appFormItemMargin),
                 ElevatedButton.icon(
-                  onPressed: _isSaving ? null : _downloadQrCode,
-                  icon:
-                      _isSaving
-                          ? const SizedBox(
-                            width: appLoadingIndicatorSizeSmall,
-                            height: appLoadingIndicatorSizeSmall,
-                            child: CircularProgressIndicator(
-                              strokeWidth: appLoadingstrokeWidthSmall,
-                            ),
-                          )
-                          : const Icon(Icons.download),
-                  label: Text(
-                    _isSaving
-                        ? getIt<AppLocalizations>().saving
-                        : getIt<AppLocalizations>().saveToGallery,
-                  ),
+                  onPressed: _downloadQrCode,
+                  icon: const Icon(CupertinoIcons.square_arrow_down),
+                  label: Text(getIt<AppLocalizations>().saveToGalleryButton),
                 ),
               ],
             ),
