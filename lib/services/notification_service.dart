@@ -4,10 +4,10 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/widgets/chat_screen.dart';
 import 'package:blink/widgets/in_app_notification_banner.dart';
-import 'package:blink/settings/fixed_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show SchedulerBinding, SchedulerPhase;
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -23,15 +23,35 @@ class NotificationService {
   String? _currentChatReceiverId;
   StreamSubscription? _chatsSubscription;
 
+  void _safeSetUnreadCount(int value) {
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        unreadCount.value = value;
+      });
+    } else {
+      unreadCount.value = value;
+    }
+  }
+
   void resetCount() {
-    unreadCount.value = 0;
-    AppBadgePlus.updateBadge(0);
+    try {
+      _safeSetUnreadCount(0);
+    } catch (_) {}
+    try {
+      AppBadgePlus.updateBadge(0);
+    } catch (_) {}
+    try {
+      _cleanExpiredNotifications();
+    } catch (_) {}
   }
 
   void removeNotification(int index) {
     final list = [...notifications.value];
-    list.removeAt(index);
-    notifications.value = list;
+    if (index >= 0 && index < list.length) {
+      list.removeAt(index);
+      notifications.value = list;
+    }
   }
 
   void setCurrentChat(String? receiverId) {
@@ -124,11 +144,16 @@ class NotificationService {
 
   void _listenTokenRefresh() {
     _messaging.onTokenRefresh.listen((token) async {
-      final userId = getIt<CacheService>().getString(cacheKeyUserId);
-      if (userId != null && userId.isNotEmpty) {
-        await getIt<FirebaseFirestore>().collection('users').doc(userId).update(
-          {'fcmToken': token},
-        );
+      try {
+        final userId = getIt<CacheService>().getString(cacheKeyUserId);
+        if (userId != null && userId.isNotEmpty) {
+          await getIt<FirebaseFirestore>()
+              .collection('users')
+              .doc(userId)
+              .update({'fcmToken': token});
+        }
+      } catch (e) {
+        debugPrint('Token refresh error: $e');
       }
     });
   }
@@ -138,6 +163,7 @@ class NotificationService {
     if (userId == null || userId.isEmpty) return;
 
     bool isFirst = true;
+    final Map<String, Timestamp?> lastNotifiedPerChat = {};
     _chatsSubscription = getIt<FirebaseFirestore>()
         .collection('chats')
         .where('participants', arrayContains: userId)
@@ -146,27 +172,59 @@ class NotificationService {
           (snapshot) {
             if (isFirst) {
               isFirst = false;
+              // Record current state to avoid notifying for existing messages
+              for (final doc in snapshot.docs) {
+                final data = doc.data();
+                final ts = data['lastMessageTimestamp'];
+                lastNotifiedPerChat[doc.id] = ts is Timestamp ? ts : null;
+              }
               return;
             }
             for (final change in snapshot.docChanges) {
-              if (change.type == DocumentChangeType.modified) {
-                final data = change.doc.data();
-                if (data == null) continue;
-                final lastSenderId = data['lastMessageSenderId'] as String?;
-                if (lastSenderId == null || lastSenderId == userId) continue;
-                if (lastSenderId == _currentChatReceiverId) continue;
+              try {
+                if (change.type == DocumentChangeType.modified) {
+                  final data = change.doc.data();
+                  if (data == null) continue;
+                  final lastSenderId = data['lastMessageSenderId'] as String?;
+                  final rawTimestamp = data['lastMessageTimestamp'];
+                  final lastTimestamp =
+                      rawTimestamp is Timestamp ? rawTimestamp : null;
+                  if (lastSenderId == null || lastSenderId == userId) continue;
+                  if (lastSenderId == _currentChatReceiverId) continue;
 
-                getIt<FirebaseFirestore>()
-                    .collection('users')
-                    .doc(lastSenderId)
-                    .get()
-                    .then((userDoc) {
-                      final senderName =
-                          userDoc.data()?['username'] ?? 'Someone';
-                      final messageText = data['lastMessage'] as String? ?? '';
-                      final payload = '$userId|$lastSenderId|$senderName';
-                      _notify(senderName, messageText, payload);
-                    });
+                  // Prevent duplicate: skip if already notified for this timestamp
+                  final prevTimestamp = lastNotifiedPerChat[change.doc.id];
+                  if (lastTimestamp != null &&
+                      prevTimestamp != null &&
+                      lastTimestamp.seconds == prevTimestamp.seconds &&
+                      lastTimestamp.nanoseconds == prevTimestamp.nanoseconds) {
+                    continue;
+                  }
+                  lastNotifiedPerChat[change.doc.id] = lastTimestamp;
+
+                  // Skip past messages (older than 5 seconds)
+                  if (lastTimestamp != null) {
+                    final messageTime = lastTimestamp.toDate();
+                    if (DateTime.now().difference(messageTime).inSeconds > 5) {
+                      continue;
+                    }
+                  }
+
+                  getIt<FirebaseFirestore>()
+                      .collection('users')
+                      .doc(lastSenderId)
+                      .get()
+                      .then((userDoc) {
+                        final senderName =
+                            userDoc.data()?['username'] ?? 'Someone';
+                        final messageText =
+                            data['lastMessage'] as String? ?? '';
+                        final payload = '$userId|$lastSenderId|$senderName';
+                        _notify(senderName, messageText, payload);
+                      });
+                }
+              } catch (e) {
+                debugPrint('Notification doc change error: $e');
               }
             }
           },
@@ -178,27 +236,52 @@ class NotificationService {
 
   void _notify(String senderName, String messageText, String payload) {
     try {
-      unreadCount.value++;
-      AppBadgePlus.updateBadge(unreadCount.value);
+      try {
+        _safeSetUnreadCount(unreadCount.value + 1);
+      } catch (_) {}
+      try {
+        AppBadgePlus.updateBadge(unreadCount.value);
+      } catch (_) {}
       final item = NotificationItem(
         senderName: senderName,
         messageText: messageText,
         payload: payload,
         time: DateTime.now(),
       );
-      notifications.value = [item, ...notifications.value];
-      _showInAppBanner(title: senderName, body: messageText, payload: payload);
-      Future.delayed(
-        const Duration(seconds: notificationAutoDeleteSeconds),
-        () {
-          final list = [...notifications.value];
-          list.remove(item);
-          notifications.value = list;
-        },
+      // Remove expired notifications before adding new one
+      final duration = Duration(
+        minutes: getIt<CacheService>().getInt(cacheKeyChatMessageDuration) ?? 1,
       );
+      final now = DateTime.now();
+      final activeItems =
+          notifications.value
+              .where((n) => now.difference(n.time) < duration)
+              .toList();
+      notifications.value = [item, ...activeItems];
+      _showInAppBanner(title: senderName, body: messageText, payload: payload);
+      // Schedule cleanup
+      Future.delayed(duration, () {
+        _cleanExpiredNotifications();
+      });
     } catch (e) {
       debugPrint('Notify error: $e');
     }
+  }
+
+  void _cleanExpiredNotifications() {
+    try {
+      final duration = Duration(
+        minutes: getIt<CacheService>().getInt(cacheKeyChatMessageDuration) ?? 1,
+      );
+      final now = DateTime.now();
+      final activeItems =
+          notifications.value
+              .where((n) => now.difference(n.time) < duration)
+              .toList();
+      if (activeItems.length != notifications.value.length) {
+        notifications.value = activeItems;
+      }
+    } catch (_) {}
   }
 
   void _showInAppBanner({
