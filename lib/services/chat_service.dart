@@ -210,6 +210,25 @@ class ChatService {
         .distinct();
   }
 
+  /// Stream that emits true if the chat is blocked by either user.
+  Stream<bool> chatBlockedStream({
+    required String currentUserId,
+    required String receiverId,
+  }) {
+    final String chatRoomId = getChatRoomId(currentUserId, receiverId);
+    return getIt<FirebaseFirestore>()
+        .collection('chats')
+        .doc(chatRoomId)
+        .snapshots()
+        .map((snapshot) {
+          if (!snapshot.exists) return false;
+          final data = snapshot.data();
+          return data?['blocked_$currentUserId'] == true ||
+              data?['blocked_$receiverId'] == true;
+        })
+        .distinct();
+  }
+
   Future<bool> isChatBlocked({
     required String currentUserId,
     required String receiverId,

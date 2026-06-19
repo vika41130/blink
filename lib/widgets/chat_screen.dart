@@ -53,6 +53,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final GlobalKey _messageAreaKey = GlobalKey();
   String _displayName = '';
   bool _isBlocked = false;
+  bool _isChatBlocked = false;
+  StreamSubscription<bool>? _blockSubscription;
 
   @override
   void initState() {
@@ -87,6 +89,16 @@ class _ChatScreenState extends State<ChatScreen> {
     _enableProtection();
     getIt<NotificationService>().setCurrentChat(widget.receiverId);
     _scrollController.addListener(_onScroll);
+    _blockSubscription = getIt<ChatService>()
+        .chatBlockedStream(
+          currentUserId: widget.currentUserId,
+          receiverId: widget.receiverId,
+        )
+        .listen((blocked) {
+          if (mounted && blocked != _isChatBlocked) {
+            setState(() => _isChatBlocked = blocked);
+          }
+        });
   }
 
   @override
@@ -95,6 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _typingHideTimer?.cancel();
     _tapTimer?.cancel();
     _typingSubscription?.cancel();
+    _blockSubscription?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _messageFocusNode.dispose();
@@ -457,6 +470,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             child: TextField(
                               controller: _messageController,
                               focusNode: _messageFocusNode,
+                              enabled: !_isChatBlocked,
                               maxLines: 5,
                               minLines: 1,
                               inputFormatters: [
@@ -473,52 +487,62 @@ class _ChatScreenState extends State<ChatScreen> {
                                   horizontal: appTextInputContentPadding * 1.5,
                                   vertical: appTextInputContentPadding,
                                 ),
-                                suffixIcon: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (!_hasText)
-                                      Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          customBorder: const CircleBorder(),
-                                          onTap: _pickAndSendImage,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4),
-                                            child: Icon(
-                                              CupertinoIcons.photo,
-                                              size: appIconMidSize,
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.tertiary,
+                                suffixIcon:
+                                    _isChatBlocked
+                                        ? null
+                                        : Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (!_hasText)
+                                              Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  customBorder:
+                                                      const CircleBorder(),
+                                                  onTap: _pickAndSendImage,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(4),
+                                                    child: Icon(
+                                                      CupertinoIcons.photo,
+                                                      size: appIconMidSize,
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .tertiary,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            if (_hasText)
+                                              Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  customBorder:
+                                                      const CircleBorder(),
+                                                  onTap: _sendMessage,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(4),
+                                                    child: Icon(
+                                                      CupertinoIcons
+                                                          .paperplane_fill,
+                                                      size: appIconMidSize,
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .tertiary,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            SizedBox(
+                                              width:
+                                                  appTextInputContentPadding /
+                                                  2,
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ),
-                                    if (_hasText)
-                                      Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          customBorder: const CircleBorder(),
-                                          onTap: _sendMessage,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4),
-                                            child: Icon(
-                                              CupertinoIcons.paperplane_fill,
-                                              size: appIconMidSize,
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.tertiary,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    SizedBox(
-                                      width: appTextInputContentPadding / 2,
-                                    ),
-                                  ],
-                                ),
                                 suffixIconConstraints: const BoxConstraints(
                                   minWidth: 0,
                                   minHeight: 0,
