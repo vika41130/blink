@@ -34,13 +34,16 @@ class NotificationService {
     }
   }
 
+  void _syncUnreadCount() {
+    final count = notifications.value.length;
+    _safeSetUnreadCount(count);
+    try {
+      AppBadgePlus.updateBadge(count);
+    } catch (_) {}
+  }
+
   void resetCount() {
-    try {
-      _safeSetUnreadCount(0);
-    } catch (_) {}
-    try {
-      AppBadgePlus.updateBadge(0);
-    } catch (_) {}
+    // Count is driven by notifications.value.length, no manual reset needed
     try {
       _cleanExpiredNotifications();
     } catch (_) {}
@@ -51,6 +54,7 @@ class NotificationService {
     if (index >= 0 && index < list.length) {
       list.removeAt(index);
       notifications.value = list;
+      _syncUnreadCount();
     }
   }
 
@@ -236,12 +240,6 @@ class NotificationService {
 
   void _notify(String senderName, String messageText, String payload) {
     try {
-      try {
-        _safeSetUnreadCount(unreadCount.value + 1);
-      } catch (_) {}
-      try {
-        AppBadgePlus.updateBadge(unreadCount.value);
-      } catch (_) {}
       final item = NotificationItem(
         senderName: senderName,
         messageText: messageText,
@@ -258,6 +256,7 @@ class NotificationService {
               .where((n) => now.difference(n.time) < duration)
               .toList();
       notifications.value = [item, ...activeItems];
+      _syncUnreadCount();
       _showInAppBanner(title: senderName, body: messageText, payload: payload);
       // Schedule cleanup
       Future.delayed(duration, () {
@@ -280,6 +279,7 @@ class NotificationService {
               .toList();
       if (activeItems.length != notifications.value.length) {
         notifications.value = activeItems;
+        _syncUnreadCount();
       }
     } catch (_) {}
   }
