@@ -18,7 +18,7 @@ class User {
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       username: map['username'] as String? ?? '',
-      pin: (map['pin'] ?? map['passcode']) as String? ?? '',
+      pin: map['pin'] as String? ?? '',
       userNickName: map['userNickName'] as String? ?? '',
       contacts: (map['contacts'] as List<dynamic>?)?.cast<String>() ?? [],
       chatMessageDuration: map['chatMessageDuration'] as int? ?? 1,

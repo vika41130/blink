@@ -37,15 +37,21 @@ class AuthService {
           );
         } else {
           var doc = querySnapshot.docs.first;
-          if ((doc['pin'] ?? doc['passcode']) == pin) {
+          if (doc['pin'] == pin) {
+            getIt<CacheService>().setString(cacheKeyUsername, username);
+            getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
+            getIt<CacheService>().setString(cacheKeyUserId, doc.id);
+            getIt<CacheService>().setBool(
+              cacheKeyContactsLocked,
+              (doc.data() as Map<String, dynamic>?)?['contactsLocked']
+                      as bool? ??
+                  false,
+            );
             getIt<LoadingService>().hideLoading();
             navigatorKey.currentState?.pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const HomeScreen()),
               (Route<dynamic> route) => false,
             );
-            getIt<CacheService>().setString(cacheKeyUsername, username);
-            getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
-            getIt<CacheService>().setString(cacheKeyUserId, doc.id);
             await getIt<NotificationService>().init();
             _backgroundFetchAndCacheUser(doc.id);
           } else {
