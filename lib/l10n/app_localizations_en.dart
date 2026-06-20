@@ -27,58 +27,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get easyAccountGuide => 'Easily create an account.';
 
   @override
-  String get userNameNotExisting => 'Username does not exist.';
+  String get userNameNotExisting => 'Username does not exist';
 
   @override
-  String get pinNotCorrect => 'Pin is incorrect.';
+  String get pinNotCorrect => 'Pin is incorrect';
 
   @override
-  String get signUpFailed => 'Sign up failed.';
+  String get signUpFailed => 'Sign up failed';
 
   @override
   String get homeTitle => 'Vapor';
 
   @override
-  String get userNameAlreadyExisted => 'Username already exists.';
+  String get userNameAlreadyExisted => 'Username already exists';
 
   @override
-  String get cannotChatWithYourself => 'You cannot chat with yourself.';
+  String get cannotChatWithYourself => 'You cannot chat with yourself';
 
   @override
-  String get userNotFound => 'User not found.';
+  String get userNotFound => 'User not found';
 
   @override
-  String get failedToReadQRCode => 'Failed to read QR code.';
+  String get failedToReadQRCode => 'Failed to read QR code';
 
   @override
-  String get noQRCodeDetected => 'No QR code detected.';
+  String get noQRCodeDetected => 'No QR code detected';
 
   @override
-  String get saveToGallery => 'Saved to gallery.';
+  String get saveToGallery => 'Saved to gallery';
 
   @override
   String get saveToGalleryButton => 'Save to gallery';
 
   @override
-  String get failedToSaveQRCode => 'Failed to save.';
+  String get failedToSaveQRCode => 'Failed to save';
 
   @override
-  String get contactSavedSuccessfully => 'Saved contact.';
+  String get contactSavedSuccessfully => 'Saved contact';
 
   @override
-  String get failedToSaveContact => 'Failed to save contact.';
+  String get failedToSaveContact => 'Failed to save contact';
 
   @override
-  String get contactAlreadyAdded => 'Contact already added.';
+  String get contactAlreadyAdded => 'Contact already added';
 
   @override
-  String get contactNotAdded => 'Contact not added.';
+  String get contactNotAdded => 'Contact not added';
 
   @override
-  String get contactRemovedSuccessfully => 'Removed contact.';
+  String get contactRemovedSuccessfully => 'Removed contact';
 
   @override
-  String get cameraPermissionDenied => 'Camera permission is required.';
+  String get cameraPermissionDenied => 'Camera permission is required';
 
   @override
   String get openSettings => 'Open settings';
@@ -129,7 +129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lockContact => 'Lock contact';
 
   @override
-  String get durationUpdated => 'Saved';
+  String get durationUpdated => 'Saved duration';
 
   @override
   String get done => 'Done';
@@ -138,7 +138,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get networkError => 'Network error';
 
   @override
-  String get networkErrorSigningOut => 'Network error. Signing out.';
+  String get networkErrorSigningOut => 'Network error, signing out';
 
   @override
   String get chatIsBlocked => 'Chat is blocked';
@@ -171,7 +171,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultOneMinute => 'Default: 1 minute';
 
   @override
-  String get networkErrorConnection => 'Network error. Please check your connection.';
+  String get networkErrorConnection => 'Network error, check your connection';
 
   @override
   String get retry => 'Retry';

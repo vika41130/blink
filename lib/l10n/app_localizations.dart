@@ -132,19 +132,19 @@ abstract class AppLocalizations {
   /// No description provided for @userNameNotExisting.
   ///
   /// In en, this message translates to:
-  /// **'Username does not exist.'**
+  /// **'Username does not exist'**
   String get userNameNotExisting;
 
   /// No description provided for @pinNotCorrect.
   ///
   /// In en, this message translates to:
-  /// **'Pin is incorrect.'**
+  /// **'Pin is incorrect'**
   String get pinNotCorrect;
 
   /// No description provided for @signUpFailed.
   ///
   /// In en, this message translates to:
-  /// **'Sign up failed.'**
+  /// **'Sign up failed'**
   String get signUpFailed;
 
   /// No description provided for @homeTitle.
@@ -156,37 +156,37 @@ abstract class AppLocalizations {
   /// No description provided for @userNameAlreadyExisted.
   ///
   /// In en, this message translates to:
-  /// **'Username already exists.'**
+  /// **'Username already exists'**
   String get userNameAlreadyExisted;
 
   /// No description provided for @cannotChatWithYourself.
   ///
   /// In en, this message translates to:
-  /// **'You cannot chat with yourself.'**
+  /// **'You cannot chat with yourself'**
   String get cannotChatWithYourself;
 
   /// No description provided for @userNotFound.
   ///
   /// In en, this message translates to:
-  /// **'User not found.'**
+  /// **'User not found'**
   String get userNotFound;
 
   /// No description provided for @failedToReadQRCode.
   ///
   /// In en, this message translates to:
-  /// **'Failed to read QR code.'**
+  /// **'Failed to read QR code'**
   String get failedToReadQRCode;
 
   /// No description provided for @noQRCodeDetected.
   ///
   /// In en, this message translates to:
-  /// **'No QR code detected.'**
+  /// **'No QR code detected'**
   String get noQRCodeDetected;
 
   /// No description provided for @saveToGallery.
   ///
   /// In en, this message translates to:
-  /// **'Saved to gallery.'**
+  /// **'Saved to gallery'**
   String get saveToGallery;
 
   /// No description provided for @saveToGalleryButton.
@@ -198,43 +198,43 @@ abstract class AppLocalizations {
   /// No description provided for @failedToSaveQRCode.
   ///
   /// In en, this message translates to:
-  /// **'Failed to save.'**
+  /// **'Failed to save'**
   String get failedToSaveQRCode;
 
   /// No description provided for @contactSavedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Saved contact.'**
+  /// **'Saved contact'**
   String get contactSavedSuccessfully;
 
   /// No description provided for @failedToSaveContact.
   ///
   /// In en, this message translates to:
-  /// **'Failed to save contact.'**
+  /// **'Failed to save contact'**
   String get failedToSaveContact;
 
   /// No description provided for @contactAlreadyAdded.
   ///
   /// In en, this message translates to:
-  /// **'Contact already added.'**
+  /// **'Contact already added'**
   String get contactAlreadyAdded;
 
   /// No description provided for @contactNotAdded.
   ///
   /// In en, this message translates to:
-  /// **'Contact not added.'**
+  /// **'Contact not added'**
   String get contactNotAdded;
 
   /// No description provided for @contactRemovedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Removed contact.'**
+  /// **'Removed contact'**
   String get contactRemovedSuccessfully;
 
   /// No description provided for @cameraPermissionDenied.
   ///
   /// In en, this message translates to:
-  /// **'Camera permission is required.'**
+  /// **'Camera permission is required'**
   String get cameraPermissionDenied;
 
   /// No description provided for @openSettings.
@@ -336,7 +336,7 @@ abstract class AppLocalizations {
   /// No description provided for @durationUpdated.
   ///
   /// In en, this message translates to:
-  /// **'Saved'**
+  /// **'Saved duration'**
   String get durationUpdated;
 
   /// No description provided for @done.
@@ -354,7 +354,7 @@ abstract class AppLocalizations {
   /// No description provided for @networkErrorSigningOut.
   ///
   /// In en, this message translates to:
-  /// **'Network error. Signing out.'**
+  /// **'Network error, signing out'**
   String get networkErrorSigningOut;
 
   /// No description provided for @chatIsBlocked.
@@ -420,7 +420,7 @@ abstract class AppLocalizations {
   /// No description provided for @networkErrorConnection.
   ///
   /// In en, this message translates to:
-  /// **'Network error. Please check your connection.'**
+  /// **'Network error, check your connection'**
   String get networkErrorConnection;
 
   /// No description provided for @retry.
