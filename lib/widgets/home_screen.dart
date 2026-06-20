@@ -80,31 +80,28 @@ class _HomeScreenState extends State<HomeScreen> {
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: Center(
-          child: Container(
-            width: 52,
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color:
-                      isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Colors.transparent,
-                  width: 2,
-                ),
-              ),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSelected ? 16 : 0,
+              vertical: isSelected ? 6 : 0,
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Center(
-                child: Icon(
-                  isSelected ? filledIcon : outlinedIcon,
-                  size: appIconLargeSize,
-                  color:
-                      isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
+            decoration: BoxDecoration(
+              color:
+                  isSelected
+                      ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.15)
+                      : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              isSelected ? filledIcon : outlinedIcon,
+              size: appIconMidSize,
+              color:
+                  isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -230,125 +227,144 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: appPaddingSmall,
-            right: appPaddingSmall,
-            bottom: appPaddingSmall,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child:
-                    _selectedTab == 0
-                        ? Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: appPaddingSmall,
-                                ),
-                                child: Text(
-                                  _getGreeting(),
-                                  style: TextStyle(
-                                    fontSize: fontSizeLarge * 1.5,
-                                    color:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      _time,
-                                      style: TextStyle(
-                                        fontSize: fontSizeLarge * 2.5,
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                        letterSpacing: 2,
-                                      ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: appPaddingSmall,
+                right: appPaddingSmall,
+                bottom: appPaddingSmall,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child:
+                        _selectedTab == 0
+                            ? Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: appPaddingSmall,
                                     ),
-                                    SizedBox(height: appPaddingSmall),
-                                    Text(
-                                      DateFormat(
-                                        'EEEE, MMMM d, yyyy',
-                                      ).format(DateTime.now()),
+                                    child: Text(
+                                      _getGreeting(),
                                       style: TextStyle(
-                                        fontSize: fontSizeMedium,
+                                        fontSize: fontSizeLarge * 1.5,
                                         color:
                                             Theme.of(
                                               context,
                                             ).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ],
-                        )
-                        : content,
+                                Expanded(
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          _time,
+                                          style: TextStyle(
+                                            fontSize: fontSizeLarge * 2.5,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
+                                            letterSpacing: 2,
+                                          ),
+                                        ),
+                                        SizedBox(height: appPaddingSmall),
+                                        Text(
+                                          DateFormat(
+                                            'EEEE, MMMM d, yyyy',
+                                          ).format(DateTime.now()),
+                                          style: TextStyle(
+                                            fontSize: fontSizeMedium,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                            : content,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        height: appBarHeight,
-        padding: EdgeInsets.zero,
-        child: Row(
-          children: [
-            _buildTabItem(
-              CupertinoIcons.house_fill,
-              CupertinoIcons.house,
-              0,
-              () {
-                setState(() {
-                  _selectedTab = 0;
-                  content = const SizedBox.shrink();
-                });
-              },
             ),
-            if (!_contactsLocked)
-              _buildTabItem(
-                CupertinoIcons.person_2_fill,
-                CupertinoIcons.person_2,
-                1,
-                () {
-                  setState(() {
-                    _selectedTab = 1;
-                    content = const ContactScreen();
-                  });
-                },
+            Positioned(
+              left: 40,
+              right: 40,
+              bottom: appPaddingSmall,
+              child: Container(
+                height: appBarHeight,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(appBarHeight / 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    _buildTabItem(
+                      CupertinoIcons.house_fill,
+                      CupertinoIcons.house,
+                      0,
+                      () {
+                        setState(() {
+                          _selectedTab = 0;
+                          content = const SizedBox.shrink();
+                        });
+                      },
+                    ),
+                    if (!_contactsLocked)
+                      _buildTabItem(
+                        CupertinoIcons.person_2_fill,
+                        CupertinoIcons.person_2,
+                        1,
+                        () {
+                          setState(() {
+                            _selectedTab = 1;
+                            content = const ContactScreen();
+                          });
+                        },
+                      ),
+                    _buildTabItem(
+                      CupertinoIcons.person_fill,
+                      CupertinoIcons.person,
+                      2,
+                      () {
+                        setState(() {
+                          _selectedTab = 2;
+                          content = ProfileScreen(
+                            onLockChanged: () {
+                              setState(() {
+                                _contactsLocked = getIt<CacheService>().getBool(
+                                  cacheKeyContactsLocked,
+                                );
+                              });
+                            },
+                          );
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
-            _buildTabItem(
-              CupertinoIcons.person_fill,
-              CupertinoIcons.person,
-              2,
-              () {
-                setState(() {
-                  _selectedTab = 2;
-                  content = ProfileScreen(
-                    onLockChanged: () {
-                      setState(() {
-                        _contactsLocked = getIt<CacheService>().getBool(
-                          cacheKeyContactsLocked,
-                        );
-                      });
-                    },
-                  );
-                });
-              },
             ),
           ],
         ),
