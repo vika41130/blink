@@ -193,7 +193,11 @@ class NotificationService {
                   final rawTimestamp = data['lastMessageTimestamp'];
                   final lastTimestamp =
                       rawTimestamp is Timestamp ? rawTimestamp : null;
-                  if (lastSenderId == null || lastSenderId == userId) continue;
+                  if (lastSenderId == null || lastSenderId.isEmpty) continue;
+                  // Skip messages sent by current user
+                  final currentUserId =
+                      getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+                  if (lastSenderId == currentUserId) continue;
                   if (lastSenderId == _currentChatReceiverId) continue;
 
                   // Prevent duplicate: skip if already notified for this timestamp
