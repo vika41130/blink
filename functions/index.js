@@ -1,9 +1,14 @@
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { defineSecret } = require("firebase-functions/params");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
+const nodemailer = require("nodemailer");
 
 initializeApp();
+
+const emailUser = defineSecret("EMAIL_USER");
+const emailPass = defineSecret("EMAIL_PASS");
 
 exports.sendChatNotification = onDocumentCreated(
   "chats/{chatRoomId}/messages/{messageId}",
@@ -66,5 +71,55 @@ exports.sendChatNotification = onDocumentCreated(
         },
       },
     });
+  }
+);
+
+exports.sendVerificationEmail = onDocumentUpdated(
+  {
+    document: "users/{userId}",
+    secrets: [emailUser, emailPass],
+  },
+  async (event) => {
+    if (!event.data) return;
+    const before = event.data.before.data();
+    const after = event.data.after.data();
+
+    // Only trigger when verificationCode is newly set
+    if (
+      !after.verificationCode ||
+      !after.pendingEmail ||
+      before.verificationCode === after.verificationCode
+    ) {
+      return;
+    }
+
+    const email = after.pendingEmail;
+    const code = after.verificationCode;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: emailUser.value(),
+        pass: emailPass.value(),
+      },
+    });
+
+    const mailOptions = {
+      from: `"Vapor" <${emailUser.value()}>`,
+      to: email,
+      subject: "Vapor email verification",
+      html: `
+        <h3>Your verification code:</h3>
+        <h1 style="text-align: center;">${code}</h1>
+        <p>Vapor team</p>
+      `,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`Verification email sent to ${email}`);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
   }
 );

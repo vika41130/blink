@@ -3,6 +3,7 @@ import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_message_duration_screen.dart';
+import 'package:blink/widgets/link_email_screen.dart';
 import 'package:blink/widgets/lock_contacts_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.timer_outlined,
+                  CupertinoIcons.lock,
                   size: appIconMidSize,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -84,6 +85,36 @@ class ProfileScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   getIt<AppLocalizations>().chatMessageDuration,
+                  style: TextStyle(
+                    fontSize: fontSizeSmall,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: appFormItemMargin),
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  CupertinoIcons.mail,
+                  size: appIconMidSize,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LinkEmailScreen(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(width: appPaddingSmall),
+              Expanded(
+                child: Text(
+                  getIt<AppLocalizations>().linkEmail,
                   style: TextStyle(
                     fontSize: fontSizeSmall,
                     color: Theme.of(context).colorScheme.onSurface,

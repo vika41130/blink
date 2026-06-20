@@ -187,4 +187,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goodNight => 'Good night';
+
+  @override
+  String get linkEmail => 'Link email';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get invalidEmail => 'Invalid email format';
+
+  @override
+  String get codeSent => 'Verification code sent';
+
+  @override
+  String get codeExpired => 'Code expired';
+
+  @override
+  String get emailLinked => 'Email linked';
+
+  @override
+  String get invalidCode => 'Invalid code';
 }

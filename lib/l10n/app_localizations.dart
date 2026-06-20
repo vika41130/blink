@@ -452,6 +452,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Good night'**
   String get goodNight;
+
+  /// No description provided for @linkEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Link email'**
+  String get linkEmail;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email format'**
+  String get invalidEmail;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code sent'**
+  String get codeSent;
+
+  /// No description provided for @codeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Code expired'**
+  String get codeExpired;
+
+  /// No description provided for @emailLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Email linked'**
+  String get emailLinked;
+
+  /// No description provided for @invalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid code'**
+  String get invalidCode;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

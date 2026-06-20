@@ -119,5 +119,21 @@
     "goodEvening": "Good evening",
     "@goodEvening": {},
     "goodNight": "Good night",
-    "@goodNight": {}
+    "@goodNight": {},
+    "linkEmail": "Link email",
+    "@linkEmail": {},
+    "email": "Email",
+    "@email": {},
+    "confirm": "Confirm",
+    "@confirm": {},
+    "invalidEmail": "Invalid email format",
+    "@invalidEmail": {},
+    "codeSent": "Verification code sent",
+    "@codeSent": {},
+    "codeExpired": "Code expired",
+    "@codeExpired": {},
+    "emailLinked": "Email linked",
+    "@emailLinked": {},
+    "invalidCode": "Invalid code",
+    "@invalidCode": {}
 }

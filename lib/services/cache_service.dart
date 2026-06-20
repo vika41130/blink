@@ -35,6 +35,9 @@ class CacheService {
     setString('pincodeDurationMinutes', '');
     setBool(cacheKeyPinVerificationEnabled, true);
     setBool(cacheKeyContactsLocked, false);
+    setString(cacheKeyVerificationCode, '');
+    setString(cacheKeyVerificationExpiry, '');
+    setString(cacheKeyPendingEmail, '');
     setString(cacheKeyUserPin, '');
     setString(cacheKeyUserNickName, '');
     setString(cacheKeyUserContacts, '');
@@ -53,3 +56,6 @@ const cacheKeyUserNickName = 'cacheKeyUserNickName';
 const cacheKeyUserContacts = 'cacheKeyUserContacts';
 const cacheKeyChatMessageDuration = 'cacheKeyChatMessageDuration';
 const cacheKeyContactsLocked = 'cacheKeyContactsLocked';
+const cacheKeyVerificationCode = 'cacheKeyVerificationCode';
+const cacheKeyVerificationExpiry = 'cacheKeyVerificationExpiry';
+const cacheKeyPendingEmail = 'cacheKeyPendingEmail';
