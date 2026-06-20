@@ -99,7 +99,10 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
                       children: [
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(),
-                          child: Text(getIt<AppLocalizations>().cancel),
+                          child: Text(
+                            getIt<AppLocalizations>().cancel,
+                            style: TextStyle(fontSize: fontSizeSmall),
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
@@ -116,7 +119,10 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
                               );
                             }
                           },
-                          child: Text(getIt<AppLocalizations>().done),
+                          child: Text(
+                            getIt<AppLocalizations>().done,
+                            style: TextStyle(fontSize: fontSizeSmall),
+                          ),
                         ),
                       ],
                     ),

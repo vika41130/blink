@@ -156,7 +156,7 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   style: TextStyle(
-                    fontSize: fontSizeMedium,
+                    fontSize: fontSizeSmall,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   decoration: InputDecoration(
@@ -213,7 +213,10 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
                       }
                       _sendVerificationCode();
                     },
-                    child: Text(getIt<AppLocalizations>().confirm),
+                    child: Text(
+                      getIt<AppLocalizations>().confirm,
+                      style: TextStyle(fontSize: fontSizeSmall),
+                    ),
                   ),
                 ),
               ],
