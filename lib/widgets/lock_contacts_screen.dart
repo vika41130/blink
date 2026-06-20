@@ -174,7 +174,9 @@ class _LockContactsScreenState extends State<LockContactsScreen> {
                   SizedBox(width: appPaddingSmall),
                   Expanded(
                     child: Text(
-                      _isLocked ? 'Locked' : 'Unlocked',
+                      _isLocked
+                          ? getIt<AppLocalizations>().unlockContact
+                          : getIt<AppLocalizations>().lockContact,
                       style: TextStyle(
                         fontSize: fontSizeMedium,
                         color: Theme.of(context).colorScheme.onSurface,

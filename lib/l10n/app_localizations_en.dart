@@ -63,7 +63,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToSaveQRCode => 'Failed to save.';
 
   @override
-  String get contactSavedSuccessfully => 'Saved';
+  String get contactSavedSuccessfully => 'Saved contact.';
 
   @override
   String get failedToSaveContact => 'Failed to save contact.';
@@ -90,7 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search => 'Search';
 
   @override
-  String get savedContact => 'Saved contact';
+  String get removeContact => 'Remove contact';
 
   @override
   String get saveContact => 'Save contact';
@@ -114,10 +114,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unblockChat => 'Unblock chat';
 
   @override
+  String get chatBlocked => 'Chat blocked';
+
+  @override
+  String get chatUnblocked => 'Chat unblocked';
+
+  @override
   String get lockContacts => 'Lock contacts';
 
   @override
-  String get defaultDurationInfo => 'Default: 6h';
+  String get unlockContact => 'Unlock contact';
+
+  @override
+  String get lockContact => 'Lock contact';
 
   @override
   String get durationUpdated => 'Saved';

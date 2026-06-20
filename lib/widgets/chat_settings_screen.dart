@@ -366,7 +366,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                       Expanded(
                         child: Text(
                           isAdded
-                              ? getIt<AppLocalizations>().savedContact
+                              ? getIt<AppLocalizations>().removeContact
                               : getIt<AppLocalizations>().saveContact,
                           style: TextStyle(
                             fontSize: fontSizeMedium,
@@ -392,8 +392,8 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                       IconButton(
                         icon: Icon(
                           isBlocked
-                              ? CupertinoIcons.lock_open
-                              : CupertinoIcons.lock,
+                              ? CupertinoIcons.lock
+                              : CupertinoIcons.lock_open,
                           size: appIconMidSize,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -409,7 +409,9 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                               );
                           if (success) {
                             getIt<ToastificationService>().showToast(
-                              !isBlocked ? 'Chat blocked' : 'Chat unblocked',
+                              !isBlocked
+                                  ? getIt<AppLocalizations>().chatBlocked
+                                  : getIt<AppLocalizations>().chatUnblocked,
                             );
                           }
                           setState(() {});

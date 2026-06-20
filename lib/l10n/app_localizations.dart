@@ -204,7 +204,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactSavedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Saved'**
+  /// **'Saved contact.'**
   String get contactSavedSuccessfully;
 
   /// No description provided for @failedToSaveContact.
@@ -255,11 +255,11 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get search;
 
-  /// No description provided for @savedContact.
+  /// No description provided for @removeContact.
   ///
   /// In en, this message translates to:
-  /// **'Saved contact'**
-  String get savedContact;
+  /// **'Remove contact'**
+  String get removeContact;
 
   /// No description provided for @saveContact.
   ///
@@ -303,17 +303,35 @@ abstract class AppLocalizations {
   /// **'Unblock chat'**
   String get unblockChat;
 
+  /// No description provided for @chatBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat blocked'**
+  String get chatBlocked;
+
+  /// No description provided for @chatUnblocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat unblocked'**
+  String get chatUnblocked;
+
   /// No description provided for @lockContacts.
   ///
   /// In en, this message translates to:
   /// **'Lock contacts'**
   String get lockContacts;
 
-  /// No description provided for @defaultDurationInfo.
+  /// No description provided for @unlockContact.
   ///
   /// In en, this message translates to:
-  /// **'Default: 6h'**
-  String get defaultDurationInfo;
+  /// **'Unlock contact'**
+  String get unlockContact;
+
+  /// No description provided for @lockContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock contact'**
+  String get lockContact;
 
   /// No description provided for @durationUpdated.
   ///
