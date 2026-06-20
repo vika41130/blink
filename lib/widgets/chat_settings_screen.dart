@@ -123,7 +123,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                         child: Text(
                           DateFormat('yyyy.MM.dd HH:mm').format(snapshot.data!),
                           style: TextStyle(
-                            fontSize: fontSizeMedium,
+                            fontSize: fontSizeSmall,
                             fontFamily: 'monospace',
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,
@@ -150,7 +150,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     child: Text(
                       getIt<AppLocalizations>().swipeRightToRemove,
                       style: TextStyle(
-                        fontSize: fontSizeMedium,
+                        fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -173,7 +173,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     child: Text(
                       getIt<AppLocalizations>().tripleTapToBlock,
                       style: TextStyle(
-                        fontSize: fontSizeMedium,
+                        fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -196,7 +196,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     child: Text(
                       getIt<AppLocalizations>().touchTextMessage,
                       style: TextStyle(
-                        fontSize: fontSizeMedium,
+                        fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -219,7 +219,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                     child: Text(
                       getIt<AppLocalizations>().touchImageFullScreen,
                       style: TextStyle(
-                        fontSize: fontSizeMedium,
+                        fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -319,7 +319,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                               ? _currentNickName
                               : widget.receiverName,
                           style: TextStyle(
-                            fontSize: fontSizeMedium,
+                            fontSize: fontSizeSmall,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -369,7 +369,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                               ? getIt<AppLocalizations>().removeContact
                               : getIt<AppLocalizations>().saveContact,
                           style: TextStyle(
-                            fontSize: fontSizeMedium,
+                            fontSize: fontSizeSmall,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -424,7 +424,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                               ? getIt<AppLocalizations>().unblockChat
                               : getIt<AppLocalizations>().blockChat,
                           style: TextStyle(
-                            fontSize: fontSizeMedium,
+                            fontSize: fontSizeSmall,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),

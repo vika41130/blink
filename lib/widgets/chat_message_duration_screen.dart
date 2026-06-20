@@ -83,7 +83,7 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
                             child: Text(
                               '$minute minute${minute > 1 ? 's' : ''}',
                               style: TextStyle(
-                                fontSize: fontSizeMedium,
+                                fontSize: fontSizeSmall,
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
@@ -167,7 +167,7 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
                     child: Text(
                       'Default: 1 minute',
                       style: TextStyle(
-                        fontSize: fontSizeMedium,
+                        fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -190,7 +190,7 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
                     child: Text(
                       '$_savedMinute minute${_savedMinute > 1 ? 's' : ''}',
                       style: TextStyle(
-                        fontSize: fontSizeMedium,
+                        fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),

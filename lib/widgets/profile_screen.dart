@@ -55,7 +55,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Text(
                   getIt<AppLocalizations>().lockContacts,
                   style: TextStyle(
-                    fontSize: fontSizeMedium,
+                    fontSize: fontSizeSmall,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -85,7 +85,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Text(
                   'Chat message duration',
                   style: TextStyle(
-                    fontSize: fontSizeMedium,
+                    fontSize: fontSizeSmall,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),

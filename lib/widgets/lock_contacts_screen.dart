@@ -68,7 +68,7 @@ class _LockContactsScreenState extends State<LockContactsScreen> {
                         width: 28,
                         height: 28,
                         textStyle: TextStyle(
-                          fontSize: fontSizeMedium,
+                          fontSize: fontSizeSmall,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         decoration: BoxDecoration(
@@ -178,7 +178,7 @@ class _LockContactsScreenState extends State<LockContactsScreen> {
                           ? getIt<AppLocalizations>().unlockContact
                           : getIt<AppLocalizations>().lockContact,
                       style: TextStyle(
-                        fontSize: fontSizeMedium,
+                        fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
