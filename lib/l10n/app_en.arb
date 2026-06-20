@@ -44,7 +44,7 @@
     "@contactAlreadyAdded": {},
     "contactNotAdded": "Contact not added.",
     "@contactNotAdded": {},
-    "contactRemovedSuccessfully": "Removed",
+    "contactRemovedSuccessfully": "Removed contact.",
     "@contactRemovedSuccessfully": {},
     "cameraPermissionDenied": "Camera permission is required.",
     "@cameraPermissionDenied": {},

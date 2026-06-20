@@ -75,7 +75,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactNotAdded => 'Contact not added.';
 
   @override
-  String get contactRemovedSuccessfully => 'Removed';
+  String get contactRemovedSuccessfully => 'Removed contact.';
 
   @override
   String get cameraPermissionDenied => 'Camera permission is required.';

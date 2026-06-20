@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Icon(
               isSelected ? filledIcon : outlinedIcon,
-              size: appIconMidSize,
+              size: appIconBottomBarSize,
               color:
                   isSelected
                       ? Theme.of(context).colorScheme.primary

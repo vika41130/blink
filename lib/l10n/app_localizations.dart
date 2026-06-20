@@ -228,7 +228,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactRemovedSuccessfully.
   ///
   /// In en, this message translates to:
-  /// **'Removed'**
+  /// **'Removed contact.'**
   String get contactRemovedSuccessfully;
 
   /// No description provided for @cameraPermissionDenied.

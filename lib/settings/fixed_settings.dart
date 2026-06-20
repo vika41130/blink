@@ -17,7 +17,7 @@ const appPaddingMid = 12.0;
 const appPaddingLarge = 16.0;
 const appTitleMarginLarge = 98.0;
 
-const appBarIconSize = 22.0;
+const appBarIconSize = 18.0;
 
 const appBarHeight = 44.0;
 
@@ -67,7 +67,8 @@ const appImageQuality = 100;
 const appImageFileNamePrefix = "qr_code_";
 
 const appIconSmallSize = 14.0;
-const appIconMidSize = 19.0;
+const appIconMidSize = 17.0;
+const appIconBottomBarSize = 19.0;
 const appIconLargeSize = 28.0;
 const appIconExtraLargeSize = 36.0;
 const appIconHugeSize = 48.0;
