@@ -1,5 +1,6 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
@@ -76,14 +77,14 @@ class _SplashScreenState extends State<SplashScreen>
             children: [
               Icon(Icons.wifi_off, size: appIconHugeSize),
               const SizedBox(height: appFormItemMargin),
-              const Text('Network error. Please check your connection.'),
+              Text(getIt<AppLocalizations>().networkErrorConnection),
               const SizedBox(height: appFormItemMargin),
               ElevatedButton(
                 onPressed: () {
                   setState(() => _error = false);
                   _init();
                 },
-                child: const Text('Retry'),
+                child: Text(getIt<AppLocalizations>().retry),
               ),
             ],
           ),

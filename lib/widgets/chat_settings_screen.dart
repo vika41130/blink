@@ -61,9 +61,13 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         widget.receiverName,
         newNickName,
       );
-      getIt<ToastificationService>().showToast('Nickname updated');
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().nicknameUpdated,
+      );
     } else {
-      getIt<ToastificationService>().showToast('Failed to update nickname');
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().failedToUpdateNickname,
+      );
     }
   }
 

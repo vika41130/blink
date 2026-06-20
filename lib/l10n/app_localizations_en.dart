@@ -133,4 +133,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get done => 'Done';
+
+  @override
+  String get networkError => 'Network error';
+
+  @override
+  String get networkErrorSigningOut => 'Network error. Signing out.';
+
+  @override
+  String get chatIsBlocked => 'Chat is blocked';
+
+  @override
+  String get nicknameUpdated => 'Nickname updated';
+
+  @override
+  String get failedToUpdateNickname => 'Failed to update nickname';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get enterPin => 'Enter pin';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get chatMessageDuration => 'Chat message duration';
+
+  @override
+  String get defaultOneMinute => 'Default: 1 minute';
+
+  @override
+  String get networkErrorConnection => 'Network error. Please check your connection.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get goodMorning => 'Good morning';
+
+  @override
+  String get goodAfternoon => 'Good afternoon';
+
+  @override
+  String get goodEvening => 'Good evening';
+
+  @override
+  String get goodNight => 'Good night';
 }

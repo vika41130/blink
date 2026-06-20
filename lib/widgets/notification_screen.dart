@@ -1,4 +1,5 @@
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/chat_screen.dart';
@@ -34,7 +35,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Notifications',
+          getIt<AppLocalizations>().notifications,
           style: TextStyle(
             fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,

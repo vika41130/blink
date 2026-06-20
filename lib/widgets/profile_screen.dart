@@ -83,7 +83,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(width: appPaddingSmall),
               Expanded(
                 child: Text(
-                  'Chat message duration',
+                  getIt<AppLocalizations>().chatMessageDuration,
                   style: TextStyle(
                     fontSize: fontSizeSmall,
                     color: Theme.of(context).colorScheme.onSurface,

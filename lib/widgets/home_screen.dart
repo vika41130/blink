@@ -56,10 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    if (hour < 21) return 'Good evening';
-    return 'Good night';
+    if (hour < 12) return getIt<AppLocalizations>().goodMorning;
+    if (hour < 17) return getIt<AppLocalizations>().goodAfternoon;
+    if (hour < 21) return getIt<AppLocalizations>().goodEvening;
+    return getIt<AppLocalizations>().goodNight;
   }
 
   @override
@@ -112,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       appBar:
           _selectedTab == 2
               ? AppBar(
@@ -227,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
       body: SafeArea(
+        bottom: false,
         child: Stack(
           children: [
             Padding(
@@ -304,11 +306,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Positioned(
               left: 40,
               right: 40,
-              bottom: appPaddingSmall,
+              bottom: MediaQuery.of(context).padding.bottom + appPaddingSmall,
               child: Container(
                 height: appBarHeight,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(appBarHeight / 2),
                   boxShadow: [
                     BoxShadow(

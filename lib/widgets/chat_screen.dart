@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/models/message.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/chat_service.dart';
@@ -191,7 +192,9 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.currentUserId,
     );
     if (blockedByMe || blockedByThem) {
-      getIt<ToastificationService>().showToast('Chat is blocked');
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().chatIsBlocked,
+      );
       return;
     }
     _messageController.clear();
@@ -220,7 +223,9 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.currentUserId,
     );
     if (blockedByMe || blockedByThem) {
-      getIt<ToastificationService>().showToast('Chat is blocked');
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().chatIsBlocked,
+      );
       return;
     }
     final picker = ImagePicker();

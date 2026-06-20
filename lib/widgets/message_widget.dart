@@ -229,14 +229,14 @@ class _MessageWidgetState extends State<MessageWidget>
                                   closeMenu();
                                   _copyMessage();
                                 },
-                                child: const Align(
+                                child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 16,
                                       vertical: 12,
                                     ),
-                                    child: Text('Copy'),
+                                    child: Text(getIt<AppLocalizations>().copy),
                                   ),
                                 ),
                               ),
@@ -245,14 +245,14 @@ class _MessageWidgetState extends State<MessageWidget>
                                 closeMenu();
                                 _deleteMessage();
                               },
-                              child: const Align(
+                              child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 16,
                                     vertical: 12,
                                   ),
-                                  child: Text('Delete'),
+                                  child: Text(getIt<AppLocalizations>().delete),
                                 ),
                               ),
                             ),

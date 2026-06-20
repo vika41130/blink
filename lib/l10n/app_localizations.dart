@@ -344,6 +344,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get done;
+
+  /// No description provided for @networkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error'**
+  String get networkError;
+
+  /// No description provided for @networkErrorSigningOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Signing out.'**
+  String get networkErrorSigningOut;
+
+  /// No description provided for @chatIsBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat is blocked'**
+  String get chatIsBlocked;
+
+  /// No description provided for @nicknameUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname updated'**
+  String get nicknameUpdated;
+
+  /// No description provided for @failedToUpdateNickname.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update nickname'**
+  String get failedToUpdateNickname;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @enterPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter pin'**
+  String get enterPin;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @chatMessageDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat message duration'**
+  String get chatMessageDuration;
+
+  /// No description provided for @defaultOneMinute.
+  ///
+  /// In en, this message translates to:
+  /// **'Default: 1 minute'**
+  String get defaultOneMinute;
+
+  /// No description provided for @networkErrorConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your connection.'**
+  String get networkErrorConnection;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get goodMorning;
+
+  /// No description provided for @goodAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get goodAfternoon;
+
+  /// No description provided for @goodEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get goodEvening;
+
+  /// No description provided for @goodNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Good night'**
+  String get goodNight;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

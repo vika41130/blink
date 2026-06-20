@@ -30,7 +30,9 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
 
   Future<void> _updateFirestore(int minutes) async {
     if (await NetworkErrorHandler.isOffline()) {
-      getIt<ToastificationService>().showToast('Network error');
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().networkError,
+      );
       return;
     }
     final userId = getIt<CacheService>().getString(cacheKeyUserId) ?? '';
@@ -97,7 +99,7 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
                       children: [
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(),
-                          child: Text('Cancel'),
+                          child: Text(getIt<AppLocalizations>().cancel),
                         ),
                         TextButton(
                           onPressed: () {
@@ -136,7 +138,7 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Chat message duration',
+          getIt<AppLocalizations>().chatMessageDuration,
           style: TextStyle(
             fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,
@@ -165,7 +167,7 @@ class _ChatMessageDurationScreenState extends State<ChatMessageDurationScreen> {
                   SizedBox(width: appPaddingSmall),
                   Expanded(
                     child: Text(
-                      'Default: 1 minute',
+                      getIt<AppLocalizations>().defaultOneMinute,
                       style: TextStyle(
                         fontSize: fontSizeSmall,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,

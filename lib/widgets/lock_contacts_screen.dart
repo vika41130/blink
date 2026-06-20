@@ -56,7 +56,7 @@ class _LockContactsScreenState extends State<LockContactsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Enter pin',
+                      getIt<AppLocalizations>().enterPin,
                       style: TextStyle(fontSize: fontSizeSmall),
                     ),
                     const SizedBox(height: appPaddingSmall * 2),

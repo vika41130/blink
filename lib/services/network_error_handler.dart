@@ -1,5 +1,6 @@
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
+import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/widgets/auth_screen.dart';
@@ -22,7 +23,9 @@ class NetworkErrorHandler {
   }
 
   static Future<void> handleNetworkError() async {
-    getIt<ToastificationService>().showToast('Network error. Signing out.');
+    getIt<ToastificationService>().showToast(
+      getIt<AppLocalizations>().networkErrorSigningOut,
+    );
     await Future.delayed(const Duration(seconds: 2));
     getIt<CacheService>().clearCache();
     navigatorKey.currentState?.pushAndRemoveUntil(

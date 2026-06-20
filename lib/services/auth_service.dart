@@ -18,7 +18,9 @@ class AuthService {
 
   goIn(String username, String pin, bool isSignInMode) async {
     if (await NetworkErrorHandler.isOffline()) {
-      getIt<ToastificationService>().showToast('Network error');
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().networkError,
+      );
       return;
     }
     final userCollection = getIt<FirebaseFirestore>().collection('users');
@@ -65,7 +67,9 @@ class AuthService {
         getIt<LoadingService>().hideLoading();
         await Future.delayed(const Duration(milliseconds: 100));
         if (NetworkErrorHandler.isNetworkError(e)) {
-          getIt<ToastificationService>().showToast('Network error');
+          getIt<ToastificationService>().showToast(
+            getIt<AppLocalizations>().networkError,
+          );
         } else {
           getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().signUpFailed,
@@ -103,7 +107,9 @@ class AuthService {
         getIt<LoadingService>().hideLoading();
         await Future.delayed(const Duration(milliseconds: 100));
         if (NetworkErrorHandler.isNetworkError(e)) {
-          getIt<ToastificationService>().showToast('Network error');
+          getIt<ToastificationService>().showToast(
+            getIt<AppLocalizations>().networkError,
+          );
         } else {
           getIt<ToastificationService>().showToast(
             getIt<AppLocalizations>().signUpFailed,
