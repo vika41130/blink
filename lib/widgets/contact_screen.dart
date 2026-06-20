@@ -182,8 +182,6 @@ class _ContactScreenState extends State<ContactScreen> {
             style: const TextStyle(fontSize: fontSizeMedium),
           ),
           trailing: IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
             icon: Icon(
               CupertinoIcons.star_fill,
               size: appIconMidSize,

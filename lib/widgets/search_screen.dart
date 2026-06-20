@@ -212,8 +212,6 @@ class _SearchScreenState extends State<SearchScreen> {
         builder: (context, snapshot) {
           final isAdded = snapshot.data == true;
           return IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
             icon: Icon(
               isAdded ? CupertinoIcons.star_fill : CupertinoIcons.star,
               size: appIconMidSize,
