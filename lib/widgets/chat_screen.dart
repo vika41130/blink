@@ -122,13 +122,9 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  Future<void> _enableProtection() async {
-    // Screen protection disabled - screen_protector incompatible with Xcode 16
-  }
+  Future<void> _enableProtection() async {}
 
-  Future<void> _disableProtection() async {
-    // Screen protection disabled - screen_protector incompatible with Xcode 16
-  }
+  Future<void> _disableProtection() async {}
 
   void _onScroll() {
     final shouldShow = _scrollController.offset > 100;
