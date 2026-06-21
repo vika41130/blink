@@ -63,7 +63,7 @@ class _QRImageScreenState extends State<QRImageScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: appBarIconSize),
+          icon: const Icon(CupertinoIcons.back, size: appBarIconSize),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
