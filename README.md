@@ -99,7 +99,7 @@ cd ..
 
 1. Open `ios/Runner.xcworkspace` in Xcode
 2. Set scheme to `Runner` and device to `Any iOS Device (arm64)`
-3. Edit scheme (Product > Scheme > Edit Scheme) > set Build Configuration to `Release`
+3. Edit scheme (Product > Scheme > Edit Scheme, or press Cmd+Shift+<) > set Build Configuration to `Release`
 4. Product > Archive
 5. Once archive completes, Organizer window opens
 6. Select the archive > Distribute App
