@@ -193,6 +193,8 @@ class NotificationService {
                   final rawTimestamp = data['lastMessageTimestamp'];
                   final lastTimestamp =
                       rawTimestamp is Timestamp ? rawTimestamp : null;
+                  // Skip if timestamp not yet resolved (server timestamp pending)
+                  if (lastTimestamp == null) continue;
                   if (lastSenderId == null || lastSenderId.isEmpty) continue;
                   // Skip messages sent by current user
                   final currentUserId =
@@ -202,8 +204,7 @@ class NotificationService {
 
                   // Prevent duplicate: skip if already notified for this timestamp
                   final prevTimestamp = lastNotifiedPerChat[change.doc.id];
-                  if (lastTimestamp != null &&
-                      prevTimestamp != null &&
+                  if (prevTimestamp != null &&
                       lastTimestamp.seconds == prevTimestamp.seconds &&
                       lastTimestamp.nanoseconds == prevTimestamp.nanoseconds) {
                     continue;
@@ -211,11 +212,9 @@ class NotificationService {
                   lastNotifiedPerChat[change.doc.id] = lastTimestamp;
 
                   // Skip past messages (older than 5 seconds)
-                  if (lastTimestamp != null) {
-                    final messageTime = lastTimestamp.toDate();
-                    if (DateTime.now().difference(messageTime).inSeconds > 5) {
-                      continue;
-                    }
+                  final messageTime = lastTimestamp.toDate();
+                  if (DateTime.now().difference(messageTime).inSeconds > 5) {
+                    continue;
                   }
 
                   getIt<FirebaseFirestore>()

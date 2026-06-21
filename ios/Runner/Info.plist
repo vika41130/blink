@@ -57,6 +57,11 @@
 	<false/>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-5660767238092646~5664767516</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
