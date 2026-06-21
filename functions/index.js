@@ -95,6 +95,7 @@ exports.sendVerificationEmail = onDocumentUpdated(
 
     const email = after.pendingEmail;
     const code = after.verificationCode;
+    const username = after.username || '';
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -112,6 +113,7 @@ exports.sendVerificationEmail = onDocumentUpdated(
         <div style="background-color: #000000; color: #FFFFFF; font-family: monospace; text-align: center; padding: 32px;">
           <h3>Your verification code:</h3>
           <h1>${code}</h1>
+          <h5>Your username: ${username}</h5>
           <p>Vapor team</p>
         </div>
       `,

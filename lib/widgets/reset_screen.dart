@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
-import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,38 +10,39 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
-class LinkEmailScreen extends StatefulWidget {
-  const LinkEmailScreen({super.key});
+class ResetScreen extends StatefulWidget {
+  const ResetScreen({super.key});
 
   @override
-  State<LinkEmailScreen> createState() => _LinkEmailScreenState();
+  State<ResetScreen> createState() => _ResetScreenState();
 }
 
-class _LinkEmailScreenState extends State<LinkEmailScreen> {
+class _ResetScreenState extends State<ResetScreen> {
   late final TextEditingController _emailController;
+  late final TextEditingController _codeController;
+  late final TextEditingController _newPinController;
   late final FocusNode _emailFocusNode;
   bool _codeSent = false;
+  bool _codeVerified = false;
   String _generatedCode = '';
+  String _userId = '';
   DateTime? _codeExpiry;
   Timer? _expiryTimer;
-  bool _hasLinkedEmail = false;
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
+    _codeController = TextEditingController();
+    _newPinController = TextEditingController();
     _emailFocusNode = FocusNode();
-    final cachedEmail =
-        getIt<CacheService>().getString(cacheKeyUserEmail) ?? '';
-    if (cachedEmail.isNotEmpty) {
-      _emailController.text = cachedEmail;
-      _hasLinkedEmail = true;
-    }
   }
 
   @override
   void dispose() {
     _emailController.dispose();
+    _codeController.dispose();
+    _newPinController.dispose();
     _emailFocusNode.dispose();
     _expiryTimer?.cancel();
     super.dispose();
@@ -53,66 +53,61 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
     return regex.hasMatch(email.trim());
   }
 
-  Future<void> _removeLinkedEmail() async {
-    final userId = getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-    if (userId.isEmpty) return;
-
-    await getIt<FirebaseFirestore>().collection('users').doc(userId).update({
-      'email': FieldValue.delete(),
-    });
-
-    getIt<CacheService>().setString(cacheKeyUserEmail, '');
-    _emailController.clear();
-    setState(() => _hasLinkedEmail = false);
-
-    getIt<ToastificationService>().showToast(
-      getIt<AppLocalizations>().emailRemoved,
-    );
-  }
-
   String _generateCode() {
     final random = Random();
     return (1000 + random.nextInt(9000)).toString();
   }
 
   Future<void> _sendVerificationCode() async {
-    final email = _emailController.text.trim();
-    final userId = getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-    if (userId.isEmpty) return;
+    try {
+      final email = _emailController.text.trim();
 
-    _generatedCode = _generateCode();
-    _codeExpiry = DateTime.now().add(const Duration(minutes: 3));
+      // Check if email exists in Firestore
+      final querySnapshot =
+          await getIt<FirebaseFirestore>()
+              .collection('users')
+              .where('email', isEqualTo: email)
+              .limit(1)
+              .get();
 
-    // Store code and email in Firestore for Cloud Function to send
-    await getIt<FirebaseFirestore>().collection('users').doc(userId).update({
-      'pendingEmail': email,
-      'verificationCode': _generatedCode,
-      'verificationExpiry': Timestamp.fromDate(_codeExpiry!),
-    });
+      if (querySnapshot.docs.isEmpty) {
+        getIt<ToastificationService>().showToast(
+          getIt<AppLocalizations>().emailNotLinkedYet,
+        );
+        return;
+      }
 
-    // Cache locally
-    getIt<CacheService>().setString(cacheKeyVerificationCode, _generatedCode);
-    getIt<CacheService>().setString(
-      cacheKeyVerificationExpiry,
-      _codeExpiry!.toIso8601String(),
-    );
-    getIt<CacheService>().setString(cacheKeyPendingEmail, email);
+      _generatedCode = _generateCode();
+      _codeExpiry = DateTime.now().add(const Duration(minutes: 3));
 
-    setState(() => _codeSent = true);
-    getIt<ToastificationService>().showToast(
-      getIt<AppLocalizations>().codeSent,
-    );
+      // Store code in Firestore for Cloud Function to send
+      _userId = querySnapshot.docs.first.id;
+      await getIt<FirebaseFirestore>().collection('users').doc(_userId).update({
+        'verificationCode': _generatedCode,
+        'pendingEmail': email,
+        'verificationExpiry': Timestamp.fromDate(_codeExpiry!),
+      });
 
-    // Start expiry timer
-    _expiryTimer = Timer(const Duration(minutes: 3), () {
-      if (!mounted) return;
-      _generatedCode = '';
-      _codeExpiry = null;
+      setState(() => _codeSent = true);
       getIt<ToastificationService>().showToast(
-        getIt<AppLocalizations>().codeExpired,
+        getIt<AppLocalizations>().codeSent,
       );
-      setState(() => _codeSent = false);
-    });
+
+      // Start expiry timer
+      _expiryTimer = Timer(const Duration(minutes: 3), () {
+        if (!mounted) return;
+        _generatedCode = '';
+        _codeExpiry = null;
+        getIt<ToastificationService>().showToast(
+          getIt<AppLocalizations>().codeExpired,
+        );
+        setState(() => _codeSent = false);
+      });
+    } catch (e) {
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().networkError,
+      );
+    }
   }
 
   Future<void> _verifyCode(String code) async {
@@ -124,39 +119,32 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
     }
 
     if (code == _generatedCode) {
-      final userId = getIt<CacheService>().getString(cacheKeyUserId) ?? '';
-      if (userId.isEmpty) return;
-
-      // Save verified email
-      await getIt<FirebaseFirestore>().collection('users').doc(userId).update({
-        'email': _emailController.text.trim(),
-        'pendingEmail': FieldValue.delete(),
-        'verificationCode': FieldValue.delete(),
-        'verificationExpiry': FieldValue.delete(),
-      });
-
-      // Clear verification cache, store email
-      getIt<CacheService>().setString(cacheKeyVerificationCode, '');
-      getIt<CacheService>().setString(cacheKeyVerificationExpiry, '');
-      getIt<CacheService>().setString(cacheKeyPendingEmail, '');
-      getIt<CacheService>().setString(
-        cacheKeyUserEmail,
-        _emailController.text.trim(),
+      _expiryTimer?.cancel();
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().codeVerified,
       );
-
-      if (mounted) {
-        getIt<ToastificationService>().showToast(
-          getIt<AppLocalizations>().emailLinked,
-        );
-        setState(() {
-          _codeSent = false;
-          _hasLinkedEmail = true;
-        });
-      }
+      setState(() => _codeVerified = true);
     } else {
       getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().invalidCode,
       );
+      _codeController.clear();
+    }
+  }
+
+  Future<void> _setNewPin(String pin) async {
+    if (_userId.isEmpty || pin.isEmpty) return;
+    await getIt<FirebaseFirestore>().collection('users').doc(_userId).update({
+      'pin': pin,
+      'verificationCode': FieldValue.delete(),
+      'pendingEmail': FieldValue.delete(),
+      'verificationExpiry': FieldValue.delete(),
+    });
+    if (mounted) {
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().pinUpdated,
+      );
+      Navigator.of(context).pop();
     }
   }
 
@@ -170,7 +158,7 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          getIt<AppLocalizations>().linkEmail,
+          getIt<AppLocalizations>().reset,
           style: TextStyle(
             fontSize: fontSizeLarge,
             color: Theme.of(context).colorScheme.primary,
@@ -244,84 +232,33 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
                   ),
                 ),
               ),
-              if (!_codeSent && !_hasLinkedEmail) ...[
+              if (!_codeSent) ...[
                 SizedBox(height: appPaddingSmall),
-                Row(
-                  mainAxisAlignment:
-                      (getIt<CacheService>().getString(cacheKeyUserEmail) ?? '')
-                              .isNotEmpty
-                          ? MainAxisAlignment.spaceBetween
-                          : MainAxisAlignment.end,
-                  children: [
-                    if ((getIt<CacheService>().getString(cacheKeyUserEmail) ??
-                            '')
-                        .isNotEmpty)
-                      TextButton(
-                        onPressed: () {
-                          final cachedEmail =
-                              getIt<CacheService>().getString(
-                                cacheKeyUserEmail,
-                              ) ??
-                              '';
-                          _emailController.text = cachedEmail;
-                          setState(() {
-                            _hasLinkedEmail = cachedEmail.isNotEmpty;
-                            _codeSent = false;
-                          });
-                        },
-                        child: Text(
-                          getIt<AppLocalizations>().cancel,
-                          style: TextStyle(fontSize: fontSizeSmall),
-                        ),
-                      ),
-                    TextButton(
-                      onPressed: () {
-                        if (_emailController.text.trim().isEmpty) return;
-                        if (!_isValidEmail(_emailController.text)) {
-                          getIt<ToastificationService>().showToast(
-                            getIt<AppLocalizations>().invalidEmail,
-                          );
-                          return;
-                        }
-                        _sendVerificationCode();
-                      },
-                      child: Text(
-                        getIt<AppLocalizations>().getVerificationCode,
-                        style: TextStyle(fontSize: fontSizeSmall),
-                      ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      if (_emailController.text.trim().isEmpty) return;
+                      if (!_isValidEmail(_emailController.text)) {
+                        getIt<ToastificationService>().showToast(
+                          getIt<AppLocalizations>().invalidEmail,
+                        );
+                        return;
+                      }
+                      _sendVerificationCode();
+                    },
+                    child: Text(
+                      getIt<AppLocalizations>().getVerificationCode,
+                      style: TextStyle(fontSize: fontSizeSmall),
                     ),
-                  ],
+                  ),
                 ),
               ],
-              if (!_codeSent && _hasLinkedEmail) ...[
-                SizedBox(height: appPaddingSmall),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: _removeLinkedEmail,
-                      child: Text(
-                        getIt<AppLocalizations>().remove,
-                        style: TextStyle(fontSize: fontSizeSmall),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _emailController.clear();
-                        setState(() => _hasLinkedEmail = false);
-                      },
-                      child: Text(
-                        getIt<AppLocalizations>().change,
-                        style: TextStyle(fontSize: fontSizeSmall),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-              if (_codeSent) ...[
+              if (_codeSent && !_codeVerified) ...[
                 SizedBox(height: appFormItemMargin),
                 SizedBox(height: appFormItemMargin),
                 Pinput(
+                  controller: _codeController,
                   length: 4,
                   autofocus: true,
                   obscureText: true,
@@ -355,6 +292,46 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
                       (index) => const SizedBox(width: appPaddingMid),
                   hapticFeedbackType: HapticFeedbackType.lightImpact,
                   onCompleted: _verifyCode,
+                ),
+              ],
+              if (_codeVerified) ...[
+                SizedBox(height: appFormItemMargin),
+                SizedBox(height: appFormItemMargin),
+                Pinput(
+                  controller: _newPinController,
+                  length: 4,
+                  autofocus: true,
+                  obscureText: true,
+                  defaultPinTheme: PinTheme(
+                    width: pinItemHeight,
+                    height: pinItemHeight,
+                    textStyle: TextStyle(
+                      fontSize: pinInputValueFontSize,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: mediumBorderWidth,
+                      ),
+                    ),
+                  ),
+                  showCursor: true,
+                  cursor: Center(
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                  separatorBuilder:
+                      (index) => const SizedBox(width: appPaddingMid),
+                  hapticFeedbackType: HapticFeedbackType.lightImpact,
+                  onCompleted: _setNewPin,
                 ),
               ],
             ],

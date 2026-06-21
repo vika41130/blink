@@ -124,8 +124,8 @@
     "@linkEmail": {},
     "email": "Email",
     "@email": {},
-    "confirm": "Confirm",
-    "@confirm": {},
+    "getVerificationCode": "Get verification code",
+    "@getVerificationCode": {},
     "invalidEmail": "Invalid email format",
     "@invalidEmail": {},
     "codeSent": "Verification code sent",
@@ -141,5 +141,15 @@
     "remove": "Remove",
     "@remove": {},
     "emailRemoved": "Email removed",
-    "@emailRemoved": {}
+    "@emailRemoved": {},
+    "reset": "Reset pin",
+    "@reset": {},
+    "emailNotLinkedYet": "Email not linked yet",
+    "@emailNotLinkedYet": {},
+    "codeVerified": "Code verified, enter new pin",
+    "@codeVerified": {},
+    "pinUpdated": "Pin updated",
+    "@pinUpdated": {},
+    "username": "Username",
+    "@username": {}
 }

@@ -195,7 +195,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get email => 'Email';
 
   @override
-  String get confirm => 'Confirm';
+  String get getVerificationCode => 'Get verification code';
 
   @override
   String get invalidEmail => 'Invalid email format';
@@ -220,4 +220,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emailRemoved => 'Email removed';
+
+  @override
+  String get reset => 'Reset pin';
+
+  @override
+  String get emailNotLinkedYet => 'Email not linked yet';
+
+  @override
+  String get codeVerified => 'Code verified, enter new pin';
+
+  @override
+  String get pinUpdated => 'Pin updated';
+
+  @override
+  String get username => 'Username';
 }

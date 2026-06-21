@@ -1,5 +1,7 @@
+import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/auth_service.dart';
+import 'package:blink/widgets/reset_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
@@ -92,7 +94,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               fontSize: fontSizeSmall,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
-                            hintText: 'Username',
+                            hintText: getIt<AppLocalizations>().username,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
                                 appTextInputBorderRadius,
@@ -193,6 +195,44 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               Spacer(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder:
+                            (context, animation, secondaryAnimation) =>
+                                const ResetScreen(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(
+                              CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
+                              ),
+                            ),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: Text(
+                    getIt<AppLocalizations>().reset,
+                    style: TextStyle(fontSize: fontSizeSmall),
+                  ),
+                ),
+              ),
               Text(
                 '• ${AppLocalizations.of(context)!.easyAccountGuide}',
                 style: TextStyle(

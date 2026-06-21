@@ -465,11 +465,11 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get email;
 
-  /// No description provided for @confirm.
+  /// No description provided for @getVerificationCode.
   ///
   /// In en, this message translates to:
-  /// **'Confirm'**
-  String get confirm;
+  /// **'Get verification code'**
+  String get getVerificationCode;
 
   /// No description provided for @invalidEmail.
   ///
@@ -518,6 +518,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email removed'**
   String get emailRemoved;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset pin'**
+  String get reset;
+
+  /// No description provided for @emailNotLinkedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Email not linked yet'**
+  String get emailNotLinkedYet;
+
+  /// No description provided for @codeVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Code verified, enter new pin'**
+  String get codeVerified;
+
+  /// No description provided for @pinUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin updated'**
+  String get pinUpdated;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
