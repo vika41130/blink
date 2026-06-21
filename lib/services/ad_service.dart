@@ -5,12 +5,20 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdService {
+  // Set to false for production
+  static const bool _useTestAds = false;
+
   static const keyAdHomeScreen = 'lastAdShown_homeScreen';
   static const keyAdContactsScreen = 'lastAdShown_contactsScreen';
   static const keyAdProfileScreen = 'lastAdShown_profileScreen';
   static const keyAdChatSettings = 'lastAdShown_chatSettings';
 
   static String get bannerAdUnitId {
+    if (_useTestAds) {
+      return Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716';
+    }
     if (Platform.isAndroid) {
       return 'ca-app-pub-5660767238092646/5880389934';
     } else {
@@ -19,6 +27,11 @@ class AdService {
   }
 
   static String get interstitialAdUnitId {
+    if (_useTestAds) {
+      return Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/1033173712'
+          : 'ca-app-pub-3940256099942544/4411468910';
+    }
     if (Platform.isAndroid) {
       return 'ca-app-pub-5660767238092646/8821258365';
     } else {
