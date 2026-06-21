@@ -12,17 +12,17 @@ class AdService {
 
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111'; // test
+      return 'ca-app-pub-5660767238092646/5880389934';
     } else {
-      return 'ca-app-pub-3940256099942544/2934735716'; // test
+      return 'ca-app-pub-5660767238092646/5903450980';
     }
   }
 
   static String get interstitialAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/1033173712'; // test
+      return 'ca-app-pub-5660767238092646/8821258365';
     } else {
-      return 'ca-app-pub-3940256099942544/4411468910'; // test
+      return 'ca-app-pub-5660767238092646/7891320079';
     }
   }
 
