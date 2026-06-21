@@ -135,5 +135,11 @@
     "emailLinked": "Email linked",
     "@emailLinked": {},
     "invalidCode": "Invalid code",
-    "@invalidCode": {}
+    "@invalidCode": {},
+    "change": "Change",
+    "@change": {},
+    "remove": "Remove",
+    "@remove": {},
+    "emailRemoved": "Email removed",
+    "@emailRemoved": {}
 }

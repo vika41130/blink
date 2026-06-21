@@ -25,6 +25,7 @@ class CacheService {
     setString(cacheKeyUserContacts, jsonEncode(user.contacts));
     setInt(cacheKeyChatMessageDuration, user.chatMessageDuration);
     setBool(cacheKeyContactsLocked, user.contactsLocked);
+    setString(cacheKeyUserEmail, user.email);
   }
 
   void clearCache() {
@@ -38,6 +39,7 @@ class CacheService {
     setString(cacheKeyVerificationCode, '');
     setString(cacheKeyVerificationExpiry, '');
     setString(cacheKeyPendingEmail, '');
+    setString(cacheKeyUserEmail, '');
     setString(cacheKeyUserPin, '');
     setString(cacheKeyUserNickName, '');
     setString(cacheKeyUserContacts, '');
@@ -59,3 +61,4 @@ const cacheKeyContactsLocked = 'cacheKeyContactsLocked';
 const cacheKeyVerificationCode = 'cacheKeyVerificationCode';
 const cacheKeyVerificationExpiry = 'cacheKeyVerificationExpiry';
 const cacheKeyPendingEmail = 'cacheKeyPendingEmail';
+const cacheKeyUserEmail = 'cacheKeyUserEmail';

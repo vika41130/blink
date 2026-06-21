@@ -500,6 +500,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid code'**
   String get invalidCode;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @emailRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Email removed'**
+  String get emailRemoved;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

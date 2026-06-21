@@ -109,9 +109,11 @@ exports.sendVerificationEmail = onDocumentUpdated(
       to: email,
       subject: "Vapor email verification",
       html: `
-        <h3>Your verification code:</h3>
-        <h1 style="text-align: center;">${code}</h1>
-        <p>Vapor team</p>
+        <div style="background-color: #000000; color: #FFFFFF; font-family: monospace; text-align: center; padding: 32px;">
+          <h3>Your verification code:</h3>
+          <h1>${code}</h1>
+          <p>Vapor team</p>
+        </div>
       `,
     };
 

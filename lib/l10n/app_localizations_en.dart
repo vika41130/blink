@@ -211,4 +211,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidCode => 'Invalid code';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get emailRemoved => 'Email removed';
 }

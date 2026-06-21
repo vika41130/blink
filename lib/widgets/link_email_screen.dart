@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:blink/get_it_setup.dart';
@@ -23,24 +24,50 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
   bool _codeSent = false;
   String _generatedCode = '';
   DateTime? _codeExpiry;
+  Timer? _expiryTimer;
+  bool _hasLinkedEmail = false;
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
     _emailFocusNode = FocusNode();
+    final cachedEmail =
+        getIt<CacheService>().getString(cacheKeyUserEmail) ?? '';
+    if (cachedEmail.isNotEmpty) {
+      _emailController.text = cachedEmail;
+      _hasLinkedEmail = true;
+    }
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _emailFocusNode.dispose();
+    _expiryTimer?.cancel();
     super.dispose();
   }
 
   bool _isValidEmail(String email) {
     final regex = RegExp(r'^[\w\.\-]+@[\w\-]+\.\w{2,}$');
     return regex.hasMatch(email.trim());
+  }
+
+  Future<void> _removeLinkedEmail() async {
+    final userId = getIt<CacheService>().getString(cacheKeyUserId) ?? '';
+    if (userId.isEmpty) return;
+
+    await getIt<FirebaseFirestore>().collection('users').doc(userId).update({
+      'email': FieldValue.delete(),
+    });
+
+    getIt<CacheService>().setString(cacheKeyUserEmail, '');
+    _emailController.clear();
+    setState(() => _hasLinkedEmail = false);
+
+    getIt<ToastificationService>().showToast(
+      getIt<AppLocalizations>().emailRemoved,
+    );
   }
 
   String _generateCode() {
@@ -75,6 +102,17 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
     getIt<ToastificationService>().showToast(
       getIt<AppLocalizations>().codeSent,
     );
+
+    // Start expiry timer
+    _expiryTimer = Timer(const Duration(minutes: 3), () {
+      if (!mounted) return;
+      _generatedCode = '';
+      _codeExpiry = null;
+      getIt<ToastificationService>().showToast(
+        getIt<AppLocalizations>().codeExpired,
+      );
+      setState(() => _codeSent = false);
+    });
   }
 
   Future<void> _verifyCode(String code) async {
@@ -97,16 +135,23 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
         'verificationExpiry': FieldValue.delete(),
       });
 
-      // Clear cache
+      // Clear verification cache, store email
       getIt<CacheService>().setString(cacheKeyVerificationCode, '');
       getIt<CacheService>().setString(cacheKeyVerificationExpiry, '');
       getIt<CacheService>().setString(cacheKeyPendingEmail, '');
+      getIt<CacheService>().setString(
+        cacheKeyUserEmail,
+        _emailController.text.trim(),
+      );
 
       if (mounted) {
         getIt<ToastificationService>().showToast(
           getIt<AppLocalizations>().emailLinked,
         );
-        Navigator.of(context).pop();
+        setState(() {
+          _codeSent = false;
+          _hasLinkedEmail = true;
+        });
       }
     } else {
       getIt<ToastificationService>().showToast(
@@ -199,25 +244,77 @@ class _LinkEmailScreenState extends State<LinkEmailScreen> {
                   ),
                 ),
               ),
-              if (!_codeSent) ...[
+              if (!_codeSent && !_hasLinkedEmail) ...[
                 SizedBox(height: appPaddingSmall),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      if (!_isValidEmail(_emailController.text)) {
-                        getIt<ToastificationService>().showToast(
-                          getIt<AppLocalizations>().invalidEmail,
-                        );
-                        return;
-                      }
-                      _sendVerificationCode();
-                    },
-                    child: Text(
-                      getIt<AppLocalizations>().confirm,
-                      style: TextStyle(fontSize: fontSizeSmall),
+                Row(
+                  mainAxisAlignment:
+                      (getIt<CacheService>().getString(cacheKeyUserEmail) ?? '')
+                              .isNotEmpty
+                          ? MainAxisAlignment.spaceBetween
+                          : MainAxisAlignment.end,
+                  children: [
+                    if ((getIt<CacheService>().getString(cacheKeyUserEmail) ??
+                            '')
+                        .isNotEmpty)
+                      TextButton(
+                        onPressed: () {
+                          final cachedEmail =
+                              getIt<CacheService>().getString(
+                                cacheKeyUserEmail,
+                              ) ??
+                              '';
+                          _emailController.text = cachedEmail;
+                          setState(() {
+                            _hasLinkedEmail = cachedEmail.isNotEmpty;
+                            _codeSent = false;
+                          });
+                        },
+                        child: Text(
+                          getIt<AppLocalizations>().cancel,
+                          style: TextStyle(fontSize: fontSizeSmall),
+                        ),
+                      ),
+                    TextButton(
+                      onPressed: () {
+                        if (!_isValidEmail(_emailController.text)) {
+                          getIt<ToastificationService>().showToast(
+                            getIt<AppLocalizations>().invalidEmail,
+                          );
+                          return;
+                        }
+                        _sendVerificationCode();
+                      },
+                      child: Text(
+                        getIt<AppLocalizations>().confirm,
+                        style: TextStyle(fontSize: fontSizeSmall),
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+              ],
+              if (!_codeSent && _hasLinkedEmail) ...[
+                SizedBox(height: appPaddingSmall),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: _removeLinkedEmail,
+                      child: Text(
+                        getIt<AppLocalizations>().remove,
+                        style: TextStyle(fontSize: fontSizeSmall),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        _emailController.clear();
+                        setState(() => _hasLinkedEmail = false);
+                      },
+                      child: Text(
+                        getIt<AppLocalizations>().change,
+                        style: TextStyle(fontSize: fontSizeSmall),
+                      ),
+                    ),
+                  ],
                 ),
               ],
               if (_codeSent) ...[
