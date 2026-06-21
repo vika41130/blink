@@ -264,7 +264,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 Expanded(
-                                  child: Center(
+                                  child: Align(
+                                    alignment: const Alignment(0, -0.6),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
