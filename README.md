@@ -18,6 +18,10 @@ A private messaging app with auto-deleting messages.
 # Clone and enter project
 cd vapor
 
+# Clean project (if needed)
+flutter clean
+flutter pub get
+
 # Get Flutter dependencies
 flutter pub get
 

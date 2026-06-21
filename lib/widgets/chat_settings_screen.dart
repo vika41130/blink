@@ -1,5 +1,6 @@
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/services/ad_service.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/chat_service.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatSettingsScreen extends StatefulWidget {
   final String receiverName;
@@ -36,6 +38,10 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
   @override
   void initState() {
     super.initState();
+    AdService.showInterstitialAd(
+      getIt<SharedPreferences>(),
+      AdService.keyAdChatSettings,
+    );
     _currentNickName = widget.displayName ?? widget.receiverName;
     _usernameController = TextEditingController(text: _currentNickName);
     _usernameFocusNode = FocusNode();

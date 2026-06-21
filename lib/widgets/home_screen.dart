@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
+import 'package:blink/services/ad_service.dart';
 import 'package:blink/services/cache_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,9 @@ import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_image_screen.dart';
 import 'package:blink/widgets/search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,6 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
   late Timer _clockTimer;
   String _time = '';
   bool _contactsLocked = false;
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
+  bool _bannerAdDismissed = false;
 
   @override
   void initState() {
@@ -48,6 +54,27 @@ class _HomeScreenState extends State<HomeScreen> {
     getIt<ContactService>().loadContactsProgressively(
       currentUserId: getIt<CacheService>().getString(cacheKeyUserId) ?? '',
     );
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    final prefs = getIt<SharedPreferences>();
+    if (!AdService.canShowAd(prefs, AdService.keyAdHomeScreen)) return;
+    _bannerAd = AdService.createBannerAd(
+      onAdLoaded: (_) {
+        if (mounted) {
+          AdService.markAdShown(
+            getIt<SharedPreferences>(),
+            AdService.keyAdHomeScreen,
+          );
+          setState(() => _isBannerAdLoaded = true);
+        }
+      },
+      onAdFailedToLoad: (ad, _) {
+        ad.dispose();
+        _bannerAd = null;
+      },
+    )..load();
   }
 
   String _formatTime() {
@@ -65,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _clockTimer.cancel();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -178,17 +206,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 actions: [
-                  IconButton(
-                    icon: Icon(CupertinoIcons.search),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SearchScreen(),
-                        ),
-                      );
-                    },
-                  ),
+                  if (_selectedTab != 1)
+                    IconButton(
+                      icon: Icon(CupertinoIcons.search),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SearchScreen(),
+                          ),
+                        );
+                      },
+                    ),
                   ValueListenableBuilder<int>(
                     valueListenable: getIt<NotificationService>().unreadCount,
                     builder:
@@ -301,6 +330,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             )
                             : content,
                   ),
+                  if (_selectedTab == 0 &&
+                      _isBannerAdLoaded &&
+                      _bannerAd != null &&
+                      !_bannerAdDismissed)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        bottom:
+                            appBarHeight +
+                            appPaddingSmall * 2 +
+                            MediaQuery.of(context).padding.bottom,
+                      ),
+                      child: SizedBox(
+                        height: _bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -342,8 +387,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         CupertinoIcons.person_2,
                         1,
                         () {
+                          AdService.showInterstitialAd(
+                            getIt<SharedPreferences>(),
+                            AdService.keyAdContactsScreen,
+                          );
                           setState(() {
                             _selectedTab = 1;
+                            _bannerAdDismissed = true;
                             content = const ContactScreen();
                           });
                         },
@@ -353,8 +403,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       CupertinoIcons.person,
                       2,
                       () {
+                        AdService.showInterstitialAd(
+                          getIt<SharedPreferences>(),
+                          AdService.keyAdProfileScreen,
+                        );
                         setState(() {
                           _selectedTab = 2;
+                          _bannerAdDismissed = true;
                           content = ProfileScreen(
                             onLockChanged: () {
                               setState(() {
