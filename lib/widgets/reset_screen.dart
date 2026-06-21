@@ -22,6 +22,7 @@ class _ResetScreenState extends State<ResetScreen> {
   late final TextEditingController _codeController;
   late final TextEditingController _newPinController;
   late final FocusNode _emailFocusNode;
+  late final FocusNode _newPinFocusNode;
   bool _codeSent = false;
   bool _codeVerified = false;
   String _generatedCode = '';
@@ -35,6 +36,7 @@ class _ResetScreenState extends State<ResetScreen> {
     _emailController = TextEditingController();
     _codeController = TextEditingController();
     _newPinController = TextEditingController();
+    _newPinFocusNode = FocusNode();
     _emailFocusNode = FocusNode();
   }
 
@@ -43,6 +45,7 @@ class _ResetScreenState extends State<ResetScreen> {
     _emailController.dispose();
     _codeController.dispose();
     _newPinController.dispose();
+    _newPinFocusNode.dispose();
     _emailFocusNode.dispose();
     _expiryTimer?.cancel();
     super.dispose();
@@ -124,6 +127,9 @@ class _ResetScreenState extends State<ResetScreen> {
         getIt<AppLocalizations>().codeVerified,
       );
       setState(() => _codeVerified = true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _newPinFocusNode.requestFocus();
+      });
     } else {
       getIt<ToastificationService>().showToast(
         getIt<AppLocalizations>().invalidCode,
@@ -299,6 +305,7 @@ class _ResetScreenState extends State<ResetScreen> {
                 SizedBox(height: appFormItemMargin),
                 Pinput(
                   controller: _newPinController,
+                  focusNode: _newPinFocusNode,
                   length: 4,
                   autofocus: true,
                   obscureText: true,
