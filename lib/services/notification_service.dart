@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/services/cache_service.dart';
@@ -68,6 +69,8 @@ class NotificationService {
     await _saveToken();
     _listenTokenRefresh();
     _listenFirestoreMessages();
+    // Suppress foreground FCM messages (handled by Firestore listener)
+    FirebaseMessaging.onMessage.listen((_) {});
   }
 
   Future<void> _requestPermission() async {
@@ -334,6 +337,10 @@ class NotificationItem {
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // iOS: system notification is shown via APNs payload from Cloud Function
+  // Android: show local notification here
+  if (!Platform.isAndroid) return;
+
   final plugin = FlutterLocalNotificationsPlugin();
   const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
   const settings = InitializationSettings(android: androidSettings);
@@ -347,12 +354,11 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     importance: Importance.high,
     priority: Priority.high,
   );
-  const iosDetails = DarwinNotificationDetails();
-  const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+  const details = NotificationDetails(android: androidDetails);
 
   await plugin.show(
     DateTime.now().millisecondsSinceEpoch ~/ 1000,
-    '',
+    senderName,
     'message',
     details,
     payload:

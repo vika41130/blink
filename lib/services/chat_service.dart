@@ -144,7 +144,7 @@ class ChatService {
         .doc(chatRoomId)
         .collection('messages')
         .where('deleteAt', isGreaterThan: currentTime)
-        .orderBy('deleteAt', descending: true)
+        .orderBy('deleteAt')
         .snapshots()
         .handleError((e) {
           if (NetworkErrorHandler.isNetworkError(e)) {
@@ -152,9 +152,12 @@ class ChatService {
           }
         })
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
-            return MessageModel.fromFirestore(doc.data(), doc.id);
-          }).toList();
+          final messages =
+              snapshot.docs.map((doc) {
+                return MessageModel.fromFirestore(doc.data(), doc.id);
+              }).toList();
+          messages.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          return messages;
         });
   }
 

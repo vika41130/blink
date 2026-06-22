@@ -19,21 +19,32 @@ exports.sendChatNotification = onDocumentCreated(
 
     const chatRoomId = event.params.chatRoomId;
     const senderId = message.senderId;
-    const messageText = message.text;
-    if (!senderId || !messageText) return;
+    const messageText = message.text || "📷 Photo";
+    if (!senderId) return;
+
+    console.log(`New message from ${senderId} in ${chatRoomId}: ${messageText}`);
 
     const ids = chatRoomId.split("_");
     const receiverId = ids.find((id) => id !== senderId);
-    if (!receiverId) return;
+    if (!receiverId) {
+      console.log("No receiverId found");
+      return;
+    }
 
     const receiverDoc = await getFirestore()
       .collection("users")
       .doc(receiverId)
       .get();
 
-    if (!receiverDoc.exists) return;
+    if (!receiverDoc.exists) {
+      console.log(`Receiver ${receiverId} not found`);
+      return;
+    }
     const fcmToken = receiverDoc.data().fcmToken;
-    if (!fcmToken) return;
+    if (!fcmToken) {
+      console.log(`No FCM token for ${receiverId}`);
+      return;
+    }
 
     const senderDoc = await getFirestore()
       .collection("users")
@@ -44,33 +55,38 @@ exports.sendChatNotification = onDocumentCreated(
       ? senderDoc.data().username
       : "Someone";
 
-    await getMessaging().send({
-      token: fcmToken,
-      notification: {
-        title: senderName,
-        body: messageText,
-      },
-      data: {
-        senderId: senderId,
-        receiverId: receiverId,
-        senderName: senderName,
-      },
-      apns: {
-        payload: {
-          aps: {
-            sound: "default",
-            badge: 1,
+    try {
+      await getMessaging().send({
+        token: fcmToken,
+        data: {
+          senderId: senderId,
+          receiverId: receiverId,
+          senderName: senderName,
+        },
+        apns: {
+          headers: {
+            "apns-priority": "10",
+            "apns-push-type": "alert",
+          },
+          payload: {
+            aps: {
+              alert: {
+                title: senderName,
+                body: "message",
+              },
+              sound: "default",
+              badge: 1,
+            },
           },
         },
-      },
-      android: {
-        priority: "high",
-        notification: {
-          sound: "default",
-          channelId: "chat_messages",
+        android: {
+          priority: "high",
         },
-      },
-    });
+      });
+      console.log(`Notification sent to ${receiverId} (${senderName}: ${messageText})`);
+    } catch (error) {
+      console.error(`Failed to send push: ${error.message}`);
+    }
   }
 );
 
