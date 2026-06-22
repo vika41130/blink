@@ -1,4 +1,4 @@
-package com.example.blinking
+package edgar.walker.vapor
 
 import io.flutter.embedding.android.FlutterActivity
 

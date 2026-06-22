@@ -71,6 +71,17 @@ class NotificationService {
     _listenFirestoreMessages();
     // Suppress foreground FCM messages (handled by Firestore listener)
     FirebaseMessaging.onMessage.listen((_) {});
+    // Clear badge on app open
+    if (Platform.isIOS) {
+      await FlutterLocalNotificationsPlugin()
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+    }
+    try {
+      AppBadgePlus.updateBadge(0);
+    } catch (_) {}
   }
 
   Future<void> _requestPermission() async {
@@ -134,8 +145,23 @@ class NotificationService {
 
   Future<void> _saveToken() async {
     try {
-      final token = await _messaging.getToken();
+      // On iOS, ensure APNs token is available first
+      String? token;
+      if (Platform.isIOS) {
+        final apnsToken = await _messaging.getAPNSToken();
+        if (apnsToken == null) {
+          // Retry after a short delay
+          await Future.delayed(const Duration(seconds: 2));
+          final retryApns = await _messaging.getAPNSToken();
+          if (retryApns == null) {
+            debugPrint('APNs token not available');
+            return;
+          }
+        }
+      }
+      token = await _messaging.getToken();
       if (token != null) {
+        debugPrint('FCM token: $token');
         final userId = getIt<CacheService>().getString(cacheKeyUserId);
         if (userId != null && userId.isNotEmpty) {
           await getIt<FirebaseFirestore>()

@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.blinking"
+    namespace = "edgar.walker.vapor"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
@@ -24,7 +24,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.blinking"
+        applicationId = "edgar.walker.vapor"
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

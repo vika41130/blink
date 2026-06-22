@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1028511199584:android:21204d37972813754dee05",
+        "mobilesdk_app_id": "1:1028511199584:android:37c7b2884ae54ab44dee05",
         "android_client_info": {
-          "package_name": "com.example.blinking"
+          "package_name": "edgar.walker.vapor"
         }
       },
       "oauth_client": [],

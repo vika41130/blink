@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.blinking</string>
+	<string>edgar.walker.vapor</string>
 	<key>PROJECT_ID</key>
 	<string>blink-59a7b</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1028511199584:ios:4b1933b2bf01415c4dee05</string>
+	<string>1:1028511199584:ios:fcf197bf87ca70724dee05</string>
 </dict>
 </plist>

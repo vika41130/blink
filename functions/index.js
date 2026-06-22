@@ -75,7 +75,6 @@ exports.sendChatNotification = onDocumentCreated(
                 body: "message",
               },
               sound: "default",
-              badge: 1,
             },
           },
         },
@@ -83,7 +82,7 @@ exports.sendChatNotification = onDocumentCreated(
           priority: "high",
         },
       });
-      console.log(`Notification sent to ${receiverId} (${senderName}: ${messageText})`);
+      console.log(`FCM push sent to ${receiverId} (${senderName}: ${messageText})`);
     } catch (error) {
       console.error(`Failed to send push: ${error.message}`);
     }
@@ -143,3 +142,4 @@ exports.sendVerificationEmail = onDocumentUpdated(
     }
   }
 );
+// force redeploy 1782115199
