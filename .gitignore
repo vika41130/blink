@@ -46,3 +46,6 @@ app.*.map.json
 
 /functions/.dart_tool/
 /functions/node_modules/
+
+# Firebase service account key
+functions/service-account.json
