@@ -1,23 +1,22 @@
-const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
-const { defineSecret } = require("firebase-functions/params");
-const { initializeApp } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
-const { getMessaging } = require("firebase-admin/messaging");
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 
-initializeApp();
+const serviceAccount = require("./service-account.json");
 
-const emailUser = defineSecret("EMAIL_USER");
-const emailPass = defineSecret("EMAIL_PASS");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
-exports.sendChatNotification = onDocumentCreated(
-  "chats/{chatRoomId}/messages/{messageId}",
-  async (event) => {
-    if (!event.data) return;
-    const message = event.data.data();
+const db = admin.firestore();
+
+exports.onNewChatMessage = functions.firestore
+  .document("chats/{chatRoomId}/messages/{messageId}")
+  .onCreate(async (snap, context) => {
+    const message = snap.data();
     if (!message) return;
 
-    const chatRoomId = event.params.chatRoomId;
+    const chatRoomId = context.params.chatRoomId;
     const senderId = message.senderId;
     const messageText = message.text || "📷 Photo";
     if (!senderId) return;
@@ -31,33 +30,30 @@ exports.sendChatNotification = onDocumentCreated(
       return;
     }
 
-    const receiverDoc = await getFirestore()
-      .collection("users")
-      .doc(receiverId)
-      .get();
-
+    const receiverDoc = await db.collection("users").doc(receiverId).get();
     if (!receiverDoc.exists) {
       console.log(`Receiver ${receiverId} not found`);
       return;
     }
+
     const fcmToken = receiverDoc.data().fcmToken;
     if (!fcmToken) {
       console.log(`No FCM token for ${receiverId}`);
       return;
     }
 
-    const senderDoc = await getFirestore()
-      .collection("users")
-      .doc(senderId)
-      .get();
-
+    const senderDoc = await db.collection("users").doc(senderId).get();
     const senderName = senderDoc.exists
       ? senderDoc.data().username
       : "Someone";
 
     try {
-      await getMessaging().send({
+      await admin.messaging().send({
         token: fcmToken,
+        notification: {
+          title: senderName,
+          body: "message",
+        },
         data: {
           senderId: senderId,
           receiverId: receiverId,
@@ -66,14 +62,9 @@ exports.sendChatNotification = onDocumentCreated(
         apns: {
           headers: {
             "apns-priority": "10",
-            "apns-push-type": "alert",
           },
           payload: {
             aps: {
-              alert: {
-                title: senderName,
-                body: "message",
-              },
               sound: "default",
             },
           },
@@ -86,20 +77,15 @@ exports.sendChatNotification = onDocumentCreated(
     } catch (error) {
       console.error(`Failed to send push: ${error.message}`);
     }
-  }
-);
+  });
 
-exports.sendVerificationEmail = onDocumentUpdated(
-  {
-    document: "users/{userId}",
-    secrets: [emailUser, emailPass],
-  },
-  async (event) => {
-    if (!event.data) return;
-    const before = event.data.before.data();
-    const after = event.data.after.data();
+exports.sendVerificationEmail = functions
+  .runWith({ secrets: ["EMAIL_USER", "EMAIL_PASS"] })
+  .firestore.document("users/{userId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
 
-    // Only trigger when verificationCode is newly set
     if (
       !after.verificationCode ||
       !after.pendingEmail ||
@@ -110,18 +96,18 @@ exports.sendVerificationEmail = onDocumentUpdated(
 
     const email = after.pendingEmail;
     const code = after.verificationCode;
-    const username = after.username || '';
+    const username = after.username || "";
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: emailUser.value(),
-        pass: emailPass.value(),
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: `"Vapor" <${emailUser.value()}>`,
+      from: `"Vapor" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Vapor email verification",
       html: `
@@ -140,6 +126,4 @@ exports.sendVerificationEmail = onDocumentUpdated(
     } catch (error) {
       console.error("Error sending email:", error);
     }
-  }
-);
-// force redeploy 1782115199
+  });
