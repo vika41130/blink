@@ -176,6 +176,25 @@ class ChatService {
           .collection('messages')
           .doc(messageId)
           .delete();
+
+      // Check if any non-expired messages remain
+      final now = Timestamp.fromDate(DateTime.now());
+      final remaining =
+          await getIt<FirebaseFirestore>()
+              .collection('chats')
+              .doc(chatRoomId)
+              .collection('messages')
+              .where('deleteAt', isGreaterThan: now)
+              .limit(1)
+              .get();
+
+      if (remaining.docs.isEmpty) {
+        // Clear lastMessage since all messages have been removed
+        await getIt<FirebaseFirestore>()
+            .collection('chats')
+            .doc(chatRoomId)
+            .update({'lastMessage': ''});
+      }
     } catch (e) {
       if (NetworkErrorHandler.isNetworkError(e)) {
         await NetworkErrorHandler.handleNetworkError();

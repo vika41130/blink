@@ -162,7 +162,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterPin => 'Enter pin';
 
   @override
-  String get notifications => 'Notifications';
+  String get chat => 'Chat';
 
   @override
   String get chatMessageDuration => 'Chat message duration';

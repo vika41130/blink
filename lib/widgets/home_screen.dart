@@ -5,12 +5,12 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/ad_service.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/chat_list_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
-import 'package:blink/widgets/notification_screen.dart';
+import 'package:blink/widgets/chat_list_screen.dart';
 import 'package:blink/widgets/contact_screen.dart';
 import 'package:blink/widgets/profile_screen.dart';
 import 'package:blink/widgets/qr_image_screen.dart';
@@ -159,26 +159,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 actions: [
                   ValueListenableBuilder<int>(
-                    valueListenable: getIt<NotificationService>().unreadCount,
+                    valueListenable: getIt<ChatListService>().unreadCount,
                     builder:
                         (_, count, __) => IconButton(
                           icon: Badge(
                             isLabelVisible: count > 0,
-                            label: Text(
-                              count > notificationBadgeMax
-                                  ? '$notificationBadgeMax+'
-                                  : '$count',
-                            ),
-                            child: Icon(CupertinoIcons.bell),
+                            label: Text(count > 9 ? '9+' : '$count'),
+                            child: Icon(CupertinoIcons.chat_bubble_2),
                           ),
-                          onPressed: () {
-                            getIt<NotificationService>().resetCount();
-                            Navigator.push(
+                          onPressed: () async {
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const NotificationScreen(),
+                                builder: (_) => const ChatListScreen(),
                               ),
                             );
+                            getIt<ChatListService>().resetCount();
                           },
                         ),
                   ),
@@ -218,30 +214,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     ),
-                  ValueListenableBuilder<int>(
-                    valueListenable: getIt<NotificationService>().unreadCount,
-                    builder:
-                        (_, count, __) => IconButton(
-                          icon: Badge(
-                            isLabelVisible: count > 0,
-                            label: Text(
-                              count > notificationBadgeMax
-                                  ? '$notificationBadgeMax+'
-                                  : '$count',
+                  if (_selectedTab != 1)
+                    ValueListenableBuilder<int>(
+                      valueListenable: getIt<ChatListService>().unreadCount,
+                      builder:
+                          (_, count, __) => IconButton(
+                            icon: Badge(
+                              isLabelVisible: count > 0,
+                              label: Text(count > 9 ? '9+' : '$count'),
+                              child: Icon(CupertinoIcons.chat_bubble_2),
                             ),
-                            child: Icon(CupertinoIcons.bell),
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ChatListScreen(),
+                                ),
+                              );
+                              getIt<ChatListService>().resetCount();
+                            },
                           ),
-                          onPressed: () {
-                            getIt<NotificationService>().resetCount();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const NotificationScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                  ),
+                    ),
                   IconButton(
                     icon: Icon(CupertinoIcons.power),
                     onPressed: () {

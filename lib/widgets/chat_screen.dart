@@ -10,7 +10,7 @@ import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/services/toastification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
-import 'package:blink/widgets/home_screen.dart';
+import 'package:blink/widgets/chat_list_screen.dart';
 import 'package:blink/widgets/message_widget.dart';
 import 'package:blink/widgets/chat_settings_screen.dart';
 import 'package:blink/widgets/custom_widgets/smoke_animation.dart';
@@ -274,8 +274,8 @@ class _ChatScreenState extends State<ChatScreen> {
         if (didPop) return;
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (Route<dynamic> route) => false,
+          MaterialPageRoute(builder: (_) => const ChatListScreen()),
+          (route) => route.isFirst,
         );
       },
       child: Scaffold(
@@ -301,8 +301,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (Route<dynamic> route) => false,
+                    MaterialPageRoute(builder: (_) => const ChatListScreen()),
+                    (route) => route.isFirst,
                   );
                 },
               ),

@@ -7,8 +7,6 @@ import 'package:blink/widgets/chat_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart' show SchedulerBinding, SchedulerPhase;
-import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -16,33 +14,17 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
-  final ValueNotifier<int> unreadCount = ValueNotifier<int>(0);
-
   String? _currentChatReceiverId;
-
-  void _safeSetUnreadCount(int value) {
-    if (SchedulerBinding.instance.schedulerPhase ==
-        SchedulerPhase.persistentCallbacks) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        unreadCount.value = value;
-      });
-    } else {
-      unreadCount.value = value;
-    }
-  }
-
-  void resetCount() {
-    try {
-      _safeSetUnreadCount(0);
-      AppBadgePlus.updateBadge(0);
-    } catch (_) {}
-  }
+  bool _initialized = false;
 
   void setCurrentChat(String? receiverId) {
     _currentChatReceiverId = receiverId;
   }
 
   Future<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
+
     await _requestPermission();
     await _initLocalNotifications();
     await _saveToken();
@@ -53,13 +35,7 @@ class NotificationService {
       // Don't show if user is in the chat with the sender
       final senderId = message.data['senderId'];
       if (senderId == _currentChatReceiverId) return;
-      _safeSetUnreadCount(unreadCount.value + 1);
     });
-
-    // Clear badge on app open
-    try {
-      AppBadgePlus.updateBadge(0);
-    } catch (_) {}
   }
 
   Future<void> _requestPermission() async {

@@ -399,11 +399,11 @@ abstract class AppLocalizations {
   /// **'Enter pin'**
   String get enterPin;
 
-  /// No description provided for @notifications.
+  /// No description provided for @chat.
   ///
   /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
+  /// **'Chat'**
+  String get chat;
 
   /// No description provided for @chatMessageDuration.
   ///

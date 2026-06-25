@@ -3,6 +3,7 @@ import 'package:blink/firebase_options.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/auth_service.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/chat_list_service.dart';
 import 'package:blink/services/chat_service.dart';
 import 'package:blink/services/contact_service.dart';
 import 'package:blink/services/loading_service.dart';
@@ -43,6 +44,7 @@ Future<void> initFirebase() async {
   getIt.registerSingleton<FirebaseFirestore>(firestore);
   getIt.registerSingleton<AuthService>(AuthService());
   getIt.registerSingleton<NotificationService>(NotificationService());
+  getIt.registerSingleton<ChatListService>(ChatListService());
   getIt.registerLazySingleton<ChatService>(() => ChatService());
   getIt.registerLazySingleton<ContactService>(() => ContactService());
 }

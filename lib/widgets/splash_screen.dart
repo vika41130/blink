@@ -2,6 +2,7 @@ import 'package:blink/app.dart';
 import 'package:blink/get_it_setup.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/chat_list_service.dart';
 import 'package:blink/services/notification_service.dart';
 import 'package:blink/settings/fixed_settings.dart';
 import 'package:blink/widgets/auth_screen.dart';
@@ -50,6 +51,7 @@ class _SplashScreenState extends State<SplashScreen>
       final isSignedIn = getIt<CacheService>().getBool(cacheKeyIsSignedIn);
       if (isSignedIn) {
         await getIt<NotificationService>().init();
+        getIt<ChatListService>().startListening();
       }
       final destination = isSignedIn ? const HomeScreen() : const AuthScreen();
       navigatorKey.currentState?.pushAndRemoveUntil(

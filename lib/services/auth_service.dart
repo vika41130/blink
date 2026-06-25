@@ -3,6 +3,7 @@ import 'package:blink/get_it_setup.dart';
 import 'package:blink/models/user.dart';
 import 'package:blink/l10n/app_localizations.dart';
 import 'package:blink/services/cache_service.dart';
+import 'package:blink/services/chat_list_service.dart';
 import 'package:blink/services/loading_service.dart';
 import 'package:blink/services/network_error_handler.dart';
 import 'package:blink/services/notification_service.dart';
@@ -55,6 +56,7 @@ class AuthService {
               (Route<dynamic> route) => false,
             );
             await getIt<NotificationService>().init();
+            getIt<ChatListService>().startListening();
             _backgroundFetchAndCacheUser(doc.id);
           } else {
             getIt<LoadingService>().hideLoading();
@@ -97,6 +99,7 @@ class AuthService {
         getIt<CacheService>().setBool(cacheKeyIsSignedIn, true);
         getIt<CacheService>().setString(cacheKeyUserId, user.id);
         await getIt<NotificationService>().init();
+        getIt<ChatListService>().startListening();
         getIt<CacheService>().cacheUser(userModel);
         getIt<LoadingService>().hideLoading();
         navigatorKey.currentState?.pushAndRemoveUntil(
